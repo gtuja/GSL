@@ -1,0 +1,2 @@
+# GSL
+Gtuja Static Library.
