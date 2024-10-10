@@ -41,10 +41,12 @@
 
 - [TOC](#toc)<br>
 <font size="4">
+
 | Abbrev. | Meaning |
 |:-------:|:--------:|
 |GSL|G? Static Library|
 |GSL|G? Static Library|
+
 </font>
 </details>
 
