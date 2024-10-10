@@ -42,7 +42,7 @@
 - [TOC](#toc)
 
 | Abbrev. | Meaning |
-|:-------:|:--------:|
+|:--|:--|
 |GSL|G? Static Library|
 |GNOS|G? No OS System|
 |PSM|Periodic Service Manager|
