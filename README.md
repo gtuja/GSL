@@ -2,15 +2,14 @@
 [![Language](https://img.shields.io/badge/Language-%E6%97%A5%E6%9C%AC%E8%AA%9E-brightgreen)](https://github.com/gtuja/CSC_MS/blob/main/README.md)
 
 # GSL(G? Static Library)
-- GSL is a collection of C libraries comprised of OS-Like system and modules that implement general purpose features.
- 
+
 <div id="toc"></div>
 <details open>
 <summary><font size="5"><b>Table of Contents</b></font></summary>
 
 - [History](#History)
-- [Concept](#Concept)
 - [Abbreviation](#Abbreviation)
+- [Concept](#Concept)
 - [Environment](#Environment)
 - [Features](#Features)
 - [Reference](#Reference)
@@ -26,15 +25,6 @@
 
 </details>
 
-<div id="Concept"></div>
-<details open>
-<summary><font size="5"><b>Concept</b></font></summary>
-
-- [TOC](#toc)
-- Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
-
-</details>
-
 <div id="Abbreviation"></div>
 <details open>
 <summary><font size="5"><b>Abbreviation</b></font></summary>
@@ -45,13 +35,25 @@
 |:--|:--|
 |GSL|G? Static Library|
 |GXXX|Gsl XXX|
-|NOS|No OS System|
+|NOS|No Operating System|
 |PSM|Periodic Service Manager|
 |BTM|Background Thread Manager|
 |BSM|Button State Manager|
 |LSM|LED State Manager|
 
 </details>
+
+<div id="Concept"></div>
+<details open>
+<summary><font size="5"><b>Concept</b></font></summary>
+
+- [TOC](#toc)
+- GSL is a collection of C libraries for ARM Cortex devices.
+- GCL is comprised of NOS and modules that implement general purpose features.
+- Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
+
+</details>
+
 
 <div id="Environment"></div>
 <details open>
