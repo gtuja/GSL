@@ -44,6 +44,7 @@
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
+|GXXX|Gsl XXX|
 |NOS|No OS System|
 |PSM|Periodic Service Manager|
 |BTM|Background Thread Manager|
