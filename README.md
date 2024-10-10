@@ -31,6 +31,7 @@
 
 - [TOC](#toc)
 
+<font size="1">
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
@@ -41,6 +42,7 @@
 |BSM|Button State Manager|
 |LSM|LED State Manager|
 
+</font>
 <br>
 </details>
 
