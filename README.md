@@ -30,8 +30,15 @@
 <summary><font size="5"><b>Abbreviation</b></font></summary>
 
 - [TOC](#toc)
+<style>
+.smalltable > table, .smalltable > th, .smalltable > td {
+   font-size: 50%;
+}
+</style>
 
-<font size="1">
+<div class="smalltable"> 
+
+
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
@@ -41,8 +48,8 @@
 |BTM|Background Thread Manager|
 |BSM|Button State Manager|
 |LSM|LED State Manager|
+</div>
 
-</font>
 <br>
 </details>
 
