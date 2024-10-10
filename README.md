@@ -39,15 +39,13 @@
 <details open>
 <summary><font size="5"><b>Abbreviation</b></font></summary>
 
-- [TOC](#toc)<br>
-<font size="4">
+- [TOC](#toc)
 
 | Abbrev. | Meaning |
 |:-------:|:--------:|
 |GSL|G? Static Library|
 |GSL|G? Static Library|
 
-</font>
 </details>
 
 <div id="Environment"></div>
