@@ -16,18 +16,16 @@
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 typedef struct {
-  tenuGnosPriority  enuPriority;
+  U16               u16Period;
   tpfGnosInitialize pfInitialize;
   tpfGnosService    pfService;
 } tstrGnosService;
 
 /* Private function prototypes -----------------------------------------------*/
-PRIVATE void vidGnosServiceDetail(tenuGnosPriority enuGnosPriority);
 
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U64 gullGnosCounter;
-
-PRIVATE tstrGnosService gstrGnosService[GNOS_PRD_MAX];
+PRIVATE tstrGnosService gstrGnosService[GNOS_PSM_MAX];
 
 /* Exported variables --------------------------------------------------------*/
 
@@ -38,38 +36,36 @@ PUBLIC void vidGnosInitialize(void* pvArgs) {
 }
 
 PUBLIC void vidGnosService(void* pvArgs) {
-  gullGnosCounter++;
+  U8 i;
 
-  if ((gullGnosCounter % GNOS_PS_INTRVL_LOW) == (U64)0)    vidGnosServiceDetail(GNOS_PS_INTRVL_LOW);
-  if ((gullGnosCounter % GNOS_PS_INTRVL_NORMAL) == (U64)0) vidGnosServiceDetail(GNOS_PS_INTRVL_NORMAL);
-  if ((gullGnosCounter % GNOS_PS_INTRVL_HIGH) == (U64)0)   vidGnosServiceDetail(GNOS_PS_INTRVL_HIGH);
+  gullGnosCounter++;
+  for (i=0; i<(U8)GNOS_PSM_MAX; i++)  {
+    if (gstrGnosService[i].u16Period != (U16)0) {
+      if ((U64)(gullGnosCounter % (U64)gstrGnosService[i].u16Period) == (U64)0) {
+        if (gstrGnosService[i].pfService != NULL) {
+          gstrGnosService[i].pfService(NULL);
+        }
+      }
+    }
+  }
 }
 
-PUBLIC BOOL bGnosRegister(tenuGnosPriority enuPriority, tpfGnosInitialize pfInitialize, tpfGnosService pfService)
+PUBLIC BOOL bGnosRegister(tstrGnosRegisterArgs* pstrArgs)
 {
   U8 i;
   BOOL bReturn = FALSE;
 
-  for (i=0; i<(U8)GNOS_PRD_MAX; i++)  {
-    if (gstrGnosService[i].enuPriority != GNOS_PRRT_NA) {
-      gstrGnosService[i].enuPriority = enuPriority;
-      gstrGnosService[i].pfInitialize = pfInitialize;
-      gstrGnosService[i].pfService = pfService;
+  for (i=0; i<(U8)GNOS_PSM_MAX; i++)  {
+    if (gstrGnosService[i].u16Period == (U16)0) {
+      gstrGnosService[i].u16Period = pstrArgs->u16Period;
+      gstrGnosService[i].pfInitialize = pstrArgs->pfGnosInitialize;
+      gstrGnosService[i].pfService = pstrArgs->pfGnosService;
+      if (gstrGnosService[i].pfInitialize != NULL) {
+        gstrGnosService[i].pfInitialize(NULL);
+      }
       bReturn = TRUE;
       break;
     }
   }
   return bReturn;
-}
-
-PRIVATE void vidGnosServiceDetail(tenuGnosPriority enuGnosPriority) {
-  U8 i;
-
-  for (i=0; i<(U8)GNOS_PRD_MAX; i++)  {
-    if (gstrGnosService[i].enuPriority == enuGnosPriority) {
-      if (gstrGnosService[i].pfService != NULL) {
-        gstrGnosService[i].pfService(NULL);
-      }
-    }
-  }
 }

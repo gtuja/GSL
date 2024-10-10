@@ -1,30 +1,25 @@
 /**
- * @file    gsl.c
+ * @file    app_callback.c
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 9, 2024
+ * @date    Oct 10, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "gsl_def.h"
-#include "gsl_api.h"
-#include <string.h>
+#include "gsl_nos_api.h"
+#include "stm32l0xx_hal.h"
+#include <stdio.h>
 
 /* External variables --------------------------------------------------------*/
-/* External functions --------------------------------------------------------*/
-EXTERN void vidGnosInitialize(void* pvArgs);
+EXTERN TIM_HandleTypeDef htim21;
 
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
-typedef struct {
-  tstrGslInitializeArgs strArgs;
-} tstrGslControl;
-
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-PRIVATE tstrGslControl strGslControl;
-
+PRIVATE U32 gu32TraceCounter = (U32)0;
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -34,20 +29,30 @@ PRIVATE tstrGslControl strGslControl;
  * @sa      vidXxx
  * @return  void
  */
-
-PUBLIC void vidGslInitialize(tstrGslInitializeArgs* pstrArgs) {
-  memcpy(&(strGslControl.strArgs), pstrArgs, sizeof(tstrGslInitializeArgs));
-
-  vidGnosInitialize(NULL);
+PUBLIC U32 u32AppTickCallback(void) {
+  return (U32)TIM22->CNT;
 }
 
-PUBLIC void vidGslTrace(char* pcTrace) {
-  if (strGslControl.strArgs.strAppCallbacks.pfTrace != NULL) {
-    strGslControl.strArgs.strAppCallbacks.pfTrace(pcTrace);
+PUBLIC void vidAppTraceCallback(char* pcTrace) {
+  printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
+}
+
+#ifdef __MEASURE_TIM22
+static U32 u32Tick21_1m[10];
+static U32 u32Tick22_1u[10];
+static U8 i;
+#endif /* __MEASURE_TIM22 */
+
+PUBLIC void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim == &htim21) {
+#ifdef __MEASURE_TIM22
+    if (i<10) {
+      u32Tick21_1m[i] = (U32)TIM21->CNT;
+      u32Tick22_1u[i] = (U32)TIM22->CNT;  /* about 970 us for each 1ms. */
+      i++;
+    }
+#endif /* __MEASURE_TIM22 */
+    vidGnosService(NULL);
   }
-}
-
-PUBLIC U32 u32GslTick(void) {
-  return (strGslControl.strArgs.strAppCallbacks.pfTick != NULL) ? \
-          strGslControl.strArgs.strAppCallbacks.pfTick() : (U32)0;
 }

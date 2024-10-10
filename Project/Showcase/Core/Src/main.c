@@ -28,6 +28,7 @@
 #include "gsl_def.h"
 #include "gsl_api.h"
 #include "gsl_nos_api.h"
+#include "app_api.h"
 #include <stdio.h>
 
 /* USER CODE END Includes */
@@ -61,8 +62,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static U32 gu32Counter;
-
 
 /* USER CODE END 0 */
 
@@ -98,10 +97,15 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_TIM21_Init();
+  MX_TIM22_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start_IT(&htim21); /* Start TIM21. */
   vidGslInitialize(NULL);
+  vidAppInitialize();
+
+  HAL_TIM_Base_Start_IT(&htim21); /* Start TIM21. */
+  HAL_TIM_Base_Start_IT(&htim22); /* Start TIM22. */
+
   setbuf(stdout, NULL);
 
   /* USER CODE END 2 */
@@ -110,12 +114,10 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    vidAppMain();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    gu32Counter++;
-
-//    if (gu32Counter % 100000) printf("Test...\r\n");
   }
   /* USER CODE END 3 */
 }

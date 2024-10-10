@@ -1,20 +1,21 @@
 /**
- * @file    gsl_feature.h
+ * @file    app_api.h
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 9, 2024
+ * @date    Oct 10, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef GSL_FEATURE_H_
-#define GSL_FEATURE_H_
+#ifndef INCLUDE_APP_API_H_
+#define INCLUDE_APP_API_H_
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported defines ----------------------------------------------------------*/
-#define GNOS_PSM_MAX  5
-
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 
-#endif /* GSL_FEATURE_H_ */
+extern void vidAppMain(void);
+extern void vidAppInitialize(void);
+
+#endif /* INCLUDE_APP_API_H_ */
