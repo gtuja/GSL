@@ -44,7 +44,11 @@
 | Abbrev. | Meaning |
 |:-------:|:--------:|
 |GSL|G? Static Library|
-|GSL|G? Static Library|
+|GNOS|G? No OS System|
+|PSM|Periodic Service Manager|
+|BTM|Background Thread Manager|
+|BSM|Button State Manager|
+|LSM|LED State Manager|
 
 </details>
 
