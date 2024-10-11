@@ -56,17 +56,13 @@
 
 </details>
 
-
 <div id="Environment"></div>
 <details open>
 <summary><font size="5"><b>Environment</b></font></summary>
 
 - [TOC](#toc)
-
-
-- [NUCLEO-G0B1RE](https://www.st.com/ja/evaluation-tools/nucleo-g0b1re.html)<br>
-![NucleoSeries_C0G0F0](https://github.com/gtuja/CSC_MS/blob/main/Resources/README/NucleoSeries_C0G0F0.png)<br>
-[marutsu](https://www.marutsu.co.jp/pc/i/40719714/)
+- [NUCLEO-L053R8](https://www.st.com/ja/evaluation-tools/nucleo-l053r8.html)<br>
+- [NUCLEO-G0B1RE(marutsu)](https://www.marutsu.co.jp/pc/i/40719714/)
 - PC
 - Wifi
 - [Github account](https://github.com)
