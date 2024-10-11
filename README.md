@@ -50,8 +50,8 @@
 
 - [TOC](#toc)
 - GSL is a collection of C libraries for enbeded devices.
-- GCL is comprised of NOS and modules that implement general purpose features.
-- GCL shall be deployed as a platform independant static library. 
+- GSL is comprised of NOS and modules that implement general purpose features.
+- GSL shall be deployed as a platform independant static library. 
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
 
 </details>
@@ -62,6 +62,8 @@
 <summary><font size="5"><b>Environment</b></font></summary>
 
 - [TOC](#toc)
+
+
 - [NUCLEO-G0B1RE](https://www.st.com/ja/evaluation-tools/nucleo-g0b1re.html)<br>
 ![NucleoSeries_C0G0F0](https://github.com/gtuja/CSC_MS/blob/main/Resources/README/NucleoSeries_C0G0F0.png)<br>
 [marutsu](https://www.marutsu.co.jp/pc/i/40719714/)
