@@ -63,7 +63,7 @@
 - [TOC](#toc)
 - Nucleo Evaluation Board
   + [NUCLEO-L053R8](https://www.st.com/ja/evaluation-tools/nucleo-l053r8.html)
-  + [NUCLEO-G0B1RE(marutsu)](https://www.marutsu.co.jp/pc/i/40719714/)
+  + [NUCLEO-G0B1RE](https://www.st.com/ja/evaluation-tools/nucleo-g0b1re.html)
   + [NUCLEO-F429ZI](https://www.st.com/ja/evaluation-tools/nucleo-f429zi.html)
 - PC
 - Wifi
