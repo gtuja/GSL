@@ -34,6 +34,7 @@
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
+|UA|User Application|
 |GXXX|Gsl XXX|
 |NOS|No Operating System|
 |PSM|Periodic Service Manager|
@@ -82,13 +83,40 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 
 </details>
 
-<div id="Modules"></div>
+<div id="Features"></div>
 <details open>
-<summary><font size="5"><b>Modules</b></font></summary>
+<summary><font size="5"><b>Features</b></font></summary>
 
-- [TOC](#toc)
+- GSL is comprised of fratures below.
+- Each feature provides interfaces with header file, e.g., **gsl_nos_api.h**.
+- [GSL](#GSL)
+- [GSL_NOS](#GSL_NOS)
+- [GSL_XSM](#GSL_XSM)
 
 </details>
+
+<div id="GSL"></div>
+<details open>
+<summary><font size="5"><b>GSL</b></font></summary>
+
+- [Features](#Features)
+- GSL play a counter role between UA and GSL including sub modules.
+- GSL is comprised of types and APIs.
+- Folder Structure
+| Path | File Name |
+|:--|:--|
+|GSL|gsl.h|
+||gsl.h|
+|UA|User Application|
+|GXXX|Gsl XXX|
+|NOS|No Operating System|
+|PSM|Periodic Service Manager|
+|BTM|Background Thread Manager|
+|BSM|Button State Manager|
+|LSM|LED State Manager|
+
+</details>
+
 
 <div id="Reference"></div>
 <details open>
