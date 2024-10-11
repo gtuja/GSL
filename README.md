@@ -30,14 +30,6 @@
 <summary><font size="5"><b>Abbreviation</b></font></summary>
 
 - [TOC](#toc)
-<style>
-.smalltable > table, .smalltable > th, .smalltable > td {
-   font-size: 50%;
-}
-</style>
-
-<div class="smalltable"> 
-
 
 | Abbrev. | Meaning |
 |:--|:--|
@@ -48,7 +40,6 @@
 |BTM|Background Thread Manager|
 |BSM|Button State Manager|
 |LSM|LED State Manager|
-</div>
 
 <br>
 </details>
