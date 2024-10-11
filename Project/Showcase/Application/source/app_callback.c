@@ -37,6 +37,8 @@ PUBLIC void vidAppTraceCallback(char* pcTrace) {
   printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
 }
 
+//#define __MEASURE_TIM22
+
 #ifdef __MEASURE_TIM22
 static U32 u32Tick21_1m[10];
 static U32 u32Tick22_1u[10];
