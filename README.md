@@ -61,8 +61,10 @@
 <summary><font size="5"><b>Environment</b></font></summary>
 
 - [TOC](#toc)
-- [NUCLEO-L053R8](https://www.st.com/ja/evaluation-tools/nucleo-l053r8.html)<br>
-- [NUCLEO-G0B1RE(marutsu)](https://www.marutsu.co.jp/pc/i/40719714/)
+- Nucleo Evaluation Board
+  + [NUCLEO-L053R8](https://www.st.com/ja/evaluation-tools/nucleo-l053r8.html)
+  + [NUCLEO-G0B1RE(marutsu)](https://www.marutsu.co.jp/pc/i/40719714/)
+  + [NUCLEO-F429ZI](https://www.st.com/ja/evaluation-tools/nucleo-f429zi.html)
 - PC
 - Wifi
 - [Github account](https://github.com)
