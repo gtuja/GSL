@@ -7,9 +7,9 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_psm.h"
-#include "gsl_api.h"
 #include "gsl_feature.h"
+#include "gsl_api.h"
+#include "gsl_psm.h"
 #include "gsl_bsm.h"
 
 /* External variables --------------------------------------------------------*/

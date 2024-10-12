@@ -7,7 +7,6 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
 #include "gsl_feature.h"
 #include "gsl_api.h"
 #include "gsl.h"
