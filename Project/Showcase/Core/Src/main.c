@@ -27,7 +27,6 @@
 /* USER CODE BEGIN Includes */
 #include "gsl_def.h"
 #include "gsl_api.h"
-#include "gsl_nos_api.h"
 #include "app_api.h"
 #include <stdio.h>
 
@@ -100,8 +99,9 @@ int main(void)
   MX_TIM22_Init();
   /* USER CODE BEGIN 2 */
 
-  vidGslInitialize(NULL);
   vidAppInitialize();
+  vidAppRegisterService();
+  vidAppRegisterProcess();
 
   HAL_TIM_Base_Start_IT(&htim21); /* Start TIM21. */
   HAL_TIM_Base_Start_IT(&htim22); /* Start TIM22. */

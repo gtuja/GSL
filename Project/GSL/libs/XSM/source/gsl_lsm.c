@@ -1,13 +1,12 @@
 /**
- * @file    app_main.c
+ * @file    gsl_lsm.c
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 10, 2024
+ * @date    Oct 12, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_api.h"
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -21,6 +20,12 @@
  * @sa      vidXxx
  * @return  void
  */
-PUBLIC void vidAppMain(void) {
-}
 
+/* Private functions ---------------------------------------------------------*/
+
+/**
+ * @brief   A private function that initialize XXX.
+ * @param   xxParam  A xxx parameter used for xxxx.
+ * @sa      vidXxx
+ * @return  void
+ */

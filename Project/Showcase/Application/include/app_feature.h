@@ -1,22 +1,21 @@
 /**
- * @file    gsl.h
+ * @file    app_feature.h
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 10, 2024
+ * @date    Oct 12, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef GSL_H_
-#define GSL_H_
+#ifndef INCLUDE_APP_FEATURE_H_
+#define INCLUDE_APP_FEATURE_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
-
 /* Exported defines ----------------------------------------------------------*/
+#define APP_BTN_MATCH_MAX   (U32)5
+#define APP_BTN_PRESS_TH    (U32)1000
+
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
-PUBLIC void vidGslTrace(char* pcTrace);
-PUBLIC U32 u32GslTick(void);
 
-#endif /* GSL_H_ */
+#endif /* INCLUDE_APP_FEATURE_H_ */

@@ -1,17 +1,22 @@
 /**
- * @file    gsl_nos_tpm.c
+ * @file    gsl_diag.c
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 9, 2024
+ * @date    Oct 12, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Includes ------------------------------------------------------------------*/
+#include "gsl.h"
+
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+PRIVATE U32 gu32DiagTickBefore;
+PRIVATE BOOL bIsDiagTimeStarted = FALSE;
+
 /* Public functions ----------------------------------------------------------*/
 
 /**
@@ -20,12 +25,22 @@
  * @sa      vidXxx
  * @return  void
  */
+PUBLIC void vidGslDiagTimeStart(void) {
+  gu32DiagTickBefore = u32GslGetTick();
+  bIsDiagTimeStarted = TRUE;
+}
 
-/* Private functions ---------------------------------------------------------*/
+PUBLIC U32 u32GslDiagGetElapsedTime(void) {
+  U32 u32TickElapsed;
+  U32 u32TickCurrent;
 
-/**
- * @brief   A private function that initialize XXX.
- * @param   xxParam  A xxx parameter used for xxxx.
- * @sa      vidXxx
- * @return  void
- */
+  u32TickCurrent = u32GslGetTick();
+  u32TickElapsed = (U32)0;
+
+  if (bIsDiagTimeStarted == TRUE) {
+    u32TickElapsed = (u32TickCurrent >= gu32DiagTickBefore) ? \
+                      (u32TickCurrent - gu32DiagTickBefore) : (u32TickCurrent + u32GslGetTickCounterPeriod() - gu32DiagTickBefore);
+  }
+  bIsDiagTimeStarted = FALSE;
+  return u32TickElapsed;
+}

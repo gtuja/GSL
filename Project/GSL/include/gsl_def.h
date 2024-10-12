@@ -52,6 +52,11 @@
 #endif /* S8 */
 #define S8  char
 
+#ifdef CH
+#undef CH
+#endif /* CH */
+#define CH  char
+
 #ifdef S16
 #undef S16
 #endif /* S16 */
@@ -70,17 +75,17 @@
 #ifdef BOOL
 #undef BOOL
 #endif /* BOOL */
-#define BOOL  U8
+#define BOOL  U32
 
 #ifdef TRUE
 #undef TRUE
 #endif /* TRUE */
-#define TRUE  (U8)1
+#define TRUE  (U32)1
 
 #ifdef FALSE
 #undef FALSE
 #endif /* FALSE */
-#define FALSE  (U8)0
+#define FALSE  (U32)0
 
 #ifdef NULL
 #undef NULL

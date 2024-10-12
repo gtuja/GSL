@@ -1,21 +1,18 @@
 /**
- * @file    gsl_feature.h
+ * @file    gsl_lsm.h
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 9, 2024
+ * @date    Oct 12, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef GSL_FEATURE_H_
-#define GSL_FEATURE_H_
+#ifndef XSM_INCLUDE_GSL_LSM_H_
+#define XSM_INCLUDE_GSL_LSM_H_
 
 /* Includes ------------------------------------------------------------------*/
 /* Exported defines ----------------------------------------------------------*/
-#define GSL_PSM_MAX   10
-#define GSL_BSM_MAX   10
-
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 
-#endif /* GSL_FEATURE_H_ */
+#endif /* XSM_INCLUDE_GSL_LSM_H_ */

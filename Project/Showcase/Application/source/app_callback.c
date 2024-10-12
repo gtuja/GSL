@@ -7,9 +7,9 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
-#include "gsl_nos_api.h"
+#include "gsl_api.h"
 #include "stm32l0xx_hal.h"
+#include "app_api.h"
 #include <stdio.h>
 
 /* External variables --------------------------------------------------------*/
@@ -20,6 +20,7 @@ EXTERN TIM_HandleTypeDef htim21;
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U32 gu32TraceCounter = (U32)0;
+PUBLIC tstrAppBtnHandle gpstrAppBtnHandle[10] = {0};
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -29,32 +30,43 @@ PRIVATE U32 gu32TraceCounter = (U32)0;
  * @sa      vidXxx
  * @return  void
  */
-PUBLIC U32 u32AppTickCallback(void) {
-  return (U32)TIM22->CNT;
+PUBLIC U32 u32AppTickCallback(void* pvArgs) {
+  return (U32)(TIM22->CNT);
 }
 
 PUBLIC void vidAppTraceCallback(char* pcTrace) {
   printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
 }
 
+PUBLIC BOOL bAppBtnExtractEventCallback(S32 s32Handle) {
+  BOOL bReturn = FALSE;
+
+  if (s32Handle != GSL_HNDL_NA && s32Handle < 10) {
+    bReturn = (HAL_GPIO_ReadPin(gpstrAppBtnHandle[s32Handle].pGpiox, gpstrAppBtnHandle[s32Handle].u16GpioPin) == GPIO_PIN_RESET) ? FALSE : TRUE;
+  }
+  return bReturn;
+}
+
 //#define __MEASURE_TIM22
 
 #ifdef __MEASURE_TIM22
-static U32 u32Tick21_1m[10];
-static U32 u32Tick22_1u[10];
-static U8 i;
+static U32 u32Tick22_before[10];
+static U32 u32Tick22_after[10];
+static U32 i = 0;
 #endif /* __MEASURE_TIM22 */
 
 PUBLIC void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim21) {
-#ifdef __MEASURE_TIM22
-    if (i<10) {
-      u32Tick21_1m[i] = (U32)TIM21->CNT;
-      u32Tick22_1u[i] = (U32)TIM22->CNT;  /* about 970 us for each 1ms. */
-      i++;
-    }
+#if __MEASURE_TIM22
+    u32Tick22_before[i] = u32AppTickCallback(NULL);
 #endif /* __MEASURE_TIM22 */
-    vidGnosService(NULL);
+    vidGslService(NULL);
+#if __MEASURE_TIM22
+    u32Tick22_after[i] = u32AppTickCallback(NULL);
+    i++;
+    if (i >= 10) i=0;
+#endif /* __MEASURE_TIM22 */
   }
 }
+

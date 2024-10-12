@@ -1,21 +1,22 @@
 /**
- * @file    gsl_feature.h
+ * @file    gsl_diag.h
  * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Oct 9, 2024
+ * @date    Oct 12, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef GSL_FEATURE_H_
-#define GSL_FEATURE_H_
+#ifndef DIAG_INCLUDE_GSL_DIAG_H_
+#define DIAG_INCLUDE_GSL_DIAG_H_
 
 /* Includes ------------------------------------------------------------------*/
-/* Exported defines ----------------------------------------------------------*/
-#define GSL_PSM_MAX   10
-#define GSL_BSM_MAX   10
+#include "gsl_def.h"
 
+/* Exported defines ----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
+PUBLIC void vidGslDiagTimeStart(void);
+PUBLIC U32 u32GslDiagGetElapsedTime(void);
 
-#endif /* GSL_FEATURE_H_ */
+#endif /* DIAG_INCLUDE_GSL_DIAG_H_ */

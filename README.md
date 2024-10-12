@@ -36,7 +36,7 @@
 |GSL|G? Static Library|
 |UA|User Application|
 |GXXX|Gsl XXX|
-|NOS|No Operating System|
+|NOOS|NO Operating System|
 |PSM|Periodic Service Manager|
 |BTM|Background Thread Manager|
 |BSM|Button State Manager|
@@ -63,10 +63,7 @@
 
 - [TOC](#toc)
 - Nucleo Evaluation Board
-  + [NUCLEO-XXXXXX](https://www.st.com/en/evaluation-tools/stm32-nucleo-boards.html)
   + [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-l053r8.html)
-  + [NUCLEO-G0B1RE](https://www.st.com/en/evaluation-tools/nucleo-g0b1re.html)
-  + [NUCLEO-F429ZI](https://www.st.com/en/evaluation-tools/nucleo-f429zi.html)
 - PC
 - Wifi
 - [Github account](https://github.com)
@@ -87,11 +84,11 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 <details open>
 <summary><font size="5"><b>Features</b></font></summary>
 
-- GSL is comprised of fratures below.
+- GSL is comprised of features below.
 - Each feature provides interfaces with header file, e.g., **gsl_nos_api.h**.
-- [GSL](#GSL)
-- [GSL_NOS](#GSL_NOS)
-- [GSL_XSM](#GSL_XSM)
+- [NOOS](#NOOS)
+- [XSM](#XSM)
+- [MEAS](#MEAS)
 
 </details>
 
@@ -100,20 +97,19 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 <summary><font size="5"><b>GSL</b></font></summary>
 
 - [Features](#Features)
-- GSL play a counter role between UA and GSL including sub modules.
+- GSL plays a counter role between UA and GSL including GSL sub modules, e.g., NOOS, XSM, etc.
 - GSL is comprised of types and APIs.
 - Folder Structure
+
 | Path | File Name |
 |:--|:--|
 |GSL|gsl.h|
-||gsl.h|
-|UA|User Application|
-|GXXX|Gsl XXX|
-|NOS|No Operating System|
-|PSM|Periodic Service Manager|
-|BTM|Background Thread Manager|
-|BSM|Button State Manager|
-|LSM|LED State Manager|
+||gsl.c|
+|include|gsl_def.h|
+||gsl_api.h|
+||gsl_feature.h|
+
+- APIS
 
 </details>
 
