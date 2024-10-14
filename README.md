@@ -99,7 +99,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 
 - [Features](#Features)
 - GSL plays a counter role between UA and GSL.
-- GSL is comprised of datatypes, APIs, and callbacks.
+- GSL is comprised of APIs, configuration, and callbacks.
 - Folder structure 
 | Path | File Name |
 |:--|:--|
@@ -108,9 +108,12 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 ||gsl_api.h|
 ||gsl_feature.h|
 
-- Data types
-  - tenuPsmType
-  - tenuPsm
+- APIs
+'''
+PUBLIC void vidGslInitialize(void* pvArgs);
+PUBLIC void vidGslService(void* pvArgs);
+PUBLIC void vidGslProcess(void* pvArgs);
+'''
 
 </details>
 
