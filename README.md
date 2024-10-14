@@ -114,7 +114,12 @@ PUBLIC void vidGslInitialize(void* pvArgs);
 PUBLIC void vidGslService(void* pvArgs);
 PUBLIC void vidGslProcess(void* pvArgs);
 ```
-
+- Configuration
+```C
+PUBLIC void vidGslInitialize(void* pvArgs);
+PUBLIC void vidGslService(void* pvArgs);
+PUBLIC void vidGslProcess(void* pvArgs);
+```
 
 </details>
 
