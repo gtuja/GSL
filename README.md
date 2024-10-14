@@ -116,9 +116,28 @@ PUBLIC void vidGslProcess(void* pvArgs);
 ```
 - Configuration
 ```C
-PUBLIC void vidGslInitialize(void* pvArgs);
-PUBLIC void vidGslService(void* pvArgs);
-PUBLIC void vidGslProcess(void* pvArgs);
+PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
+  /* u32Period  pfPsmService        */
+  {  (U32)1,    vidPsmServiceClock  },  /* PSM_TYPE_CLK */
+  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
+  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
+};
+
+PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
+  /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
+  {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
+};
+
+PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
+  /* tenuBsmType        u32Period u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback    */
+  {  BSM_TYPE_B1_BLUE,  (U32)1,   (U32)1000,        (U32)2000,        enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
+};
+
+PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
+  /* pfBtmProcess        */
+  {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
+  {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
+};
 ```
 
 </details>
