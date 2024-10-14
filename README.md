@@ -109,6 +109,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 ||gsl_feature.h|
 
 - APIs
+
 '''
 PUBLIC void vidGslInitialize(void* pvArgs);
 PUBLIC void vidGslService(void* pvArgs);
