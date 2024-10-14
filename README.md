@@ -86,10 +86,10 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 <summary><font size="5"><b>Features</b></font></summary>
 
 - GSL is comprised of features below.
-- Each feature provides interfaces with header file, e.g., **gsl_nos_api.h**.
+- [GSL](#GSL)
 - [NOOS](#NOOS)
 - [XSM](#XSM)
-- [MEAS](#MEAS)
+- [DIAG](#DIAG)
 
 </details>
 
@@ -98,14 +98,11 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 <summary><font size="5"><b>GSL</b></font></summary>
 
 - [Features](#Features)
-- GSL plays a counter role between UA and GSL including GSL sub modules, e.g., NOOS, XSM, etc.
-- GSL is comprised of types and APIs.
-- Folder Structure
+- GSL plays a counter role between UA and GSL.
 
 | Path | File Name |
 |:--|:--|
-|GSL|gsl.h|
-||gsl.c|
+|gsl.c||
 |include|gsl_def.h|
 ||gsl_api.h|
 ||gsl_feature.h|
