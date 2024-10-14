@@ -23,6 +23,8 @@ EXTERN U32  u32GslTickCountCallback(void* pvArgs);
 EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 EXTERN void vidGslTraceCallback(char* pcTrace);
+EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
+EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 
 PUBLIC void vidBtmProcessIdle(void* pvArgs);
 PUBLIC void vidBtmProcessTrace(void* pvArgs);
@@ -41,6 +43,11 @@ PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
 PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
   /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
   {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
+};
+
+PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
+  /* tenuBsmType        u32Period u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback    */
+  {  BSM_TYPE_B1_BLUE,  (U32)1,   (U32)1000,        (U32)2000,        enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
 };
 
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
@@ -96,6 +103,13 @@ PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enu
   return (tenuBsmEvent)0; /* BSM_TYPE_B1_BLUE */
 }
 
+PUBLIC __attribute__((weak)) tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuType, tenuLsmType enuLsmType) {
+  return (tenuLsmEvent)0; /* LSM_TYPE_LD2_GREEN */
+}
+
+PUBLIC __attribute__((weak)) void enuGslLsmOutputCallback(tenuBsmType enuType, U32 u32PwmDuty) {
+  return;
+}
 
 /* External variables ---------------------------------------------- */
 

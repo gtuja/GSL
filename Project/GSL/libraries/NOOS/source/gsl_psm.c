@@ -55,5 +55,6 @@ PUBLIC void vidPsmServiceBsm(void* pvArgs) {
 }
 
 PUBLIC void vidPsmServiceLsm(void* pvArgs) {
+  vidLsmService(NULL);
 }
 

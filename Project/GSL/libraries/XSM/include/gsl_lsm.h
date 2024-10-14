@@ -17,5 +17,6 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 PUBLIC void vidLsmInitialize(void* pvArgs);
+PUBLIC void vidLsmService(void* pvArgs);
 
 #endif /* XSM_INCLUDE_GSL_LSM_H_ */

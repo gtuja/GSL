@@ -14,13 +14,13 @@
 
 /* External variables --------------------------------------------------------*/
 EXTERN TIM_HandleTypeDef htim21;
+EXTERN TIM_HandleTypeDef htim2;
 
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U32 gu32TraceCounter = (U32)0;
-PUBLIC tstrAppBtnHandle gpstrAppBtnHandle[10] = {0};
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -55,6 +55,64 @@ PUBLIC tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
   }
   return enuEvent;
 }
+
+PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType) {
+  tenuBsmEventNotify  enuBsmEventNotify;
+  tenuLsmEvent        enuReturn = LSM_EVT_NA;
+  U32                 u32PwmDuty;
+
+  switch (enuLsmType) {
+    case LSM_TYPE_LD2_GREEN :
+      u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_1);
+      enuBsmEventNotify = enuGslBsmGetEventNotify(enuBsmType);
+      switch (enuBsmEventNotify) {
+        case BSM_EVT_NTF_SHORT :
+          if (u32PwmDuty == (U32)0) {
+            enuReturn = LSM_EVT_REQ_ON;
+          } else {
+            enuReturn = LSM_EVT_REQ_OFF;
+          }
+          break;
+        case BSM_EVT_NTF_LONG :
+          if (u32PwmDuty == (U32)0) {
+            enuReturn = LSM_EVT_ON_FRC;
+          } else {
+            enuReturn = LSM_EVT_OFF_FRC;
+          }
+          break;
+        default :
+          break;
+      }
+    default :
+      break;
+  }
+  return enuReturn;
+}
+
+PUBLIC void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
+  switch (enuType) {
+    case LSM_TYPE_LD2_GREEN :
+      __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, u32PwmDuty);  /* Set PWM duty 0 on TIM2, Channel#1. */
+      break;
+    default :
+      break;
+  }
+  return;
+}
+
+PUBLIC U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
+  U32 u32Return = (U32)0;
+
+  switch (enuType) {
+    case LSM_TYPE_LD2_GREEN :
+      u32Return = (U32)TIM2->ARR;
+      break;
+    default :
+      break;
+  }
+  return u32Return;
+}
+
 
 //#define __MEASURE_TIM22
 
