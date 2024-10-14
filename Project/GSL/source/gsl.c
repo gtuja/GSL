@@ -12,18 +12,48 @@
 #include "gsl_btm.h"
 #include "gsl_psm.h"
 #include "gsl_bsm.h"
+#include "gsl_queue.h"
 #include <string.h>
 
 /* External variables --------------------------------------------------------*/
+EXTERN void vidPsmServiceClock(void* pvArgs);
+EXTERN void vidPsmServiceBsm(void* pvArgs);
+EXTERN void vidPsmServiceLsm(void* pvArgs);
+EXTERN U32  u32GslTickCountCallback(void* pvArgs);
+EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
+EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
+EXTERN void vidGslTraceCallback(char* pcTrace);
+
+PUBLIC void vidBtmProcessIdle(void* pvArgs);
+PUBLIC void vidBtmProcessTrace(void* pvArgs);
+
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
-typedef struct {
-  tstrGslInitializeArgs strArgs;
-} tstrGslControl;
-
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-PRIVATE tstrGslControl gstGslControl = {0};
+PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
+  /* u32Period  pfPsmService        */
+  {  (U32)1,    vidPsmServiceClock  },  /* PSM_TYPE_CLK */
+  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
+  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
+};
+
+PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
+  /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
+  {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
+};
+
+PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
+  /* pfBtmProcess        */
+  {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
+  {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
+};
+
+PUBLIC const tstrGslCallbacks gcstrGslCalbacks = {
+  u32GslTickCountCallback,
+  u32GslTickPeriodCallback,
+  vidGslTraceCallback,
+};
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -33,45 +63,44 @@ PRIVATE tstrGslControl gstGslControl = {0};
  * @sa      vidXxx
  * @return  void
  */
-PUBLIC void vidGslInitialize(tstrGslInitializeArgs* pstrArgs) {
-  memcpy(&(gstGslControl.strArgs), pstrArgs, sizeof(tstrGslInitializeArgs));
-  vidGslPsmInitialize(NULL);
-  vidGslBtmInitialize(NULL);
-  vidBsmInitialize(NULL);
-}
-
-PUBLIC S32 s32GslRegister(tstrGslRegisterArgs* pstrArgs) {
-  S32 s32Handle = GSL_HNDL_NA;
-
-  switch(pstrArgs->enuType) {
-  case GSL_SRVC_BSM :
-    s32Handle = s32GslPsmRegister(GSL_PSM_BSM, pstrArgs->pvArgs);
-    break;
-  case GSL_SRVC_LSM :
-    s32Handle = s32GslPsmRegister(GSL_PSM_LSM, pstrArgs->pvArgs);
-    break;
-  case GSL_TSK_IDLE :
-    s32Handle = s32GslBtmRegister(GSL_BTM_IDLE, pstrArgs->pvArgs);
-    break;
-  default :
-    break;
-  }
-  return s32Handle;
+PUBLIC void vidGslInitialize(void* pvArgs) {
+  vidPsmInitialize(NULL);
+  vidBtmInitialize(NULL);
+  vidGslQueInitialize();
 }
 
 PUBLIC void vidGslService(void* pvArgs) {
-  vidGslPsmService(NULL);
+  vidPsmService(NULL);
 }
 
 PUBLIC void vidGslProcess(void* pvArgs) {
-  vidGslBtmProcess(NULL);
+  vidBtmProcess(NULL);
 }
 
-PUBLIC U32 u32GslGetTick(void) {
-  return (gstGslControl.strArgs.pfGslTickCallback != NULL) ? gstGslControl.strArgs.pfGslTickCallback(NULL) : (U32)0;
+PUBLIC tenuBsmEventNotify enuGslBsmGetEventNotify(tenuBsmType enuType) {
+  return enuBsmEventNotify(enuType);
 }
 
-PUBLIC U32 u32GslGetTickCounterPeriod(void) {
-  return gstGslControl.strArgs.u32TickCounterPeriod;
+PUBLIC __attribute__((weak)) U32 u32GslTickCountCallback(void *pvArgs) {
+  return (U32)0;
 }
+
+PUBLIC __attribute__((weak)) U32 u32GslTickPeriodCallback(void *pvArgs) {
+  return (U32)0;
+}
+
+PUBLIC __attribute__((weak)) void vidGslTraceCallback(char* pcTrace) {
+}
+
+PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
+  return (tenuBsmEvent)0; /* BSM_TYPE_B1_BLUE */
+}
+
+
+/* External variables ---------------------------------------------- */
+
+/* Private define -------------------------------------------------- */
+/* Private typedef ------------------------------------------------- */
+/* Private functions ----------------------------------------------- */
+/* Private variables ----------------------------------------------- */
 

@@ -17,6 +17,6 @@
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 PUBLIC void vidGslDiagTimeStart(void);
-PUBLIC U32 u32GslDiagGetElapsedTime(void);
+PUBLIC U32  u32GslDiagTimeElapsed(void);
 
 #endif /* DIAG_INCLUDE_GSL_DIAG_H_ */

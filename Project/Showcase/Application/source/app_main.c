@@ -22,5 +22,6 @@
  * @return  void
  */
 PUBLIC void vidAppMain(void) {
+  vidGslProcess(NULL);
 }
 

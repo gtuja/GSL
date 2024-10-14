@@ -9,85 +9,51 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gsl_feature.h"
 #include "gsl_api.h"
-#include "gsl_psm.h"
 #include "gsl_bsm.h"
+#include "gsl_lsm.h"
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
-typedef void (*tpfPsmService)(S32 s32Handle);
-
-typedef struct {
-  U32           u32Period;
-  tpfPsmService pfService;
-} tstrPsmService;
-
 /* Private function prototypes -----------------------------------------------*/
-PRIVATE S32 s32GslPsmGetFreeHandle(void);
-
 /* Private variables ---------------------------------------------------------*/
-PRIVATE U32 gulPsmCounter;
-PRIVATE tstrPsmService gpstrPsmService[GSL_PSM_MAX] = {0};
+PRIVATE U32 gu32PsmClockCounter;
 
 /* Public functions ----------------------------------------------------------*/
-
 /**
  * @brief   A public function that xxx.
  * @param   xxParam  A xxx parameter used for xxxx from Xxx.
  * @sa      vidXxx
  * @return  void
  */
-
-PUBLIC void vidGslPsmInitialize(void* pvArgs) {
-  gulPsmCounter = 0;
+PUBLIC void vidPsmInitialize(void* pvArgs) {
+  gu32PsmClockCounter = (U32)0;
+  vidBsmInitialize(NULL);
+  vidLsmInitialize(NULL);
 }
 
-PUBLIC S32 s32GslPsmRegister(tenuGslPsmType enuType, void* pvArgs) {
-  S32 s32Handle = GSL_HNDL_NA;
-  tstrGslBsmRegisterArgs* pstrGslBsmRegisterArgs;
-
-  switch(enuType) {
-  case GSL_PSM_BSM :
-    s32Handle = s32GslPsmGetFreeHandle();
-    if (s32Handle != GSL_HNDL_NA) {
-      pstrGslBsmRegisterArgs = (tstrGslBsmRegisterArgs*)pvArgs;
-      gpstrPsmService[s32Handle].u32Period = pstrGslBsmRegisterArgs->u32Period;
-      gpstrPsmService[s32Handle].pfService = vidGslBsmService;
-      vidGslBsmRegister(s32Handle, pstrGslBsmRegisterArgs);
-    }
-    break;
-  case GSL_PSM_LSM :
-    break;
-  default :
-    break;
-  }
-  return s32Handle;
-}
-
-PUBLIC void vidGslPsmService(void* pvArgs) {
+PUBLIC void vidPsmService(void* pvArgs) {
   U32 i;
 
-  gulPsmCounter++;
-  for (i=0; i<GSL_PSM_MAX; i++)  {
-    if (gpstrPsmService[i].u32Period != (U16)0) {
-      if ((gulPsmCounter % gpstrPsmService[i].u32Period) == (U32)0) {
-        if (gpstrPsmService[i].pfService != NULL) {
-          gpstrPsmService[i].pfService(NULL);
+  for (i=0; i<(U32)PSM_TYPE_MAX; i++)  {
+    if (gcpstrPsmCfgTbl[i].u32Period != (U16)0) {
+      if ((gu32PsmClockCounter % gcpstrPsmCfgTbl[i].u32Period) == (U32)0) {
+        if (gcpstrPsmCfgTbl[i].pfPsmService != NULL) {
+          gcpstrPsmCfgTbl[i].pfPsmService(NULL);
         }
       }
     }
   }
 }
 
-PRIVATE S32 s32GslPsmGetFreeHandle(void) {
-  S32 s32Handle = GSL_HNDL_NA;
-  U32 i;
-
-  for (i=0; i<GSL_PSM_MAX; i++)  {
-    if (gpstrPsmService[i].u32Period == (U16)0) {
-      s32Handle = i;
-      break;
-    }
-  }
-  return s32Handle;
+PUBLIC void vidPsmServiceClock(void* pvArgs) {
+  gu32PsmClockCounter++;
 }
+
+PUBLIC void vidPsmServiceBsm(void* pvArgs) {
+  vidBsmService(NULL);
+}
+
+PUBLIC void vidPsmServiceLsm(void* pvArgs) {
+}
+

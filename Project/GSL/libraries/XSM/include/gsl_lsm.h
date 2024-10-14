@@ -11,8 +11,11 @@
 #define XSM_INCLUDE_GSL_LSM_H_
 
 /* Includes ------------------------------------------------------------------*/
+#include "gsl_def.h"
+
 /* Exported defines ----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
+PUBLIC void vidLsmInitialize(void* pvArgs);
 
 #endif /* XSM_INCLUDE_GSL_LSM_H_ */

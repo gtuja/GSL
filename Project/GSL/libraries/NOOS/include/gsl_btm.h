@@ -20,8 +20,7 @@ typedef enum {
 } tenuGslBtmType;
 
 /* Exported functions prototypes ---------------------------------------------*/
-PUBLIC void vidGslBtmInitialize(void* pvArgs);
-PUBLIC U32  s32GslBtmRegister(tenuGslBtmType enuType, void* pvArgs);
-PUBLIC void vidGslBtmProcess(void* pvArgs);
+PUBLIC void vidBtmInitialize(void* pvArgs);
+PUBLIC void vidBtmProcess(void* pvArgs);
 
 #endif /* NOOS_INCLUDE_GSL_BTM_H_ */

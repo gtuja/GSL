@@ -30,21 +30,30 @@ PUBLIC tstrAppBtnHandle gpstrAppBtnHandle[10] = {0};
  * @sa      vidXxx
  * @return  void
  */
-PUBLIC U32 u32AppTickCallback(void* pvArgs) {
+
+PUBLIC U32 u32GslTickCountCallback(void *pvArgs) {
   return (U32)(TIM22->CNT);
 }
 
-PUBLIC void vidAppTraceCallback(char* pcTrace) {
+PUBLIC U32 u32GslTickPeriodCallback(void *pvArgs) {
+  return (U32)(TIM22->ARR);
+}
+
+PUBLIC void vidGslTraceCallback(char* pcTrace) {
   printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
 }
 
-PUBLIC BOOL bAppBtnExtractEventCallback(S32 s32Handle) {
-  BOOL bReturn = FALSE;
+PUBLIC tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
+  tenuBsmEvent enuEvent = BSM_EVT_NA;
 
-  if (s32Handle != GSL_HNDL_NA && s32Handle < 10) {
-    bReturn = (HAL_GPIO_ReadPin(gpstrAppBtnHandle[s32Handle].pGpiox, gpstrAppBtnHandle[s32Handle].u16GpioPin) == GPIO_PIN_RESET) ? FALSE : TRUE;
+  switch (enuType) {
+    case BSM_TYPE_B1_BLUE :
+      enuEvent = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) ? BSM_EVT_PSH : BSM_EVT_RLS;
+      break;
+    default :
+      break;
   }
-  return bReturn;
+  return enuEvent;
 }
 
 //#define __MEASURE_TIM22

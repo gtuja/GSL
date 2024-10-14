@@ -11,21 +11,13 @@
 #define XSM_INCLUDE_GSL_BSM_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
+#include "gsl_feature.h"
+#include "gsl_api.h"
 
 /* Exported defines ----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
-/** tenuBsmEvent, with in line documents. */
-typedef enum {
-  BSM_EVT_NTF_NA = 0, /**< BSM event notified, not available. */
-  BSM_EVT_NTF_SHORT,  /**< BSM event notified, short-press. */
-  BSM_EVT_NTF_LONG,   /**< BSM event notified, long-press. */
-  BSM_EVT_NTF_MAX,    /**< BSM event notified, maximum event. */
-} tenuBsmEventNotify;
-
 /* Exported functions prototypes ---------------------------------------------*/
 PUBLIC void vidBsmInitialize(void* pvArgs);
-PUBLIC void vidGslBsmService(S32 s32Handle);
-PUBLIC void vidGslBsmRegister(S32 s32Handle, tstrGslBsmRegisterArgs* pstrArgs);
-
+PUBLIC void vidBsmService(void* pvArgs);
+PUBLIC tenuBsmEventNotify enuBsmEventNotify(tenuBsmType enuType);
 #endif /* XSM_INCLUDE_GSL_BSM_H_ */

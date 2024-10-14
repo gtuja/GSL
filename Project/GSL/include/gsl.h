@@ -14,6 +14,8 @@
 #include "gsl_def.h"
 
 /* Exported defines ----------------------------------------------------------*/
+#define GSL_TRACE_MAX   72
+
 /* Exported types ------------------------------------------------------------*/
 
 /** tenuXsmStateFunction, with in line comments. */
@@ -22,21 +24,8 @@ typedef enum {
   XSM_STT_FTN_DO,         /**< XSM state function, do. */
   XSM_STT_FTN_EXIT,       /**< XSM state function, exit. */
   XSM_STT_FTN_MAX,        /**< XSM maximum state function. */
-} tenuXsmStateFunction;
-
-/** tpfXsmStateFunction XSM state functions */
-typedef void (*tpfXsmStateFunction)(S32 Handle);
-
-/** Private tstrXsmStateFunction, with in line comments. */
-typedef struct {
-  tpfXsmStateFunction pfEntry;  /**< XSM state function, entry. */
-  tpfXsmStateFunction pfDo;     /**< XSM state function, do. */
-  tpfXsmStateFunction pfExit;   /**< XSM state function, exit. */
-} tstrXsmStateFunction;
+} tenuXsmSttFtn;
 
 /* Exported functions prototypes ---------------------------------------------*/
-
-PUBLIC U32  u32GslGetTick(void);
-PUBLIC U32  u32GslGetTickCounterPeriod(void);
 
 #endif /* GSL_H_ */

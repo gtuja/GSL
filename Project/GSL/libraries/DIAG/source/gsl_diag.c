@@ -8,6 +8,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gsl_feature.h"
+#include "gsl_api.h"
 #include "gsl.h"
 
 /* External variables --------------------------------------------------------*/
@@ -27,20 +28,20 @@ PRIVATE BOOL bIsDiagTimeStarted = FALSE;
  * @return  void
  */
 PUBLIC void vidGslDiagTimeStart(void) {
-  gu32DiagTickBefore = u32GslGetTick();
+  gu32DiagTickBefore = u32GslTickCountCallback(NULL);
   bIsDiagTimeStarted = TRUE;
 }
 
-PUBLIC U32 u32GslDiagGetElapsedTime(void) {
+PUBLIC U32 u32GslDiagTimeElapsed(void) {
   U32 u32TickElapsed;
   U32 u32TickCurrent;
 
-  u32TickCurrent = u32GslGetTick();
+  u32TickCurrent = u32GslTickCountCallback(NULL);
   u32TickElapsed = (U32)0;
 
   if (bIsDiagTimeStarted == TRUE) {
     u32TickElapsed = (u32TickCurrent >= gu32DiagTickBefore) ? \
-                      (u32TickCurrent - gu32DiagTickBefore) : (u32TickCurrent + u32GslGetTickCounterPeriod() - gu32DiagTickBefore);
+                      (u32TickCurrent - gu32DiagTickBefore) : (u32TickCurrent + u32GslTickPeriodCallback(NULL) - gu32DiagTickBefore);
   }
   bIsDiagTimeStarted = FALSE;
   return u32TickElapsed;

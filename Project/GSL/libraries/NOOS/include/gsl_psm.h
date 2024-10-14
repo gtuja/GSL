@@ -25,4 +25,7 @@ PUBLIC void vidGslPsmInitialize(void* pvArgs);
 PUBLIC S32  s32GslPsmRegister(tenuGslPsmType enuType, void* pvArgs);
 PUBLIC void vidGslPsmService(void* pvArgs);
 
+PUBLIC void vidPsmInitialize(void* pvArgs);
+PUBLIC void vidPsmService(void* pvArgs);
+
 #endif /* NOOS_INCLUDE_GSL_PSM_H_ */

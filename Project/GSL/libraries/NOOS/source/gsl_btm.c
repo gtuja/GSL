@@ -10,6 +10,7 @@
 #include "gsl_feature.h"
 #include "gsl_api.h"
 #include "gsl_btm.h"
+#include "gsl_queue.h"
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -25,14 +26,26 @@
  * @return  void
  */
 
-PUBLIC void vidGslBtmInitialize(void* pvArgs) {
+PUBLIC void vidBtmInitialize(void* pvArgs) {
 
 }
 
-PUBLIC U32 s32GslBtmRegister(tenuGslBtmType enuType, void* pvArgs) {
-  return GSL_HNDL_NA;
+PUBLIC void vidBtmProcess(void* pvArgs) {
+  U32 i;
+
+  for (i=0; i<(U32)BTM_TYPE_MAX; i++) {
+    if (gcpstrBtmCfgTbl[i].pfBtmProcess != NULL) {
+      gcpstrBtmCfgTbl[i].pfBtmProcess(NULL);
+    }
+  }
 }
 
-PUBLIC void vidGslBtmProcess(void* pvArgs) {
-
+PUBLIC void vidBtmProcessIdle(void* pvArgs) {
 }
+
+PUBLIC void vidBtmProcessTrace(void* pvArgs) {
+  if (bGslQueIsEmpty(GSL_QUE_TRACE) == FALSE) {
+    gcstrGslCalbacks.pfGslTraceCallback((char*)u32GslQueDequeue(GSL_QUE_TRACE));
+  }
+}
+

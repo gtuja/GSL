@@ -100,8 +100,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   vidAppInitialize();
-  vidAppRegisterService();
-  vidAppRegisterProcess();
 
   HAL_TIM_Base_Start_IT(&htim21); /* Start TIM21. */
   HAL_TIM_Base_Start_IT(&htim22); /* Start TIM22. */
