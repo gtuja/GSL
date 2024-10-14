@@ -35,12 +35,13 @@
 |:--|:--|
 |GSL|G? Static Library|
 |UA|User Application|
-|GXXX|Gsl XXX|
 |NOOS|NO Operating System|
 |PSM|Periodic Service Manager|
-|BTM|Background Thread Manager|
+|BTM|Background Task Manager|
+|XSM|eXclusive State Manager|
 |BSM|Button State Manager|
 |LSM|LED State Manager|
+|DIAG|Diagnosis |
 
 <br>
 </details>
