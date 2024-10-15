@@ -116,6 +116,25 @@ PUBLIC void vidGslService(void* pvArgs);
 PUBLIC void vidGslProcess(void* pvArgs);
 ```
 - Configuration
+#define BSM_PRD (U32)1
+#define BSM_MATCH_CNT (U32)5
+#define BSM_PRESS_TH (U32)1000
+#define BSM_EVT_CB enuGslBsmEventCallback
+
+#define LSM_PRD (U32)1
+#define LSM_FI_TMO (U32)1000
+#define LSM_FI_TMO (U32)2000
+#define LSM_EVT_CB enuGslLsmEventCallback
+#define LSM_OUTPUT_CB vidGslLsmOutputCallback
+
+
+
+
+
+#define LSM_PRD (U32)1
+
+
+
 ```C
 PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   /* u32Period  pfPsmService        */
@@ -125,8 +144,8 @@ PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
 };
 
 PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
-  /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
-  {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
+  /* u32Period  u32MatchCount   u32PressedThreshHold  pfBsmEventCallback  */
+  {  BSM_PRD,   BSM_MATCH_CNT,  (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
 };
 
 PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
