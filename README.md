@@ -100,7 +100,8 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 - [Features](#Features)
 - GSL plays a counter role between UA and GSL.
 - GSL is comprised of APIs, configuration, and callbacks.
-- Folder structure 
+- Folder structure
+
 | Path | File Name |
 |:--|:--|
 |root|gsl.c|
@@ -139,7 +140,7 @@ PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
   {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
 };
 ```
-
+- Callbacks
 </details>
 
 
