@@ -173,7 +173,7 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ||gsl_btm.c|
 ||gsl_queue.c|
 
-- PSM is responsibe for periodic services invoked by GSL API, vidGslService.
+- PSM is responsibe for periodic services and shall be invoked by GSL API, vidGslService.
 - Preset configurations are below and those might change depending on the UA specification. 
 
 ```C
@@ -184,7 +184,7 @@ PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
 };
 ```
-- BTM is responsibe for task processes invoked by GSL API, vidGslProcess.
+- BTM is responsibe for task processes and shall be invoked by GSL API, vidGslProcess.
 - Preset configurations are below and those might change depending on the UA specification. 
 
 ```C
