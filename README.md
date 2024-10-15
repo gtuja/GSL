@@ -175,16 +175,7 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 
 - PSM is responsibe for periodic services invoked by GSL API, vidGslService.
 - Preset configurations are below and those might change depending on UA specification. 
-```C
 
-
-- APIs
-```C
-PUBLIC void vidGslInitialize(void* pvArgs);
-PUBLIC void vidGslService(void* pvArgs);
-PUBLIC void vidGslProcess(void* pvArgs);
-```
-- Configuration
 ```C
 PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   /* u32Period  pfPsmService        */
@@ -192,31 +183,16 @@ PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
   {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
 };
+```
+- BTM is responsibe for task processes invoked by GSL API, vidGslProcess.
+- Preset configurations are below and those might change depending on UA specification. 
 
-PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
-  /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
-  {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
-};
-
-PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
-  /* tenuBsmType        u32Period u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback    */
-  {  BSM_TYPE_B1_BLUE,  (U32)1,   (U32)1000,        (U32)2000,        enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
-};
-
+```C
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
   /* pfBtmProcess        */
   {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
   {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
 };
-```
-- Callbacks
-```C
-EXTERN U32  u32GslTickCountCallback(void* pvArgs);
-EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
-EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
-EXTERN void vidGslTraceCallback(char* pcTrace);
-EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
-EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ```
 
 </details>
