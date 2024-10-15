@@ -157,10 +157,10 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 <summary><font size="5"><b>NOOS</b></font></summary>
 
 - [Features](#Features)
-- NOOS provides OS-like feature below.<br>
+- NOOS provides OS-like features below.<br>
 \- PSM (Periodic Service Manager)<br>
 \- BTM (Background Task Manager)<br>
-\- Simpe Queue provides IPC among GCL features.<br>
+\- Simpe queue provides IPC among GCL features.<br>
 
 - Folder structure
 
@@ -174,7 +174,7 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ||gsl_queue.c|
 
 - PSM is responsibe for periodic services invoked by GSL API, vidGslService.
-- Preset configurations are below and those might change depending on UA specification. 
+- Preset configurations are below and those might change depending on the UA specification. 
 
 ```C
 PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
@@ -185,7 +185,7 @@ PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
 };
 ```
 - BTM is responsibe for task processes invoked by GSL API, vidGslProcess.
-- Preset configurations are below and those might change depending on UA specification. 
+- Preset configurations are below and those might change depending on the UA specification. 
 
 ```C
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
@@ -194,9 +194,11 @@ PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
   {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
 };
 ```
-
+- Queue provides generic features, i.e., enqueue, dequeue.
+- Simpe itself, it dosen't provide any context switching or receiving.
+- Enqueue is available for each feature of GSL.
+- Dequeue shall be done at the BTM, polling style.
 </details>
-
 
 <div id="Reference"></div>
 <details open>
