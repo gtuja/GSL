@@ -115,8 +115,8 @@ PUBLIC void vidGslInitialize(void* pvArgs);
 PUBLIC void vidGslService(void* pvArgs);
 PUBLIC void vidGslProcess(void* pvArgs);
 ```
-<div id="Configuration"></div>
-<summary><font size="5"><b>Configuration</b></font></summary>
+- <div id="Configuration"></div>
+<summary>Configuration</summary>
 
 ```C
 #define BSM_PRD (U32)1
