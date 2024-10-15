@@ -141,6 +141,15 @@ PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
 };
 ```
 - Callbacks
+```C
+EXTERN U32  u32GslTickCountCallback(void* pvArgs);
+EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
+EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
+EXTERN void vidGslTraceCallback(char* pcTrace);
+EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
+EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
+```
+
 </details>
 
 
