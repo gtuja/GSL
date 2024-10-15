@@ -63,8 +63,8 @@
 <summary><font size="5"><b>Environment</b></font></summary>
 
 - [TOC](#toc)
-- Nucleo Evaluation Board
-  - [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-l053r8.html)
+- Nucleo Evaluation Board<br>
+\- [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-l053r8.html)
 - PC
 - Wifi
 - [Github account](https://github.com)
