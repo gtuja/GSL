@@ -104,10 +104,79 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 
 | Path | File Name |
 |:--|:--|
-|root|gsl.c|
+|source|gsl.c|
 |include|gsl_def.h|
 ||gsl_api.h|
 ||gsl_feature.h|
+
+- APIs
+```C
+PUBLIC void vidGslInitialize(void* pvArgs);
+PUBLIC void vidGslService(void* pvArgs);
+PUBLIC void vidGslProcess(void* pvArgs);
+```
+- Configuration
+```C
+PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
+  /* u32Period  pfPsmService        */
+  {  (U32)1,    vidPsmServiceClock  },  /* PSM_TYPE_CLK */
+  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
+  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
+};
+
+PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
+  /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
+  {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
+};
+
+PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
+  /* tenuBsmType        u32Period u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback    */
+  {  BSM_TYPE_B1_BLUE,  (U32)1,   (U32)1000,        (U32)2000,        enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
+};
+
+PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
+  /* pfBtmProcess        */
+  {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
+  {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
+};
+```
+- Callbacks
+```C
+EXTERN U32  u32GslTickCountCallback(void* pvArgs);
+EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
+EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
+EXTERN void vidGslTraceCallback(char* pcTrace);
+EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
+EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
+```
+
+</details>
+
+<div id="NOOS"></div>
+<details open>
+<summary><font size="5"><b>NOOS</b></font></summary>
+
+- [Features](#Features)
+- NOOS provides OS-like feature below.<br>
+\- PSM (Periodic Service Manager)<br>
+\- BTM (Background Task Manager)<br>
+\- Simpe Queue provides IPC among GCL features.<br>
+
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|NOOS/include|gsl_psm.h|
+||gsl_btm.h|
+||gsl_queue.h|
+|NOOS/source|gsl_psm.c|
+||gsl_btm.c|
+||gsl_queue.c|
+
+- PSM is responsibe for periodic services invoked by GSL API, vidGslService.
+- Preset configurations are below and those might change depending on UA specification. 
+```C
+
 
 - APIs
 ```C
