@@ -115,7 +115,10 @@ PUBLIC void vidGslInitialize(void* pvArgs);
 PUBLIC void vidGslService(void* pvArgs);
 PUBLIC void vidGslProcess(void* pvArgs);
 ```
-- Configuration
+<div id="Configuration"></div>
+<summary><font size="5"><b>Configuration</b></font></summary>
+
+```C
 #define BSM_PRD (U32)1
 #define BSM_MATCH_CNT (U32)5
 #define BSM_PRESS_TH (U32)1000
@@ -126,45 +129,14 @@ PUBLIC void vidGslProcess(void* pvArgs);
 #define LSM_FI_TMO (U32)2000
 #define LSM_EVT_CB enuGslLsmEventCallback
 #define LSM_OUTPUT_CB vidGslLsmOutputCallback
-
-
-
-
-
-#define LSM_PRD (U32)1
-
-
-
-```C
-PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
-  /* u32Period  pfPsmService        */
-  {  (U32)1,    vidPsmServiceClock  },  /* PSM_TYPE_CLK */
-  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
-  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
-};
-
-PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
-  /* u32Period  u32MatchCount   u32PressedThreshHold  pfBsmEventCallback  */
-  {  BSM_PRD,   BSM_MATCH_CNT,  (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
-};
-
-PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
-  /* tenuBsmType        u32Period u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback    */
-  {  BSM_TYPE_B1_BLUE,  (U32)1,   (U32)1000,        (U32)2000,        enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
-};
-
-PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
-  /* pfBtmProcess        */
-  {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
-  {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
-};
 ```
+
 - Callbacks
 ```C
 EXTERN U32  u32GslTickCountCallback(void* pvArgs);
 EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
-EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 EXTERN void vidGslTraceCallback(char* pcTrace);
+EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
 EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ```
@@ -204,7 +176,7 @@ PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
 };
 ```
 - BTM is responsibe for task processes and shall be invoked by GSL API, vidGslProcess.
-- Preset configurations are below and those might change depending on the UA specification. 
+- Preset [Configuration](#Configuration) might change depending on the UA specification. 
 
 ```C
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
