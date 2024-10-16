@@ -104,10 +104,19 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 
 | Path | File Name |
 |:--|:--|
-|source|gsl.c|
 |include|gsl_def.h|
-||gsl_api.h|
 ||gsl_feature.h|
+||gsl_config.h|
+||gsl_api.h|
+|source|gsl.c|
+
+\+ include<br>
+\+ gsl_def.h<br>
+\+ gsl_config.h<br>
+\+ gsl_api.h<br>
+\+ gsl_def.h<br>
+
+
 
 - APIs
 ```C
