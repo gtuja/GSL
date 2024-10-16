@@ -18,5 +18,7 @@
 /* Exported functions prototypes ---------------------------------------------*/
 PUBLIC void vidGslDiagTimeStart(void);
 PUBLIC U32  u32GslDiagTimeElapsed(void);
+PUBLIC void vidDiagRefreshTus(U32 u32PrdCnt);
+PUBLIC U64  u64DiagGetTusElapsed(void);
 
 #endif /* DIAG_INCLUDE_GSL_DIAG_H_ */

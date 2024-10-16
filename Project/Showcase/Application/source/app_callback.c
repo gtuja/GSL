@@ -35,10 +35,6 @@ PUBLIC U32 u32GslTickCountCallback(void *pvArgs) {
   return (U32)(TIM22->CNT);
 }
 
-PUBLIC U32 u32GslTickPeriodCallback(void *pvArgs) {
-  return (U32)(TIM22->ARR);
-}
-
 PUBLIC void vidGslTraceCallback(char* pcTrace) {
   printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
 }
@@ -134,6 +130,10 @@ PUBLIC void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     i++;
     if (i >= 10) i=0;
 #endif /* __MEASURE_TIM22 */
+  }
+
+  if (htim == &htim21) {
+
   }
 }
 

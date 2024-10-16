@@ -18,6 +18,7 @@
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U32 gu32DiagTickBefore;
 PRIVATE BOOL bIsDiagTimeStarted = FALSE;
+PRIVATE U64 gu4DiagTusElapsed = 0;
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -40,9 +41,20 @@ PUBLIC U32 u32GslDiagTimeElapsed(void) {
   u32TickElapsed = (U32)0;
 
   if (bIsDiagTimeStarted == TRUE) {
-    u32TickElapsed = (u32TickCurrent >= gu32DiagTickBefore) ? \
-                      (u32TickCurrent - gu32DiagTickBefore) : (u32TickCurrent + u32GslTickPeriodCallback(NULL) - gu32DiagTickBefore);
+    if (u32TickCurrent >= gu32DiagTickBefore) {
+      u32TickElapsed = u32TickCurrent - gu32DiagTickBefore;
+    } else {
+      u32TickElapsed = u32TickCurrent + GSL_TUS_PRD_CNT - gu32DiagTickBefore;
+    }
   }
   bIsDiagTimeStarted = FALSE;
   return u32TickElapsed;
+}
+
+PUBLIC void vidDiagRefreshTus(U32 u32PrdCnt) {
+  gu4DiagTusElapsed += (U64)u32PrdCnt;
+}
+
+PUBLIC U64 u64DiagGetTusElapsed(void) {
+  return gu4DiagTusElapsed;
 }

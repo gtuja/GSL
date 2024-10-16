@@ -11,6 +11,7 @@
 #include "gsl_api.h"
 #include "gsl_bsm.h"
 #include "gsl_lsm.h"
+#include "gsl_dsm.h"
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -34,6 +35,7 @@ PUBLIC void vidPsmInitialize(void* pvArgs) {
 
 PUBLIC void vidPsmService(void* pvArgs) {
   U32 i;
+  gu32PsmClockCounter++;
 
   for (i=0; i<(U32)PSM_TYPE_MAX; i++)  {
     if (gcpstrPsmCfgTbl[i].u32Period != (U16)0) {
@@ -46,8 +48,8 @@ PUBLIC void vidPsmService(void* pvArgs) {
   }
 }
 
-PUBLIC void vidPsmServiceClock(void* pvArgs) {
-  gu32PsmClockCounter++;
+PUBLIC void vidPsmServiceDsm(void* pvArgs) {
+  vidDsmService(NULL);
 }
 
 PUBLIC void vidPsmServiceBsm(void* pvArgs) {
@@ -55,6 +57,6 @@ PUBLIC void vidPsmServiceBsm(void* pvArgs) {
 }
 
 PUBLIC void vidPsmServiceLsm(void* pvArgs) {
-  vidLsmService(NULL);
+//  vidLsmService(NULL);
 }
 

@@ -14,8 +14,7 @@
 #include "gsl_def.h"
 
 /* Exported defines ----------------------------------------------------------*/
-#define GSL_NAME_LEN  (U32)31
-#define GSL_HNDL_NA   (S32)(-1)
+#define GSL_TUS_PRD_CNT (U32)(65535)
 
 /* Exported types ------------------------------------------------------------*/
 typedef enum {
@@ -36,6 +35,11 @@ typedef enum {
   BSM_TYPE_B1_BLUE = 0, /**< BSM type for B1_BLUE button on the Nucleo-L053R8. */
   BSM_TYPE_MAX,         /**< BSM type maximum. */
 } tenuBsmType;
+
+typedef enum {
+  DSM_TYPE_KA = 0,  /**< DSM type for sending keep alive. */
+  DSM_TYPE_MAX,     /**< DSM type maximum. */
+} tenuDsmType;
 
 typedef enum {
   LSM_EVT_NA = 0,   /**< LSM event not available. */
@@ -61,7 +65,7 @@ typedef enum {
 } tenuLsmType;
 
 typedef enum {
-  PSM_TYPE_CLK = 0, /**< PSM type : clock service. */
+  PSM_TYPE_DSM = 0, /**< PSM type : DIAG service. */
   PSM_TYPE_BSM,     /**< PSM type : BSM service. */
   PSM_TYPE_LSM,     /**< PSM type : LSM service. */
   PSM_TYPE_MAX,     /**< PSM type maximum. */
@@ -95,20 +99,23 @@ typedef struct {
 typedef tenuLsmEvent (*tpfLsmEventCallback)(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
 typedef void (*tpfLsmOutputCallback)(tenuLsmType enuType, U32 u32PwmDuty);
 typedef struct {
-  tenuBsmType enuBsmType;                   /**< BSM linked with LSM */
   U32 u32Period;                            /**< The periodic cycle for fading. */
+  tenuBsmType enuBsmType;                   /**< BSM linked with LSM */
   U32 u32FadeInTimeOut;                     /**< The fade in timeout. */
   U16 u32FadeOutTimeOut;                    /**< The fade out timeout. */
   tpfLsmEventCallback pfLsmEventCallback;   /**< Callback for retrieving tenuLlmState. */
   tpfLsmOutputCallback pfLsmOutputCallback; /**< Callback for LED output. */
 } tstrLsmCfg;
 
+typedef struct {
+  U32 u32Period;                            /**< The periodic cycle for DSM. */
+} tstrDsmCfg;
+
 typedef U32 (*tpfGslTickCountCallback)(void* pvArgs);
 typedef U32 (*tpfGslTickPeriodCallback)(void* pvArgs);
 typedef void (*tpfGslTraceCallback)(char* pcTrace);
 typedef struct {
   tpfGslTickCountCallback   pfGslTickCountCallback;
-  tpfGslTickPeriodCallback  pfGslTickPeriodCallback;
   tpfGslTraceCallback       pfGslTraceCallback;
 } tstrGslCallbacks;
 
@@ -118,7 +125,6 @@ PUBLIC void vidGslService(void* pvArgs);
 PUBLIC void vidGslProcess(void* pvArgs);
 
 PUBLIC U32 u32GslTickCountCallback(void *pvArgs);
-PUBLIC U32 u32GslTickPeriodCallback(void *pvArgs);
 PUBLIC tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 PUBLIC tenuBsmEventNotify enuGslBsmGetEventNotify(tenuBsmType enuType);
 
@@ -128,5 +134,7 @@ EXTERN const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX];
 EXTERN const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX];
 EXTERN const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX];
 EXTERN const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX];
+EXTERN const tstrDsmCfg gcpstrDsmCfgTbl[DSM_TYPE_MAX];
+
 EXTERN const tstrGslCallbacks gcstrGslCalbacks;
 #endif /* GSL_API_H_ */

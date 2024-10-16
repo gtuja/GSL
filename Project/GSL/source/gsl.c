@@ -8,19 +8,21 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gsl_feature.h"
+#include "gsl_config.h"
 #include "gsl_api.h"
 #include "gsl_btm.h"
 #include "gsl_psm.h"
 #include "gsl_bsm.h"
 #include "gsl_queue.h"
+#include "gsl_diag.h"
+
 #include <string.h>
 
 /* External variables --------------------------------------------------------*/
-EXTERN void vidPsmServiceClock(void* pvArgs);
+EXTERN void vidPsmServiceDsm(void* pvArgs);
 EXTERN void vidPsmServiceBsm(void* pvArgs);
 EXTERN void vidPsmServiceLsm(void* pvArgs);
 EXTERN U32  u32GslTickCountCallback(void* pvArgs);
-EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 EXTERN void vidGslTraceCallback(char* pcTrace);
 EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
@@ -34,32 +36,36 @@ PUBLIC void vidBtmProcessTrace(void* pvArgs);
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
-  /* u32Period  pfPsmService        */
-  {  (U32)1,    vidPsmServiceClock  },  /* PSM_TYPE_CLK */
-  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
-  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
+  /* u32Period    pfPsmService        */
+  {  GSL_DSM_PRD, vidPsmServiceDsm  },  /* PSM_TYPE_DSM */
+  {  GSL_BSM_PRD, vidPsmServiceBsm  },  /* PSM_TYPE_BSM */
+  {  GSL_LSM_PRD, vidPsmServiceLsm  },  /* PSM_TYPE_LSM */
 };
 
 PUBLIC const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
-  /* u32Period  u32MatchCount u32PressedThreshHold  pfBsmEventCallback  */
-  {  (U32)1,    (U32)5,       (U32)1000,            enuGslBsmEventCallback  },  /* BSM_TYPE_B1_BLUE */
+  /* u32Period        u32MatchCount       u32PressedThreshHold  pfBsmEventCallback      */
+  {  GSL_BSM_PRD_B1,  GSL_BSM_MATCH_CNT,  GSL_BSM_PRESS_TH,     GSL_BSM_EVT_CB_B1  },  /* BSM_TYPE_B1_BLUE */
 };
 
 PUBLIC const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
-  /* tenuBsmType        u32Period u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback    */
-  {  BSM_TYPE_B1_BLUE,  (U32)1,   (U32)1000,        (U32)2000,        enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
+  /* u32Period        tenuBsmType     u32FadeInTimeOut    u32FadeOutTimeOut   pfLsmEventCallback  pfLsmOutputCallback */
+  {  GSL_LSM_PRD_L1,  GSL_LSM_BSM_L1, GSL_LSM_FI_TMO_L1,  GSL_LSM_FO_TMO_L1,  GSL_LSM_EVT_CB_B1,  GSL_LSM_OUT_CB_B1 },  /* LSM_TYPE_LD2_GREEN */
+};
+
+PUBLIC const tstrDsmCfg gcpstrDsmCfgTbl[DSM_TYPE_MAX] = {
+  /* u32Period      */
+  {  GSL_LSM_PRD_D1 },  /* DSM_TYPE_KA */
 };
 
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
   /* pfBtmProcess        */
-  {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
-  {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
+  {  GSL_BTM_PROC_IDLE  },  /* BTM_TYPE_IDLE */
+  {  GSL_BTM_PROC_TRACE },  /* BTM_TYPE_TRACE */
 };
 
 PUBLIC const tstrGslCallbacks gcstrGslCalbacks = {
-  u32GslTickCountCallback,
-  u32GslTickPeriodCallback,
-  vidGslTraceCallback,
+  GSL_TUS_CB,
+  GSL_TRACE_CB,
 };
 
 /* Public functions ----------------------------------------------------------*/
@@ -88,11 +94,11 @@ PUBLIC tenuBsmEventNotify enuGslBsmGetEventNotify(tenuBsmType enuType) {
   return enuBsmEventNotify(enuType);
 }
 
-PUBLIC __attribute__((weak)) U32 u32GslTickCountCallback(void *pvArgs) {
-  return (U32)0;
+PUBLIC void vidGslRefreshTus(void) {
+  vidDiagRefreshTus(GSL_TUS_PRD_CNT);
 }
 
-PUBLIC __attribute__((weak)) U32 u32GslTickPeriodCallback(void *pvArgs) {
+PUBLIC __attribute__((weak)) U32 u32GslTickCountCallback(void *pvArgs) {
   return (U32)0;
 }
 
