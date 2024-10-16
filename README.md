@@ -110,7 +110,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 ||gsl_api.h|
 |source|gsl.c|
 
-\+ include<br>
+\+ ***include***<br>
 Each of files in include folder provides common feature between GSL and UA.<br>
 
 \* gsl_def.h<br>
