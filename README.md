@@ -114,6 +114,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 PUBLIC void vidGslInitialize(void* pvArgs);
 PUBLIC void vidGslService(void* pvArgs);
 PUBLIC void vidGslProcess(void* pvArgs);
+PUBLIC coid vidGslRefreshTus(void);
 ```
 - Configuration <div id="Configuration"></div>
 
@@ -132,8 +133,7 @@ PUBLIC void vidGslProcess(void* pvArgs);
 
 - Callbacks
 ```C
-EXTERN U32  u32GslTickCountCallback(void* pvArgs);
-EXTERN U32  u32GslTickPeriodCallback(void* pvArgs);
+EXTERN U32  u32GslTusCntCallback(void* pvArgs);
 EXTERN void vidGslTraceCallback(char* pcTrace);
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
@@ -169,25 +169,28 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ```C
 PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   /* u32Period  pfPsmService        */
-  {  (U32)1,    vidPsmServiceClock  },  /* PSM_TYPE_CLK */
+  {  (U32)1,    vidPsmServiceDsm  },  /* PSM_TYPE_CLK */
   {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
   {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
 };
 ```
 - BTM is responsibe for task processes and shall be invoked by GSL API, vidGslProcess.
-- Preset [Configuration](#Configuration) might change depending on the UA specification. 
+- Each of processes has its own queue and handle enqued requests as a background task.
+- Preset processes are below and might change according to the UA specification.
 
 ```C
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
   /* pfBtmProcess        */
-  {  vidBtmProcessIdle  },  /* BTM_TYPE_IDLE */
-  {  vidBtmProcessTrace },  /* BTM_TYPE_TRACE */
+  {  vidBtmProcIdle  },  /* BTM_TYPE_IDLE */
+  {  vidBtmProcDiag },   /* BTM_TYPE_DIAG */
+  {  vidBtmProcTrace },  /* BTM_TYPE_TRACE */
 };
 ```
 - Queue provides generic features, i.e., enqueue, dequeue.
-- Simpe itself, it dosen't provide any context switching or receiving.
 - Enqueue is available for each feature of GSL.
-- Dequeue shall be done at the BTM, polling style.
+- Dequeue shall be processed by BTM, background task.
+- Natural born simple library, there is no context switching on dequeue process.
+
 </details>
 
 <div id="Reference"></div>
