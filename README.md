@@ -111,11 +111,20 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 |source|gsl.c|
 
 \+ include<br>
-include folder provides common feature between GSL and UA.<br>
+Each of files in include folder provides common feature between GSL and UA.<br>
 
-\+ gsl_def.h<br>
-\+ gsl_config.h<br>
-\+ gsl_api.h<br>
+\* gsl_def.h<br>
+***gsl_def.h*** defines GSL types.<br>
+GSL is aims to be platform independent, ***gsl_def.h*** might change according to the UA tool chain.<br>
+
+\* gsl_config.h<br>
+***gsl_config.h*** contains data types of each modules in GSL to satisfy UA requirements.<br>
+***gsl_config.h*** also provide abstract defines to link GSL and UA, e.g., BSM_PRD[1..5] for BSM service period in ms.
+
+\* gsl_api.h<br>
+***gsl_api.h*** provides GSL API for UA, e.g., vidGslService.
+
+
 \+ gsl_def.h<br>
 
 
