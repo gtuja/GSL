@@ -108,34 +108,79 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 ||gsl_feature.h|
 ||gsl_config.h|
 ||gsl_api.h|
-|source|gsl.c|
+|GSL/include|gsl.h|
+|GSL/source|gsl.c|
 
 \+ ***include***<br>
 Each of files in include folder provides common feature between GSL and UA.<br>
 
-\* gsl_def.h<br>
-***gsl_def.h*** defines GSL types.<br>
-GSL is aims to be platform independent, ***gsl_def.h*** might change according to the UA tool chain.<br>
+\* ***gsl_def.h***<br>
+gsl_def.h defines GSL types.<br>
+GSL is aims to be platform independent, gsl_def.h might change according to the UA environment, e.g., tool chain.<br>
 
-\* gsl_config.h<br>
-***gsl_config.h*** contains data types of each modules in GSL to satisfy UA requirements.<br>
-***gsl_config.h*** also provide abstract defines to link GSL and UA, e.g., BSM_PRD[1..5] for BSM service period in ms.
-
-\* gsl_api.h<br>
-***gsl_api.h*** provides GSL API for UA, e.g., vidGslService.
-
-
-\+ gsl_def.h<br>
-
-
-
-- APIs
 ```C
-PUBLIC void vidGslInitialize(void* pvArgs);
-PUBLIC void vidGslService(void* pvArgs);
-PUBLIC void vidGslProcess(void* pvArgs);
-PUBLIC coid vidGslRefreshTus(void);
+#ifdef U32
+#undef U32
+#define U32 unsigned long
+#endif 
+
+#ifdef BOOL
+#undef BOOL
+#define BOOL U32
+#endif
 ```
+
+\* ***gsl_feature.h***<br>
+gsl_feature.h specify GSL features.<br>
+gsl_feature.h defines high level view of the GSL library.<br>
+
+```C
+#define FEATURE_DIAG
+#define FEATURE_BSM
+#define FEATURE_LSM
+#define FEATURE_INSP
+```
+
+\* ***gsl_config.h***<br>
+gsl_config.h contains defines for each modules in GSL to satisfy UA requirements.<br>
+gsl_config.h provides abstract names to link GSL and UA, e.g., BSM_PRD[1..5] for BSM service period in ms.
+
+```C
+typefef enum {
+  BSM_EVT_RLS = 0,
+  BSM_EVT_PSH,
+
+
+#define BSM_PRD_B[1..x]     (U32)XX
+#define BSM_EVT_CB_B[1..x]  enuGslBsmB[1..x]EvtCallback
+```
+
+\* ***gsl_api.h***<br>
+gsl_api.h provides Callback APIs for UA.
+
+```C
+PUBLIC void vidGslInitCallback(void* pvArgs);
+PUBLIC void vidGslSrvcCallback(void* pvArgs);
+PUBLIC void vidGslProcCallback(void* pvArgs);
+PUBLIC coid vidGslTusElapsedCallback(void);
+```
+
+\* ***gsl.h***<br>
+gsl.h provides defines, data types, and extern cinfiguration tables for GSL modules, e.g., gpstrBsmCfgTbl.
+
+```C
+PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
+  /* u32Period  pfPsmService        */
+  {  (U32)1,    vidPsmServiceDsm  },  /* PSM_TYPE_CLK */
+  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
+  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
+};
+```
+
+\* gsl.c<br>
+gsl.c implements GSL APIs and GSL configuration tables for UA and GSL itself.
+
+
 - Configuration <div id="Configuration"></div>
 
 ```C
@@ -186,13 +231,7 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 - PSM is responsibe for periodic services and shall be invoked by GSL API, vidGslService.
 - Preset configurations are below and those might change depending on the UA specification. 
 
-```C
-PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
-  /* u32Period  pfPsmService        */
-  {  (U32)1,    vidPsmServiceDsm  },  /* PSM_TYPE_CLK */
-  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
-  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
-};
+
 ```
 - BTM is responsibe for task processes and shall be invoked by GSL API, vidGslProcess.
 - Each of processes has its own queue and handle enqued requests as a background task.
