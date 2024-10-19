@@ -149,29 +149,83 @@ gsl_config.h contains defines, types and callbacks.
 UA shall redefine defines according to requirement specifications and implement callbacks for device specific features.
 
 ```C
+/* Application callback -------------------------------------------- */
+#ifdef FEATURE_BSM
+typedef tenuBsmEvent (*tpfBsmEventCallback)(tenuBsmType enuType);
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
-EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuLsmType enuType);
+#endif /* FEATURE_BSM */
+
+#ifdef FEATURE_LSM
+typedef tenuLsmEvent (*tpfLsmEventCallback)(tenuBsmType enuBsmType, tenuLsmType enuType);
+EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuType);
+typedef void (*tpfLsmOutputCallback)(tenuLsmType enuType, U32 u32PwmDuty);
 EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
-EXTERN U32 u32DsmCntCallback(void* pvArgs);
-EXTERN U32 u32DsmCntPrdCallback(void* pvArgs);
-EXTERN void vidDsmTraceCallback(char* pcTrace);
+typedef U32 (*tpfLsmPwmMaxCallback)(tenuLsmType enuType);
+EXTERN U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType);
+#endif /* FEATURE_LSM */
+
+#ifdef FEATURE_DIAG
+typedef U32 (*tpfDiagCntCallback)(void* pvArgs);
+EXTERN U32 u32DiagCntCallback(void* pvArgs);
+typedef U32 (*tpfDiagCntPrdCallback)(void* pvArgs);
+EXTERN U32 u32DiagCntPrdCallback(void* pvArgs);
+typedef void (*tpfDiagTraceCallback)(char* pcTrace);
+EXTERN void vidDiagTraceCallback(char* pcTrace);
+#endif /* FEATURE_DIAG */
+
+/* Exported defines ------------------------------------------------ */
+#ifdef FEATURE_BSM
+#define PSM_PRD_BSM   (U32)1    /* The period of BSM service. */
+#define BSM_CP_MC     (U32)5    /* The match count of chattering prevention for buttons. */
+#define BSM_NTF_TH    (U32)1000 /* The threshold between short and long press on buttons. */
+
+#define BSM_PRD_B0    (U32)1  /**< B1_BLUE PC13 on L053R8TX. */
+#define BSM_PRD_B1    (U32)0
+#define BSM_PRD_B2    (U32)0
+#define BSM_PRD_B3    (U32)0
+#define BSM_PRD_B4    (U32)0
+
+#define BSM_NAME_B0   (const char*)"B1_BLUE" /**< B1_BLUE PC13 on L053R8TX. */
+#define BSM_NAME_B1   (const char*)""
+#define BSM_NAME_B2   (const char*)""
+#define BSM_NAME_B3   (const char*)""
+#define BSM_NAME_B4   (const char*)""
+
+#define BSM_EVT_CB_B0 enuGslBsmEventCallback
+#define BSM_EVT_CB_B1 gNULL
+#define BSM_EVT_CB_B2 gNULL
+#define BSM_EVT_CB_B3 gNULL
+#define BSM_EVT_CB_B4 gNULL
+
+#define BSM_NTF_CB_B0 enuGslBsmNotifyCallback
+#define BSM_NTF_CB_B1 gNULL
+#define BSM_NTF_CB_B2 gNULL
+#define BSM_NTF_CB_B3 gNULL
+#define BSM_NTF_CB_B4 gNULL
+#endif /* FEATURE_BSM */
 ```
 
 \* ***gsl_api.h***<br>
 gsl_api.h provides callback APIs shall be called by UA.
 
 ```C
+PUBLIC void vidGslInitCallback(void* pvArgs);
 PUBLIC void vidGslSrvcCallback(void* pvArgs);
 PUBLIC void vidGslProcCallback(void* pvArgs);
-PUBLIC void vidGslDsmElapsedCallback(void* pvArgs);
-PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
+PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
+EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ```
 
 \* ***gsl.h***<br>
 gsl.h provides defines and data types for GSL modules.
 
 ```C
-
+typedef enum {
+  XSM_STT_FTN_ENTRY = 0,  /**< XSM state function, entry. */
+  XSM_STT_FTN_DO,         /**< XSM state function, do. */
+  XSM_STT_FTN_EXIT,       /**< XSM state function, exit. */
+  XSM_STT_FTN_MAX,        /**< XSM maximum state function. */
+} tenuXsmSttFtn;
 ```
 
 \* gsl.c<br>
@@ -181,25 +235,6 @@ UA shall call them comply with GSL specification.
 - Configuration <div id="Configuration"></div>
 
 ```C
-#define BSM_PRD (U32)1
-#define BSM_MATCH_CNT (U32)5
-#define BSM_PRESS_TH (U32)1000
-#define BSM_EVT_CB enuGslBsmEventCallback
-
-#define LSM_PRD (U32)1
-#define LSM_FI_TMO (U32)1000
-#define LSM_FI_TMO (U32)2000
-#define LSM_EVT_CB enuGslLsmEventCallback
-#define LSM_OUTPUT_CB vidGslLsmOutputCallback
-```
-
-- Callbacks
-```C
-EXTERN U32  u32GslTusCntCallback(void* pvArgs);
-EXTERN void vidGslTraceCallback(char* pcTrace);
-EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
-EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType);
-EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ```
 
 </details>
@@ -225,13 +260,15 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 ||gsl_bpm.c|
 ||gsl_queue.c|
 
-- PSM is responsible for periodic services and shall be invoked by GSL API, vidGslService.
-- Preset configurations are below and those might change depending on the UA specification. 
+- PSM is responsible for periodic services and shall be invoked by GSL API, vidGslSrvc.
 
-
+```C
 ```
-- BPM is responsible for task processes and shall be invoked by GSL API, vidGslProcess.
-- Each of processes has its own queue and handle enqueued requests as a background task.
+
+- BPM is responsible for background  processes and shall be invoked by GSL API, vidGslProc.
+- Each of processes might have 
+
+ own queue and handle enqueued requests as a background task.
 - Preset processes are below and might change according to the UA specification.
 
 ```C
