@@ -1,14 +1,14 @@
 /**
- * @file    gsl_lsm.h
- * @brief   This file provides LSM interfaces. 
+ * @file    gsl_bpm.h
+ * @brief   This file provides BPM interfaces. 
  * @author  Gtuja
  * @date    Oct 18, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef XSM_INCLUDE_GSL_LSM_H_
-#define XSM_INCLUDE_GSL_LSM_H_
+#ifndef NOOS_INCLUDE_GSL_BPM_H_
+#define NOOS_INCLUDE_GSL_BPM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -16,9 +16,9 @@
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
 /* Exported functions prototypes ----------------------------------- */
+PUBLIC void vidBpmInit(void* pvArgs);
+PUBLIC void vidBpmProc(void* pvArgs);
+
 /* Exported variables ---------------------------------------------- */
 
-PUBLIC void vidLsmInit(void* pvArgs);
-PUBLIC void vidLsmSrvc(void* pvArgs);
-
-#endif /* XSM_INCLUDE_GSL_LSM_H_ */
+#endif /* NOOS_INCLUDE_GSL_BPM_H_ */

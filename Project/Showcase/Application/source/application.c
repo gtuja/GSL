@@ -28,5 +28,5 @@
  */
 
 PUBLIC void vidAppInitialize(void) {
-  vidGslInitialize(NULL);
+  vidGslInitCallback(gNULL);
 }

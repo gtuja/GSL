@@ -7,13 +7,14 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_api.h"
 #include "stm32l0xx_hal.h"
+#include "gsl_api.h"
 #include "app_api.h"
 #include <stdio.h>
 
 /* External variables --------------------------------------------------------*/
 EXTERN TIM_HandleTypeDef htim21;
+EXTERN TIM_HandleTypeDef htim22;
 EXTERN TIM_HandleTypeDef htim2;
 
 /* Private define ------------------------------------------------------------*/
@@ -31,19 +32,11 @@ PRIVATE U32 gu32TraceCounter = (U32)0;
  * @return  void
  */
 
-PUBLIC U32 u32GslTickCountCallback(void *pvArgs) {
-  return (U32)(TIM22->CNT);
-}
-
-PUBLIC void vidGslTraceCallback(char* pcTrace) {
-  printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
-}
-
 PUBLIC tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
   tenuBsmEvent enuEvent = BSM_EVT_NA;
 
   switch (enuType) {
-    case BSM_TYPE_B1_BLUE :
+    case BSM_TYPE_B0 :
       enuEvent = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) ? BSM_EVT_PSH : BSM_EVT_RLS;
       break;
     default :
@@ -53,27 +46,27 @@ PUBLIC tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
 }
 
 PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType) {
-  tenuBsmEventNotify  enuBsmEventNotify;
-  tenuLsmEvent        enuReturn = LSM_EVT_NA;
-  U32                 u32PwmDuty;
+  tenuBsmNotify enuBsmNotify;
+  tenuLsmEvent  enuReturn = LSM_EVT_NA;
+  U32           u32PwmDuty;
 
   switch (enuLsmType) {
-    case LSM_TYPE_LD2_GREEN :
+    case LSM_TYPE_L0 :
       u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_1);
-      enuBsmEventNotify = enuGslBsmGetEventNotify(enuBsmType);
-      switch (enuBsmEventNotify) {
-        case BSM_EVT_NTF_SHORT :
+      enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
+      switch (enuBsmNotify) {
+        case BSM_NTF_SHORT :
           if (u32PwmDuty == (U32)0) {
-            enuReturn = LSM_EVT_REQ_ON;
+            enuReturn = LSM_EVT_ON;
           } else {
-            enuReturn = LSM_EVT_REQ_OFF;
+            enuReturn = LSM_EVT_OFF;
           }
           break;
-        case BSM_EVT_NTF_LONG :
+        case BSM_NTF_LONG :
           if (u32PwmDuty == (U32)0) {
-            enuReturn = LSM_EVT_ON_FRC;
+            enuReturn = LSM_EVT_FRC_ON;
           } else {
-            enuReturn = LSM_EVT_OFF_FRC;
+            enuReturn = LSM_EVT_FRC_OFF;
           }
           break;
         default :
@@ -87,7 +80,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
 
 PUBLIC void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
   switch (enuType) {
-    case LSM_TYPE_LD2_GREEN :
+    case LSM_TYPE_L0 :
       __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, u32PwmDuty);  /* Set PWM duty 0 on TIM2, Channel#1. */
       break;
     default :
@@ -100,13 +93,25 @@ PUBLIC U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
   U32 u32Return = (U32)0;
 
   switch (enuType) {
-    case LSM_TYPE_LD2_GREEN :
+    case LSM_TYPE_L0 :
       u32Return = (U32)TIM2->ARR;
       break;
     default :
       break;
   }
   return u32Return;
+}
+
+PUBLIC U32 u32DsmCntCallback(void* pvArgs) {
+  return (U32)TIM22->CNT;
+}
+
+PUBLIC U32 u32DsmCntPrdCallback(void* pvArgs) {
+  return (U32)TIM22->ARR;
+}
+
+PUBLIC void vidDsmTraceCallback(char* pcTrace) {
+  printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
 }
 
 
@@ -122,18 +127,18 @@ PUBLIC void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim21) {
 #if __MEASURE_TIM22
-    u32Tick22_before[i] = u32AppTickCallback(NULL);
+    u32Tick22_before[i] = u32AppTickCallback(gNULL);
 #endif /* __MEASURE_TIM22 */
-    vidGslService(NULL);
+    vidGslSrvcCallback(gNULL);
 #if __MEASURE_TIM22
-    u32Tick22_after[i] = u32AppTickCallback(NULL);
+    u32Tick22_after[i] = u32AppTickCallback(gNULL);
     i++;
     if (i >= 10) i=0;
 #endif /* __MEASURE_TIM22 */
   }
 
-  if (htim == &htim21) {
-
+  if (htim == &htim22) {
+    vidGslDsmElapsedCallback(gNULL);
   }
 }
 

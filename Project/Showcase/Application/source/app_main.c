@@ -7,7 +7,10 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
+#include "gsl_def.h"
+#include "gsl_config.h"
 #include "gsl_api.h"
+
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -22,6 +25,6 @@
  * @return  void
  */
 PUBLIC void vidAppMain(void) {
-  vidGslProcess(NULL);
+  vidGslProcCallback(gNULL);
 }
 

@@ -72,25 +72,25 @@
 #endif /* S64 */
 #define S64 long long
 
-#ifdef BOOL
-#undef BOOL
-#endif /* BOOL */
-#define BOOL  U32
+#ifdef gBOOL
+#undef gBOOL
+#endif /* gBOOL */
+#define gBOOL  U32
 
-#ifdef TRUE
-#undef TRUE
-#endif /* TRUE */
-#define TRUE  (U32)1
+#ifdef gTRUE
+#undef gTRUE
+#endif /* gTRUE */
+#define gTRUE  (U32)1
 
-#ifdef FALSE
-#undef FALSE
-#endif /* FALSE */
-#define FALSE  (U32)0
+#ifdef gFALSE
+#undef gFALSE
+#endif /* gFALSE */
+#define gFALSE  (U32)0
 
-#ifdef NULL
-#undef NULL
-#endif /* NULL */
-#define NULL  0
+#ifdef gNULL
+#undef gNULL
+#endif /* gNULL */
+#define gNULL   0
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/

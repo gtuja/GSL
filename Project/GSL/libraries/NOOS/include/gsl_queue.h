@@ -1,8 +1,8 @@
 /**
  * @file    gsl_queue.h
- * @brief   This file is used to ... 
+ * @brief   This file provides GSL queue interfaces. 
  * @author  Gtuja
- * @date    Oct 14, 2024
+ * @date    Oct 18, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -11,22 +11,25 @@
 #define NOOS_INCLUDE_GSL_QUEUE_H_
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_def.h"
+#include "gsl_config.h"
 
 /* Exported defines ------------------------------------------------ */
+#define GSL_QUE_LEN       10
+#define GSL_QUE_TRACE_LEN 72
+
 /* Exported types -------------------------------------------------- */
 typedef enum {
   GSL_QUE_TRACE = 0,
-  GSL_QUE_REPORT,
+  GSL_QUE_DIAG,
   GSL_QUE_MAX,
 } tenuGslQueType;
 
 /* Exported functions ---------------------------------------------- */
-PUBLIC void vidGslQueInitialize(void);
-PUBLIC BOOL bGslQueIsEmpty(tenuGslQueType enuType);
-PUBLIC BOOL bGslQueIsFull(tenuGslQueType enuType);
+PUBLIC void vidGslQueInit(void* pvArgs);
+PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
+PUBLIC gBOOL bGslQueIsFull(tenuGslQueType enuType);
 PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
-PUBLIC void* u32GslQueDequeue(tenuGslQueType enuType);
+PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
 
 /* Exported variables ---------------------------------------------- */
 

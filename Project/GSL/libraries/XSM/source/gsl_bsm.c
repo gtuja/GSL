@@ -1,35 +1,29 @@
 /**
  * @file    gsl_bsm.c
- * @brief   This file is used to ... 
+ * @brief   This file is used to implement BSM manages button states.
  * @author  Gtuja
- * @date    Oct 12, 2024
+ * @date    Oct 18, 2024
  * @note    Copyleft, All rights reversed.
  */
 
-/* Includes ------------------------------------------------------------------*/
-#include "gsl_feature.h"
-#include "gsl_api.h"
+/* Includes -------------------------------------------------------- */
+#include "gsl_config.h"
 #include "gsl.h"
 #include "gsl_bsm.h"
+#include "gsl_dsm.h"
 #include "gsl_queue.h"
-#include "gsl_diag.h"
-#include <string.h>
 #include <stdio.h>
 
-/* External variables --------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-
-/* Private typedef -----------------------------------------------------------*/
-/** Private tenuBsmEvt, with in line documents. */
-/** Private tenuBsmState, with in line documents. */
-typedef enum {
-  BSM_STT_NA = 0,   /**< BSM state, not available. */
-  BSM_STT_RLS,      /**< BSM state, button is released. */
-  BSM_STT_PSH_CFM,  /**< BSM state, button is pushed, but under confirmation. */
-  BSM_STT_PSH,      /**< BSM state, button is pushed. */
-  BSM_STT_RLS_CFM,  /**< BSM state, button is pushed, but under confirmation. */
-  BSM_STT_MAX,      /**< BSM maximum state.  */
-} tenuBsmState;
+/* External variables ---------------------------------------------- */
+/* Private define -------------------------------------------------- */
+/* Private typedef ------------------------------------------------- */
+typedef struct {
+  const CH*           pcName;               /**< The name of BSM service. */
+  U32                 u32Period;            /**< The cycle of execution. */
+  U32                 u32CPMC;              /**< The match count of same button state for chattering prevention. */
+  U32                 u32PressedThreshHold; /**< The threshold for fetching tenuBsmEventNotify, short or long press. */
+  tpfBsmEventCallback pfBsmEventCallback;   /**< Callback for retrieving tenuBsmEvent. */
+} tstrBsmCfg;
 
 typedef void (*tpfBsmSttFtn)(tenuBsmType enuType);  /** BSM state functions */
 typedef struct {
@@ -39,23 +33,16 @@ typedef struct {
 } tstrBsmSttFtn;
 
 typedef struct {
-  const tstrBsmCfg*   pcstrBsmConfig;   /**< BSM configuration. */
-  U32                 u32MatchCounter;  /**< u32MatchCounter is used for chattering prevention within BSM state machine. */
-  U32                 u32PressCounter;  /**< u32PressCounter is used for fetching ISB event(tenuIsbEvent) within BSM state machine. */
-  tenuBsmState        enuStateCurrent;  /**< The current BSM state. */
-  tenuBsmState        enuStatePrevious; /**< The previous BSM state. */
-  tenuBsmEventNotify  enuEventNotify;   /**< Event notified by BSM. */
-  U32                 u32TimeProcess;   /**< The process time of BSM. */
-} tstrBsmControl;
+  const tstrBsmCfg* pcstrBsmCfg;  /**< BSM configuration. */
+  U32               u32CPMCCnt;   /**< u32CPMCCnt is used for chattering prevention within BSM state machine. */
+  U32               u32PressCnt;  /**< u32PressCnt is used for fetching ISB event(tenuIsbEvent) within BSM state machine. */
+  tenuBsmStt        enuSttCur;    /**< The current BSM state. */
+  tenuBsmStt        enuSttPrev;   /**< The previous BSM state. */
+  tenuBsmNotify     enuNotify;    /**< Event notified by BSM. */
+} tstrBsmCtrl;
 
-typedef struct {
-  U32 u32TimeProcTotal;
-  U32 u32TimeProcMax;
-} tstrBsmDiag;
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmState enuStateNext);
+/* Private function prototypes ------------------------------------- */
+PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext);
 
 PRIVATE void vidBsmRlsEntry(tenuBsmType enuType);
 PRIVATE void vidBsmRlsDo(tenuBsmType enuType);
@@ -73,23 +60,47 @@ PRIVATE void vidBsmRlsCfmEntry(tenuBsmType enuType);
 PRIVATE void vidBsmRlsCfmDo(tenuBsmType enuType);
 PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType);
 
-/* Private variables ---------------------------------------------------------*/
-PRIVATE tstrBsmControl gpstrControl[BSM_TYPE_MAX] = {0};  /** gpstrControl is a private variable holding information for BSM. */
-PRIVATE tstrBsmDiag gpstrBsmDiagProc[BSM_TYPE_MAX] = {0};
-PRIVATE tstrBsmDiag gpstrBsmDiag = {0};
+/* Private variables ----------------------------------------------- */
+/** 
+ * @brief gpstrBsmCtrl is a private table holding information for BSM.
+ * @sa    tenuBsmType
+ */
+PRIVATE tstrBsmCtrl gpstrBsmCtrl[BSM_TYPE_MAX] = {0};
 
-/** gpfBsmSttFtnTbl is a private constant table holding BSM state functions. */
+/** 
+ * @brief gcpstrBsmCfgTbl is a private constant table holding BSM features.
+ * @sa    tenuBsmType
+ */
+PRIVATE const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
+  /* pcName       u32Period    u32CPMC     u32PressedThreshHold  pfBsmEventCallback  */
+  {  BSM_NAME_B0, BSM_PRD_B0,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B0 },  /* BSM_TYPE_B0 */
+  {  BSM_NAME_B1, BSM_PRD_B1,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B1 },  /* BSM_TYPE_B1 */
+  {  BSM_NAME_B2, BSM_PRD_B2,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B2 },  /* BSM_TYPE_B2 */
+  {  BSM_NAME_B3, BSM_PRD_B3,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B3 },  /* BSM_TYPE_B3 */
+  {  BSM_NAME_B4, BSM_PRD_B4,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B4 },  /* BSM_TYPE_B4 */
+};
+
+/** 
+ * @brief gpfBsmSttFtnTbl is a private constant table holding BSM state functions.
+ * @sa    tenuBsmStt
+ * @sa    tenuXsmSttFtn
+ */
 PRIVATE const tpfBsmSttFtn gpfBsmSttFtnTbl[BSM_STT_MAX][XSM_STT_FTN_MAX] = {
                         /*  XSM_STT_FTN_ENTRY   XSM_STT_FTN_DO  XSM_STT_FTN_EXIT  */
-  /* BSM_STT_NA */      {   NULL,               NULL,           NULL              },
+  /* BSM_STT_NA */      {   gNULL,              gNULL,          gNULL             },
   /* BSM_STT_RLS */     {   vidBsmRlsEntry,     vidBsmRlsDo,    vidBsmRlsExit     },
   /* BSM_STT_PSH_CFM */ {   vidBsmPshCfmEntry,  vidBsmPshCfmDo, vidBsmPshCfmExit  },
   /* BSM_STT_PSH */     {   vidBsmPshEntry,     vidBsmPshDo,    vidBsmPshExit     },
   /* BSM_STT_RLS_CFM */ {   vidBsmRlsCfmEntry,  vidBsmRlsCfmDo, vidBsmRlsCfmExit  },
 };
 
-/** gpstrBsmTransTbl is a private constant table holding state transition information with each event. */
-PRIVATE const tenuBsmState gpstrBsmTransTbl[BSM_STT_MAX][BSM_EVT_MAX] = {
+/**
+ * @brief gpstrBsmTransTbl is a private constant table holding state transition.
+ *        information for each of events.
+ * @sa    tenuBsmStt
+ * @sa    tenuBsmEvent
+ */
+PRIVATE const tenuBsmStt gpstrBsmTransTbl[BSM_STT_MAX][BSM_EVT_MAX] = {
                         /* BSM_EVT_NA  BSM_EVT_RLS      BSM_EVT_PSH     */
   /* BSM_STT_NA */      {  BSM_STT_NA, BSM_STT_NA,      BSM_STT_NA      },
   /* BSM_STT_RLS */     {  BSM_STT_NA, BSM_STT_NA,      BSM_STT_PSH_CFM },
@@ -98,7 +109,17 @@ PRIVATE const tenuBsmState gpstrBsmTransTbl[BSM_STT_MAX][BSM_EVT_MAX] = {
   /* BSM_STT_RLS_CFM */ {  BSM_STT_NA, BSM_STT_NA,      BSM_STT_RLS     },
 };
 
-/** gpcBsmStateNameTable is a string table holding state names for notification. */
+/**
+ * @brief gu32BsmCnt is a counter accumulated to control each of BSM periods.
+ */
+PRIVATE U32 gu32BsmCnt = (S32)0;
+
+PRIVATE const char* gcpcBsmName = "BSM";
+
+PRIVATE tstrBsmDiag gstrBsmDiag = {0};
+/**
+ * @brief gcpcBsmSttNameTbl is a string table holding state names for notification.
+ */
 PRIVATE const char* gcpcBsmSttNameTbl[BSM_STT_MAX] = {
   "BSM_STT_NA",
   "BSM_STT_RLS",
@@ -107,223 +128,250 @@ PRIVATE const char* gcpcBsmSttNameTbl[BSM_STT_MAX] = {
   "BSM_STT_RLS_CFM",
 };
 
-PRIVATE const char* gcpcBsm = "BSM";
-
 /* Public functions ----------------------------------------------------------*/
 /**
- * @brief   Public function that initialize BSM called by ISB.
- * @param   void
- * @sa      vidIsbInitialize
+ * @brief   A public function that initialize BSM called by ISB.
+ * @param   pvArgs  arguments reserved. 
+ * @sa      vidPsmInit
  * @return  void
  */
-PUBLIC void vidBsmInitialize(void* pvArgs) {
+PUBLIC void vidBsmInit(void* pvArgs) {
   U32 i;
 
-  memset(gpstrControl, 0, sizeof(gpstrControl));
-  memset(gpstrBsmDiagProc, 0, sizeof(gpstrBsmDiagProc));
-  memset(&gpstrBsmDiag, 0, sizeof(gpstrBsmDiag));
-
+  gstrBsmDiag.pcName = gcpcBsmName;
   for (i=0; i<(U32)BSM_TYPE_MAX; i++) {
-    gpstrControl[i].pcstrBsmConfig = &(gcpstrBsmCfgTbl[i]);
-    gpstrControl[i].enuStateCurrent = BSM_STT_RLS;
+    gpstrBsmCtrl[i].pcstrBsmCfg = &(gcpstrBsmCfgTbl[i]);
+    gpstrBsmCtrl[i].enuSttCur = BSM_STT_RLS;
+    gstrBsmDiag.strDiag[i].pcSrvName = gpstrBsmCtrl[i].pcstrBsmCfg->pcName;
+    gstrBsmDiag.strDiag[i].pcSttName = gcpcBsmSttNameTbl;
+    gstrBsmDiag.strDiag[i].bIsRegistered = (gpstrBsmCtrl[i].pcstrBsmCfg->u32Period != (U32)0) ? gTRUE : gFALSE;
+
+  }
+  gu32BsmCnt = (U32)0;
+}
+
+/**
+ * @brief   A public function that process BSM called by PSM.
+ * @param   pvArgs  arguments reserved. 
+ * @sa      vidGslPsmService
+ * @return  void
+ */
+PUBLIC void vidBsmSrvc(void* pvArgs) {
+  tenuBsmEvent enuEvent;
+  tenuBsmStt enuStateNext;
+  U32 i;
+  
+  gu32BsmCnt++;
+  for (i=0; i<(U32)BSM_TYPE_MAX; i++) {
+    if (gpstrBsmCtrl[i].pcstrBsmCfg->u32Period != (U32)0) {
+      if (gu32BsmCnt % gpstrBsmCtrl[i].pcstrBsmCfg->u32Period == (U32)0) {
+        /* Get the next state with data passed and event extracted. */
+        enuEvent = gpstrBsmCtrl[i].pcstrBsmCfg->pfBsmEventCallback((tenuBsmType)i);
+        enuStateNext = gpstrBsmTransTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)enuEvent];
+
+        /* Transit states if needed. */
+        if (enuStateNext != BSM_STT_NA) {
+          vidBsmTransit((tenuBsmType)i, enuStateNext);
+        }
+        /* Process the do state function. */
+        if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO] != gNULL) {
+          gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO]((tenuBsmType)i);
+        }
+      }
+    }
   }
 }
 
 /**
- * @brief   Public function that process BSM called by PSM.
- * @param   void
- * @sa      vidGslPsmService
- * @return  void
+ * @brief   A public function getting BSM diagnostic information.
+ * @param   pvArgs  arguments reserved.
+ * @return  tstrBsmDiag*
  */
-PUBLIC void vidBsmService(void* pvArgs) {
-  tenuBsmEvent enuEvent;
-  tenuBsmState enuStateNext;
-  U32 i;
-  U32 u32TimeElapsed;
+PUBLIC tstrBsmDiag* pstrBsmGetDiag(void* pvArgs) {
+  return &gstrBsmDiag;
+}
 
-  for (i=0; i<(U32)BSM_TYPE_MAX; i++) {
-    vidGslDiagTimeStart();
+/**
+ * @brief   A public function getting BSM notification.
+ * @param   enuType BSM type for each of buttons.
+ * @note    UA shall call this callback while extracting LSM events.
+ * @return  tenuBsmNotify
+ */
+PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType) {
+  return gpstrBsmCtrl[(U32)enuType].enuNotify;
+}
 
-    /* Get the next state with data passed and event extracted. */
-    enuEvent = gpstrControl[i].pcstrBsmConfig->pfBsmEventCallback((tenuBsmType)i);
-    enuStateNext = gpstrBsmTransTbl[(U32)(gpstrControl[i].enuStateCurrent)][(U32)enuEvent];
-
-    /* Transit states if needed. */
-    if (enuStateNext != BSM_STT_NA) {
-      vidBsmTransit((tenuBsmType)i, enuStateNext);
-    }
-    /* Process the do state function. */
-    if (gpfBsmSttFtnTbl[(U32)(gpstrControl[i].enuStateCurrent)][(U32)XSM_STT_FTN_DO] != NULL) {
-      gpfBsmSttFtnTbl[(U32)(gpstrControl[i].enuStateCurrent)][(U32)XSM_STT_FTN_DO]((tenuBsmType)i);
-    }
-
-    u32TimeElapsed = u32GslDiagTimeElapsed();
-    if (u32TimeElapsed > gpstrBsmDiagProc[i].u32TimeProcMax) {
-      gpstrBsmDiagProc[i].u32TimeProcMax = u32TimeElapsed;
-    }
-    gpstrBsmDiagProc[i].u32TimeProcTotal += u32TimeElapsed;
-  }
-
-  for (i=0; i<(U32)BSM_TYPE_MAX; i++) {
-    if (gpstrBsmDiagProc[i].u32TimeProcMax > gpstrBsmDiag.u32TimeProcMax) {
-      gpstrBsmDiag.u32TimeProcMax = gpstrBsmDiagProc[i].u32TimeProcMax;
-    }
-    gpstrBsmDiag.u32TimeProcTotal += gpstrBsmDiagProc[i].u32TimeProcTotal;
-  }
+/**
+ * @brief   A public weak function for retrieving BSM event.
+ * @param   enuType The BSM type for each of buttons.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  tenuBsmEvent  BSM button event.
+ */
+PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
+  return BSM_TYPE_B0;
 }
 
 /* Private functions ---------------------------------------------------------*/
 /**
- * @brief   Private function that transit state on BSM.
+ * @brief   A private function that transit states on BSM.
+ * @param   enuType       The BSM type for each of buttons.
  * @param   enuStateNext  The next state to transit.
  * @param   pvArgs        Arguments shall be set if needed.
  * @return  void
  */
-PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmState enuStateNext) {
+PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
+#if 0
   CH pchTrace[GSL_TRACE_MAX];
+#endif
 
   if (enuStateNext != BSM_STT_NA) {
     /* Process the exit state function of the current state. */
-    if (gpfBsmSttFtnTbl[(U32)(gpstrControl[(U32)enuType].enuStateCurrent)][(U32)XSM_STT_FTN_EXIT] != NULL) {
-      gpfBsmSttFtnTbl[(U32)(gpstrControl[(U32)enuType].enuStateCurrent)][(U32)XSM_STT_FTN_EXIT](enuType);
+    if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_EXIT] != gNULL) {
+      gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_EXIT](enuType);
     }
     /* Transit states. */
-    gpstrControl[(U32)enuType].enuStatePrevious = gpstrControl[(U32)enuType].enuStateCurrent;
-    gpstrControl[(U32)enuType].enuStateCurrent = enuStateNext;
+    gpstrBsmCtrl[(U32)enuType].enuSttPrev = gpstrBsmCtrl[(U32)enuType].enuSttCur;
+    gpstrBsmCtrl[(U32)enuType].enuSttCur = enuStateNext;
 
     /* Process the entry state function of the next state. */
-    if (gpfBsmSttFtnTbl[(U32)(gpstrControl[(U32)enuType].enuStateCurrent)][(U32)XSM_STT_FTN_ENTRY] != NULL) {
-      gpfBsmSttFtnTbl[(U32)(gpstrControl[(U32)enuType].enuStateCurrent)][(U32)XSM_STT_FTN_ENTRY](enuType);
+    if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY] != gNULL) {
+      gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY](enuType);
     }
+#if 0
     snprintf(pchTrace, GSL_TRACE_MAX, "%s: State changed [%s]->[%s]", \
         gcpcBsm,  \
-        gcpcBsmSttNameTbl[gpstrControl[(U32)enuType].enuStatePrevious], \
-        gcpcBsmSttNameTbl[gpstrControl[(U32)enuType].enuStateCurrent]);
+        gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttPrev], \
+        gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttCur]);
     vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+#endif
   }
 }
 
 /**
- * @brief   Private entry function that is processed when the state transit to BSM_STT_RLS.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private entry function that is processed
+ *          when the state transit to BSM_STT_RLS.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmRlsEntry(tenuBsmType enuType) {
-  if ((gpstrControl[(U32)enuType].u32PressCounter != (U32)0) && (gpstrControl[(U32)enuType].u32PressCounter <= gpstrControl[(U32)enuType].pcstrBsmConfig->u32PressedThreshHold)) {
-    gpstrControl[(U32)enuType].enuEventNotify = BSM_EVT_NTF_SHORT;
+  if ((gpstrBsmCtrl[(U32)enuType].u32PressCnt != (U32)0) && (gpstrBsmCtrl[(U32)enuType].u32PressCnt <= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32PressedThreshHold)) {
+    gpstrBsmCtrl[(U32)enuType].enuNotify = BSM_NTF_SHORT;
   }
-  gpstrControl[(U32)enuType].u32PressCounter = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32PressCnt = (U32)0;
 }
 
 /**
- * @brief   Private do function that is processed on BSM_STT_RLS.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private do function that is processed on BSM_STT_RLS.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmRlsDo(tenuBsmType enuType) {
+  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_RLS]++;
 }
 
 /**
- * @brief   Private exit function that is processed when the state go out from BSM_STT_RLS.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private exit function that is processed when the state go out from BSM_STT_RLS.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmRlsExit(tenuBsmType enuType) {
 }
 
 /**
- * @brief   Private entry function that is processed when the state transit to BSM_STT_PRS_CFM.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private entry function that is processed when the state transit to BSM_STT_PRS_CFM.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmPshCfmEntry(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32MatchCounter = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
 }
 
 /**
- * @brief   Private do function that is processed on BSM_STT_PRS_CFM.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private do function that is processed on BSM_STT_PRS_CFM.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmPshCfmDo(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32MatchCounter++;
-  if (gpstrControl[(U32)enuType].u32MatchCounter > gpstrControl[(U32)enuType].pcstrBsmConfig->u32MatchCount)
+  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH_CFM]++;
+  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt++;
+  
+  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt > gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
   {
     vidBsmTransit(enuType, BSM_STT_PSH);
   }
 }
 
 /**
- * @brief   Private exit function that is processed when the state go out from BSM_STT_PRS_CFM.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private exit function that is processed when the state go out from BSM_STT_PRS_CFM.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmPshCfmExit(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32MatchCounter = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
 }
 
 /**
- * @brief   Private entry function that is processed when the state transit to BSM_STT_PRS.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private entry function that is processed when the state transit to BSM_STT_PRS.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmPshEntry(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32PressCounter = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32PressCnt = (U32)0;
 }
 
 /**
- * @brief   Private do function that is processed on BSM_STT_PRS.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private do function that is processed on BSM_STT_PRS.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmPshDo(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32PressCounter++;
-  if (gpstrControl[(U32)enuType].u32PressCounter > gpstrControl[(U32)enuType].pcstrBsmConfig->u32PressedThreshHold) {
-    gpstrControl[(U32)enuType].enuEventNotify = BSM_EVT_NTF_LONG;
+  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH]++;
+  gpstrBsmCtrl[(U32)enuType].u32PressCnt++;
+  
+  if (gpstrBsmCtrl[(U32)enuType].u32PressCnt > gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32PressedThreshHold) {
+    gpstrBsmCtrl[(U32)enuType].enuNotify = BSM_NTF_LONG;
   }
 }
 
 /**
  * @brief   Private exit function that is processed when the state go out from BSM_STT_PRS.
- * @param   pvArgs  Arguments reserved.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmPshExit(tenuBsmType enuType) {
 }
 
 /**
- * @brief   Private entry function that is processed when the state is transited to BSM_STT_RLS_CFM.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private entry function that is processed when the state is transited to BSM_STT_RLS_CFM.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmRlsCfmEntry(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32MatchCounter = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
 }
 
 /**
- * @brief   Private do function that is processed on BSM_STT_RLS_CFM.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private do function that is processed on BSM_STT_RLS_CFM.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmRlsCfmDo(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32MatchCounter++;
+  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_RLS_CFM]++;
+  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt++;
 
-  if (gpstrControl[(U32)enuType].u32MatchCounter > gpstrControl[(U32)enuType].pcstrBsmConfig->u32MatchCount)
+  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt > gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
   {
     vidBsmTransit(enuType, BSM_STT_RLS);
   }
 }
 
 /**
- * @brief   Private exit function that is processed when the state go out from BSM_STT_RLS_CFM.
- * @param   pvArgs  Arguments reserved.
+ * @brief   A private exit function that is processed when the state go out from BSM_STT_RLS_CFM.
+ * @param   enuType The BSM type for each of buttons.
  * @return  void
  */
 PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType) {
-  gpstrControl[(U32)enuType].u32MatchCounter = (U32)0;
-}
-
-PUBLIC tenuBsmEventNotify enuBsmEventNotify(tenuBsmType enuType) {
-  return gpstrControl[(U32)enuType].enuEventNotify;
+  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
 }
 

@@ -11,9 +11,11 @@
 #define GSL_FEATURE_H_
 
 /* Includes ------------------------------------------------------------------*/
+
 /* Exported defines ----------------------------------------------------------*/
-#define GSL_PSM_MAX   10
-#define GSL_BSM_MAX   10
+#define FEATURE_BSM
+#define FEATURE_LSM
+#define FEATURE_DSM
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/

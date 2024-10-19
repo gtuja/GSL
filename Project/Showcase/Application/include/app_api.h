@@ -27,7 +27,7 @@ PUBLIC void vidAppMain(void);
 PUBLIC void vidAppService(void);
 PUBLIC void vidAppInitialize(void);
 PUBLIC U32  u32AppTickCallback(void* pvArgs);
-PUBLIC BOOL bAppBtnExtractEventCallback(void* pvArgs);
+PUBLIC gBOOL bAppBtnExtractEventCallback(void* pvArgs);
 
 extern tstrAppBtnHandle gpstrAppBtnHandle[];
 

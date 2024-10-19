@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "gsl_queue.h": "c",
+    "gsl_def.h": "c",
+    "gsl_feature.h": "c"
+  }
+}

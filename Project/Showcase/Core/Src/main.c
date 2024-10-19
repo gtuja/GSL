@@ -107,7 +107,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);         /* Start TIM2, Channel#1. */
   __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);  /* Set PWM duty 0 on TIM2, Channel#1. */
 
-  setbuf(stdout, NULL);
+  setbuf(stdout, gNULL);
 
   /* USER CODE END 2 */
 

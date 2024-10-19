@@ -51,9 +51,9 @@
 <summary><font size="5"><b>Concept</b></font></summary>
 
 - [TOC](#toc)
-- GSL is a collection of C libraries for enbeded devices.
+- GSL is a collection of C libraries for embedded devices.
 - GSL is comprised of NOS and modules that implement general purpose features.
-- GSL shall be deployed as a platform independant static library. 
+- GSL shall be deployed as a platform independent static library. 
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
 
 </details>
@@ -135,38 +135,38 @@ gsl_feature.h specify GSL features.<br>
 gsl_feature.h defines high level view of the GSL library.<br>
 
 ```C
-#define FEATURE_DIAG
+#define FEATURE_DSM
 #define FEATURE_BSM
 #define FEATURE_LSM
-#define FEATURE_INSP
 ```
 
 \* ***gsl_config.h***<br>
-gsl_config.h contains defines for each modules in GSL to satisfy UA requirements.<br>
-gsl_config.h provides abstract names to link GSL and UA, e.g., BSM_PRD[1..5] for BSM service period in ms.
+gsl_config.h contains defines, types and callbacks.
+UA shall implement callbacks for device specific features.
 
 ```C
-typefef enum {
-  BSM_EVT_RLS = 0,
-  BSM_EVT_PSH,
+EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
+EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuLsmType enuType);
+EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
+EXTERN U32 u32DsmCntCallback(void* pvArgs);
+EXTERN U32 u32DsmCntPrdCallback(void* pvArgs);
+EXTERN void vidDsmTraceCallback(char* pcTrace);
 
 
-#define BSM_PRD_B[1..x]     (U32)XX
-#define BSM_EVT_CB_B[1..x]  enuGslBsmB[1..x]EvtCallback
 ```
 
 \* ***gsl_api.h***<br>
 gsl_api.h provides Callback APIs for UA.
 
 ```C
-PUBLIC void vidGslInitCallback(void* pvArgs);
 PUBLIC void vidGslSrvcCallback(void* pvArgs);
 PUBLIC void vidGslProcCallback(void* pvArgs);
-PUBLIC coid vidGslTusElapsedCallback(void);
+PUBLIC void vidGslDsmElapsedCallback(void* pvArgs);
+PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ```
 
 \* ***gsl.h***<br>
-gsl.h provides defines, data types, and extern cinfiguration tables for GSL modules, e.g., gpstrBsmCfgTbl.
+gsl.h provides defines, data types and extern configuration tables for GSL modules, e.g., gcpstrBsmCfgTbl.
 
 ```C
 PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
@@ -222,19 +222,19 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 | Path | File Name |
 |:--|:--|
 |NOOS/include|gsl_psm.h|
-||gsl_btm.h|
+||gsl_bpm.h|
 ||gsl_queue.h|
 |NOOS/source|gsl_psm.c|
-||gsl_btm.c|
+||gsl_bpm.c|
 ||gsl_queue.c|
 
-- PSM is responsibe for periodic services and shall be invoked by GSL API, vidGslService.
+- PSM is responsible for periodic services and shall be invoked by GSL API, vidGslService.
 - Preset configurations are below and those might change depending on the UA specification. 
 
 
 ```
-- BTM is responsibe for task processes and shall be invoked by GSL API, vidGslProcess.
-- Each of processes has its own queue and handle enqued requests as a background task.
+- BPM is responsible for task processes and shall be invoked by GSL API, vidGslProcess.
+- Each of processes has its own queue and handle enqueued requests as a background task.
 - Preset processes are below and might change according to the UA specification.
 
 ```C
