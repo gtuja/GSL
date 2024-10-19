@@ -37,11 +37,10 @@
 |UA|User Application|
 |NOOS|NO Operating System|
 |PSM|Periodic Service Manager|
-|BTM|Background Task Manager|
-|XSM|eXclusive State Manager|
+|BPM|Background Process Manager|
 |BSM|Button State Manager|
 |LSM|LED State Manager|
-|DIAG|Diagnosis |
+|DSM|Diagnostic Service Manager|
 
 <br>
 </details>
@@ -52,7 +51,7 @@
 
 - [TOC](#toc)
 - GSL is a collection of C libraries for embedded devices.
-- GSL is comprised of NOS and modules that implement general purpose features.
+- GSL is comprised of NOOS and modules that implement general purpose features.
 - GSL shall be deployed as a platform independent static library. 
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
 
@@ -88,8 +87,9 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 - GSL is comprised of features below.
 - [GSL](#GSL)
 - [NOOS](#NOOS)
-- [XSM](#XSM)
-- [DIAG](#DIAG)
+- [BSM](#BSM)
+- [LSM](#LSM)
+- [DSM](#DSM)
 
 </details>
 
@@ -124,9 +124,9 @@ GSL is aims to be platform independent, gsl_def.h might change according to the 
 #define U32 unsigned long
 #endif 
 
-#ifdef BOOL
-#undef BOOL
-#define BOOL U32
+#ifdef gBOOL
+#undef gBOOL
+#define gBOOL U32
 #endif
 ```
 
@@ -142,7 +142,7 @@ gsl_feature.h defines high level view of the GSL library.<br>
 
 \* ***gsl_config.h***<br>
 gsl_config.h contains defines, types and callbacks.
-UA shall implement callbacks for device specific features.
+UA shall redefine UA specification and and implement callbacks for device specific features.
 
 ```C
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
@@ -214,7 +214,7 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 - [Features](#Features)
 - NOOS provides OS-like features below.<br>
 \- PSM (Periodic Service Manager)<br>
-\- BTM (Background Task Manager)<br>
+\- BPM (Background Process Manager)<br>
 \- Simpe queue provides IPC among GCL features.<br>
 
 - Folder structure
