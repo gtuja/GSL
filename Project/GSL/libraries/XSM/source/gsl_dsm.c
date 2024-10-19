@@ -12,6 +12,7 @@
 #include "gsl_config.h"
 #include "gsl_bsm.h"
 #include "gsl.h"
+#include "gsl_diag.h"
 #include "gsl_queue.h"
 #include <stdio.h>
 
@@ -30,8 +31,8 @@ typedef enum {
 typedef void (*tpfDsmSrvc)(void* pvArgs);
 
 /* Private functions ----------------------------------------------- */
-PRIVATE void vidDsmSrvKeepAlive(void* pvArgs);
-PRIVATE void vidDsmSrvXsmState(void* pvArgs);
+PRIVATE void vidDsmKeepAlive(void* pvArgs);
+PRIVATE void vidDsmDiag(void* pvArgs);
 
 /* Private variables ----------------------------------------------- */
 typedef struct {
@@ -39,17 +40,13 @@ typedef struct {
   tpfDsmSrvc  pfDsmSrvc;  /**< DSM service. */
 } tstrDsmCfg;
 
+PRIVATE U32 gu32DsmCnt = (U32)0;
+
 PRIVATE const tstrDsmCfg gcpstrDsmCfgTbl[DSM_TYPE_MAX] = {
   /* u32Period            tpfDsmSrvc */
-  {  DSM_PRD_KEEP_ALIVE,  vidDsmSrvKeepAlive  },  /* DSM_TYPE_KEEP_ALIVE */
-  {  DSM_PRD_XSM_STATE,   vidDsmSrvXsmState  },   /* DSM_TYPE_XSM_STT */
+  {  DSM_PRD_KEEP_ALIVE,  vidDsmKeepAlive },  /* DSM_TYPE_KEEP_ALIVE */
+  {  DSM_PRD_XSM_STATE,   vidDsmDiag      },  /* DSM_TYPE_XSM_STT */
 };
-
-PRIVATE U32   gu32DsmCnt = (U32)0;
-PRIVATE U32   gu32DsmTusPast = (U32)0;
-PRIVATE gBOOL gbIsDsmTusMeas = gFALSE;
-PRIVATE U64   gu4DsmTusTotal = (U64)0;
-PRIVATE U32   gu32DsmTusCntPrd = (U32)0;
 
 /* A public functions ------------------------------------------------ */
 /**
@@ -60,10 +57,6 @@ PRIVATE U32   gu32DsmTusCntPrd = (U32)0;
  */
 PUBLIC void vidDsmInit(void* pvArgs) {
   gu32DsmCnt = (U32)0;
-  gu32DsmTusPast = (U32)0;
-  gbIsDsmTusMeas = gFALSE;
-  gu4DsmTusTotal = (U64)0;
-  gu32DsmTusCntPrd = u32DsmCntPrdCallback(gNULL);
 }
 
 /**
@@ -87,123 +80,25 @@ PUBLIC void vidDsmSrvc(void* pvArgs) {
   }
 }
 
+/* Private functions ----------------------------------------------- */
 /**
- * @brief   A public function to setup us unit timer elapsed time calculation.
- * @param   pvArgs  arguments reserved.
- * @sa      gbIsDsmTusMeas
- * @sa      gu32DsmTusPast
- * @sa      u32DsmCntCallback
+ * @brief   A private function that process DSM keep alive service.
+ * @param   void
+ * @sa      vidDsmSrvc
  * @return  void
  */
-PUBLIC void vidDsmTusMeasStart(void* pvArgs) {
-  gu32DsmTusPast = u32DsmCntCallback(gNULL);
-  gbIsDsmTusMeas = gTRUE;
+PRIVATE void vidDsmKeepAlive(void* pvArgs) {
+  vidDiagKeepAlive(gNULL);
 }
 
 /**
- * @brief   A public function for getting us unit timer elapsed time.
- * @param   pvArgs  arguments reserved.
- * @sa      gbIsDsmTusMeas
- * @sa      gu32DsmTusPast
- * @sa      u32DsmCntCallback
- * @return  U32     us unit timer elapsed time.
- */
-PUBLIC U32 u32DsmTusMeasElapsed(void* pvArgs) {
-  U32 u32TusElapsed;
-  U32 u32TusCur;
-
-  u32TusElapsed = (U32)0;
-  if (gbIsDsmTusMeas == gTRUE) {
-    u32TusCur = u32DsmCntCallback(gNULL);
-    if (u32TusCur >= gu32DsmTusPast) {
-      u32TusElapsed = u32TusCur - gu32DsmTusPast;
-    } else {
-      u32TusElapsed = u32TusCur + gu32DsmTusCntPrd - gu32DsmTusPast;
-    }
-  }
-  return u32TusElapsed;
-}
-
-/**
- * @brief   A public function to accumulate us unit timer period count.
- * @param   pvArgs  arguments reserved.
+ * @brief   A private function that process DSM diagnostic service.
+ * @param   void
+ * @sa      vidDsmSrvc
  * @return  void
  */
-PUBLIC void vidDsmTusAccumulate(void *pvArgs) {
-  gu4DsmTusTotal += (U64)gu32DsmTusCntPrd;
+PRIVATE void vidDsmDiag(void* pvArgs) {
+  vidBsmDiag(gNULL);
 }
 
-/**
- * @brief   A public function for getting us unit timer period count accumulated.
- * @param   pvArgs  arguments reserved.
- * @return  U64     us unit timer period count accumulated.
- */
-PUBLIC U64 u64DsmGetTusTotal(void *pvArgs) {
-  return gu4DsmTusTotal;
-}
-
-/**
- * @brief   A public weak function for tracing GSL features.
- * @param   char*   Trace string.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  void
- */
-PRIVATE void vidDsmSrvKeepAlive(void* pvArgs) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
-
-  snprintf(pchTrace, GSL_QUE_TRACE_LEN, "keep alive...");
-  vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
-}
-
-PRIVATE void vidDsmSrvXsmState(void* pvArgs) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
-  tstrBsmDiag* pstrBsmDiag;
-  U32 i, j;
-
-  pstrBsmDiag = pstrBsmGetDiag(NULL);
-
-  for (i=0; i<BSM_TYPE_MAX; i++) {
-    if (pstrBsmDiag->strDiag[i].bIsRegistered == gTRUE) {
-      snprintf(pchTrace, GSL_QUE_TRACE_LEN, "## %s[%s] ------------------", pstrBsmDiag->pcName, pstrBsmDiag->strDiag[i].pcSrvName);
-      vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
-      for (j=0; j<BSM_STT_MAX; j++) {
-        snprintf(pchTrace, GSL_QUE_TRACE_LEN, "## %s[%08ld]", pstrBsmDiag->strDiag[i].pcSttName[j], pstrBsmDiag->strDiag[i].pu32SttCnt[j]);
-        vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
-      }
-    }
-  }
-}
-
-/**
- * @brief   A public weak function for retrieving count of us unit timer.
- * @param   pvArgs  arguments reserved.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  U32     Count of us unit timer.
- */
-PUBLIC __attribute__((weak)) U32 u32DsmCntCallback(void* pvArgs) {
-  return (U32)0;
-}
-
-/**
- * @brief   A public weak function for retrieving counter period of us unit timer.
- * @param   pvArgs  arguments reserved.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  U32     Counter period of us unit timer.
- */
-PUBLIC __attribute__((weak)) U32 u32DsmCntPrdCallback(void* pvArgs) {
-  return (U32)0;
-}
-
-/**
- * @brief   A public weak function for tracing GSL features.
- * @param   char*   Trace string.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  void
- */
-PUBLIC __attribute__((weak)) void vidDsmTraceCallback(char* pcTrace) {
-}
 

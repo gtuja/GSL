@@ -16,6 +16,7 @@
 #define FEATURE_BSM
 #define FEATURE_LSM
 #define FEATURE_DSM
+#define FEATURE_DIAG
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/

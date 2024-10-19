@@ -76,14 +76,14 @@ typedef U32 (*tpfLsmPwmMaxCallback)(tenuLsmType enuType);
 EXTERN U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType);
 #endif /* FEATURE_LSM */
 
-#ifdef FEATURE_DSM
-typedef U32 (*tpfDsmCntCallback)(void* pvArgs);
-EXTERN U32 u32DsmCntCallback(void* pvArgs);
-typedef U32 (*tpfDsmCntPrdCallback)(void* pvArgs);
-EXTERN U32 u32DsmCntPrdCallback(void* pvArgs);
-typedef void (*tpfDsmTraceCallback)(char* pcTrace);
-EXTERN void vidDsmTraceCallback(char* pcTrace);
-#endif /* FEATURE_DSM */
+#ifdef FEATURE_DIAG
+typedef U32 (*tpfDiagCntCallback)(void* pvArgs);
+EXTERN U32 u32DiagCntCallback(void* pvArgs);
+typedef U32 (*tpfDiagCntPrdCallback)(void* pvArgs);
+EXTERN U32 u32DiagCntPrdCallback(void* pvArgs);
+typedef void (*tpfDiagTraceCallback)(char* pcTrace);
+EXTERN void vidDiagTraceCallback(char* pcTrace);
+#endif /* FEATURE_DIAG */
 
 /* Exported defines ------------------------------------------------ */
 #ifdef FEATURE_BSM

@@ -114,9 +114,16 @@ PRIVATE const tenuBsmStt gpstrBsmTransTbl[BSM_STT_MAX][BSM_EVT_MAX] = {
  */
 PRIVATE U32 gu32BsmCnt = (S32)0;
 
+/**
+ * @brief gcpcBsmName is the name of BSM.
+ */
 PRIVATE const char* gcpcBsmName = "BSM";
 
+/**
+ * @brief gstrBsmDiag is the diagnostic information of BSM.
+ */
 PRIVATE tstrBsmDiag gstrBsmDiag = {0};
+
 /**
  * @brief gcpcBsmSttNameTbl is a string table holding state names for notification.
  */
@@ -128,7 +135,7 @@ PRIVATE const char* gcpcBsmSttNameTbl[BSM_STT_MAX] = {
   "BSM_STT_RLS_CFM",
 };
 
-/* Public functions ----------------------------------------------------------*/
+/* Public functions ------------------------------------------------ */
 /**
  * @brief   A public function that initialize BSM called by ISB.
  * @param   pvArgs  arguments reserved. 
@@ -183,15 +190,6 @@ PUBLIC void vidBsmSrvc(void* pvArgs) {
 }
 
 /**
- * @brief   A public function getting BSM diagnostic information.
- * @param   pvArgs  arguments reserved.
- * @return  tstrBsmDiag*
- */
-PUBLIC tstrBsmDiag* pstrBsmGetDiag(void* pvArgs) {
-  return &gstrBsmDiag;
-}
-
-/**
  * @brief   A public function getting BSM notification.
  * @param   enuType BSM type for each of buttons.
  * @note    UA shall call this callback while extracting LSM events.
@@ -202,17 +200,27 @@ PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType) {
 }
 
 /**
- * @brief   A public weak function for retrieving BSM event.
- * @param   enuType The BSM type for each of buttons.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  tenuBsmEvent  BSM button event.
+ * @brief   A public function to trace BSM features.
+ * @param   pvArgs  arguments reserved.
+ * @return  void
  */
-PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
-  return BSM_TYPE_B0;
+PUBLIC void vidBsmDiag(void* pvArgs) {
+  CH pchTrace[GSL_QUE_TRACE_LEN];
+  U32 i, j;
+
+  for (i=0; i<BSM_TYPE_MAX; i++) {
+    if (gstrBsmDiag.strDiag[i].bIsRegistered == gTRUE) {
+      snprintf(pchTrace, GSL_QUE_TRACE_LEN, "## %s[%s] ------------------", gstrBsmDiag.pcName, gstrBsmDiag.strDiag[i].pcSrvName);
+      vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+      for (j=0; j<BSM_STT_MAX; j++) {
+        snprintf(pchTrace, GSL_QUE_TRACE_LEN, "## %s[%08ld]", gstrBsmDiag.strDiag[i].pcSttName[j], gstrBsmDiag.strDiag[i].pu32SttCnt[j]);
+        vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+      }
+    }
+  }
 }
 
-/* Private functions ---------------------------------------------------------*/
+/* Private functions ----------------------------------------------- */
 /**
  * @brief   A private function that transit states on BSM.
  * @param   enuType       The BSM type for each of buttons.
@@ -221,9 +229,7 @@ PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enu
  * @return  void
  */
 PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
-#if 0
-  CH pchTrace[GSL_TRACE_MAX];
-#endif
+  CH pchTrace[GSL_QUE_TRACE_LEN];
 
   if (enuStateNext != BSM_STT_NA) {
     /* Process the exit state function of the current state. */
@@ -238,13 +244,11 @@ PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
     if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY] != gNULL) {
       gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY](enuType);
     }
-#if 0
-    snprintf(pchTrace, GSL_TRACE_MAX, "%s: State changed [%s]->[%s]", \
-        gcpcBsm,  \
+    snprintf(pchTrace, GSL_QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
+        gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->pcName,  \
         gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttPrev], \
         gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttCur]);
     vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
-#endif
   }
 }
 
@@ -296,7 +300,7 @@ PRIVATE void vidBsmPshCfmDo(tenuBsmType enuType) {
   gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH_CFM]++;
   gpstrBsmCtrl[(U32)enuType].u32CPMCCnt++;
   
-  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt > gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
+  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
   {
     vidBsmTransit(enuType, BSM_STT_PSH);
   }
@@ -329,7 +333,7 @@ PRIVATE void vidBsmPshDo(tenuBsmType enuType) {
   gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH]++;
   gpstrBsmCtrl[(U32)enuType].u32PressCnt++;
   
-  if (gpstrBsmCtrl[(U32)enuType].u32PressCnt > gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32PressedThreshHold) {
+  if (gpstrBsmCtrl[(U32)enuType].u32PressCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32PressedThreshHold) {
     gpstrBsmCtrl[(U32)enuType].enuNotify = BSM_NTF_LONG;
   }
 }
@@ -360,7 +364,7 @@ PRIVATE void vidBsmRlsCfmDo(tenuBsmType enuType) {
   gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_RLS_CFM]++;
   gpstrBsmCtrl[(U32)enuType].u32CPMCCnt++;
 
-  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt > gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
+  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
   {
     vidBsmTransit(enuType, BSM_STT_RLS);
   }
@@ -375,3 +379,14 @@ PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType) {
   gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
 }
 
+/* Weak functions -------------------------------------------------- */
+/**
+ * @brief   A public weak function for retrieving BSM event.
+ * @param   enuType The BSM type for each of buttons.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  tenuBsmEvent  BSM button event.
+ */
+PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
+  return BSM_TYPE_B0;
+}

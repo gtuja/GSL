@@ -32,15 +32,14 @@ typedef struct {
 } tstrBsmSrvDiag;
 
 typedef struct {
-  const CH* pcName;
-  tstrBsmSrvDiag strDiag[BSM_TYPE_MAX];
+  const CH* pcName;                     /**< BSM name. */
+  tstrBsmSrvDiag strDiag[BSM_TYPE_MAX]; /**< BSM diagnostic information. */
 } tstrBsmDiag;
 
 /* Exported functions prototypes ----------------------------------- */
 /* Exported variables ---------------------------------------------- */
-
 PUBLIC void vidBsmInit(void* pvArgs);
 PUBLIC void vidBsmSrvc(void* pvArgs);
-PUBLIC tstrBsmDiag* pstrBsmGetDiag(void* pvArgs);
+PUBLIC void vidBsmDiag(void* pvArgs);
 
 #endif /* XSM_INCLUDE_GSL_BSM_H_ */

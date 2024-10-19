@@ -56,6 +56,6 @@ PRIVATE void vidBpmProcIdle(void* pvArgs) {
  */
 PRIVATE void vidBpmProcDiag(void* pvArgs) {
   if (bGslQueIsEmpty(GSL_QUE_TRACE) != gTRUE) {
-    vidDsmTraceCallback((char*)pvGslQueDequeue(GSL_QUE_TRACE));
+    vidDiagTraceCallback((char*)pvGslQueDequeue(GSL_QUE_TRACE));
   }
 }

@@ -22,6 +22,18 @@ typedef enum {
   PSM_TYPE_MAX,     /**< PSM type maximum. */
 } tenuPsmType;
 
+typedef struct {
+  const CH* pcSrvName;  /**< PSM service name.  */
+  gBOOL bIsRegistered;  /**< PSM is registered or not.  */
+  U64   u64TusElapsed;  /**< PSM elapsed time.  */
+} tstrPsmSrvDiag;
+
+typedef struct {
+  const CH* pcName;                     /**< PSM name. */
+  U64   u64TusElapsed;                  /**< PSM elapsed time.  */
+  tstrPsmSrvDiag strDiag[PSM_TYPE_MAX]; /**< PSM diagnostic information. */
+} tstrPsmDiag;
+
 typedef void (*tpfPsmInit)(void* pvArgs);
 typedef void (*tpfPsmSrvc)(void* pvArgs);
 typedef struct {
@@ -33,6 +45,7 @@ typedef struct {
 /* Exported functions prototypes ----------------------------------- */
 PUBLIC void vidPsmInit(void* pvArgs);
 PUBLIC void vidPsmSrvc(void* pvArgs);
+PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 

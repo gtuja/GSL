@@ -175,39 +175,6 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
   }
 }
 
-/**
- * @brief   A public weak function for fetching LSM event.
- * @param   enuType The LSM type for each of LEDs.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  tenuLsmEvent  LSM event.
- */
-PUBLIC __attribute__((weak)) tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType) {
-  return LSM_EVT_NA;
-}
-
-/**
- * @brief   A public weak function to output LED.
- * @param   enuType The LSM type for each of LEDs.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  void.
- */
-PUBLIC __attribute__((weak)) void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
-}
-
-/**
- * @brief   A public weak function for getting the maximum counter period for each of LEDs.
- * @param   enuType The LSM type for each of LEDs.
- * @note    This is an weak function!
- *          UA shall override this and implement device specific features.
- * @return  U32 The maximum counter period for each of LEDs.
- */
-PUBLIC __attribute__((weak)) U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
-  return (U32)0;
-}
-
-
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -367,5 +334,38 @@ PRIVATE void vidLsmFadeOffDo(tenuLsmType enuType) {
  */
 PRIVATE void vidLsmFadeOffExit(tenuLsmType enuType) {
   gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->pfLsmOutputCallback(enuType, 0);
+}
+
+/* Weak functions -------------------------------------------------- */
+/**
+ * @brief   A public weak function for fetching LSM event.
+ * @param   enuType The LSM type for each of LEDs.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  tenuLsmEvent  LSM event.
+ */
+PUBLIC __attribute__((weak)) tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuLsmType) {
+  return LSM_EVT_NA;
+}
+
+/**
+ * @brief   A public weak function to output LED.
+ * @param   enuType The LSM type for each of LEDs.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  void.
+ */
+PUBLIC __attribute__((weak)) void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
+}
+
+/**
+ * @brief   A public weak function for getting the maximum counter period for each of LEDs.
+ * @param   enuType The LSM type for each of LEDs.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  U32 The maximum counter period for each of LEDs.
+ */
+PUBLIC __attribute__((weak)) U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
+  return (U32)0;
 }
 

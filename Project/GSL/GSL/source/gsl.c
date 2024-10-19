@@ -17,6 +17,8 @@
 #include "gsl_bsm.h"
 #include "gsl_dsm.h"
 #include "gsl_queue.h"
+#include "gsl_diag.h"
+
 #include <string.h>
 
 /* External variables ---------------------------------------------- */
@@ -66,7 +68,7 @@ PUBLIC void vidGslProcCallback(void* pvArgs) {
  * @sa      u32DsmCntPrdCallback
  * @return  void
  */
-PUBLIC void vidGslDsmElapsedCallback(void* pvArgs) {
-  vidDsmTusAccumulate(gNULL);
+PUBLIC void vidGslDiagElapsedCallback(void* pvArgs) {
+  vidDiagTusAccumulate(gNULL);
 }
 

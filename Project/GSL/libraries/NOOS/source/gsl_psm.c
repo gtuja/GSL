@@ -11,6 +11,8 @@
 #include "gsl_bsm.h"
 #include "gsl_lsm.h"
 #include "gsl_dsm.h"
+#include "gsl_queue.h"
+#include <stdio.h>
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
@@ -34,6 +36,27 @@ PRIVATE const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   {  PSM_PRD_LSM, vidLsmInit, gNULL       },  /* PSM_TYPE_BSM */
 };
 
+/**
+ * @brief gcpcPsmSrvcNameTbl is a string table holding state names for notification.
+ * @sa    tenuPsmType
+ */
+PRIVATE const char* gcpcPsmSrvcNameTbl[PSM_TYPE_MAX] = {
+  "DSM",
+  "BSM",
+  "LSM",
+};
+
+/** 
+ * @brief gpstrPsmDiag is a private table holding diagnostic information of PSM.
+ * @sa    tstrPsmDiag
+ */
+PRIVATE tstrPsmDiag gstrPsmDiag = {0};
+
+/**
+ * @brief gcpcPsmName is the name of PSM.
+ */
+PRIVATE const char* gcpcPsmName = "PSM";
+
 /* Public functions ------------------------------------------------- */
 /**
  * @brief   A public function that initialize PSM.
@@ -45,9 +68,14 @@ PUBLIC void vidPsmInit(void* pvArgs) {
   U32 i;
 
   gu32PsmClkCnt = (U32)0;
-  for (i=0; i<(U32)PSM_TYPE_MAX; i++)  {
-    if (gcpstrPsmCfgTbl[i].pfPsmInit != gNULL) {
-      gcpstrPsmCfgTbl[i].pfPsmInit(gNULL);
+  gstrPsmDiag.pcName = gcpcPsmName;
+  for (i=0; i<(U32)PSM_TYPE_MAX; i++) {
+    if (gcpstrPsmCfgTbl[i].u32Period != (U32)0) {
+      if (gcpstrPsmCfgTbl[i].pfPsmInit != gNULL) {
+        gcpstrPsmCfgTbl[i].pfPsmInit(gNULL);
+        gstrPsmDiag.strDiag[(U32)i].bIsRegistered = gTRUE;
+        gstrPsmDiag.strDiag[(U32)i].pcSrvName = gcpcPsmSrvcNameTbl[(U32)i];
+      }
     }
   }
 }
@@ -60,8 +88,9 @@ PUBLIC void vidPsmInit(void* pvArgs) {
  */
 PUBLIC void vidPsmSrvc(void* pvArgs) {
   U32 i;
-  gu32PsmClkCnt++;
 
+  
+  gu32PsmClkCnt++;
   for (i=0; i<(U32)PSM_TYPE_MAX; i++)  {
     if (gcpstrPsmCfgTbl[i].u32Period != gNULL) {
       if ((gu32PsmClkCnt % gcpstrPsmCfgTbl[i].u32Period) == (U32)0) {
@@ -72,3 +101,33 @@ PUBLIC void vidPsmSrvc(void* pvArgs) {
     }
   }
 }
+
+/**
+ * @brief   A public function getting PSM diagnostic information.
+ * @param   pvArgs  arguments reserved.
+ * @return  tstrPsmDiag*
+ */
+PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs) {
+  return &gstrPsmDiag;
+}
+
+/**
+ * @brief   A public function to trace PSM features.
+ * @param   pvArgs  arguments reserved.
+ * @return  void
+ */
+PUBLIC void vidDiagPsm(void* pvArgs) {
+  CH pchTrace[GSL_QUE_TRACE_LEN];
+  tstrPsmDiag* pstrPsmDiag;
+  U32 i;
+
+  pstrPsmDiag = pstrPsmGetDiag(gNULL);
+
+  for (i=0; i<PSM_TYPE_MAX; i++) {
+    if (pstrPsmDiag->strDiag[i].bIsRegistered == gTRUE) {
+      snprintf(pchTrace, GSL_QUE_TRACE_LEN, "%s:> [%s] ------------------", pstrPsmDiag->pcName, pstrPsmDiag->strDiag[i].pcSrvName);
+      vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+    }
+  }
+}
+
