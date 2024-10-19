@@ -38,8 +38,9 @@
 |NOOS|NO Operating System|
 |PSM|Periodic Service Manager|
 |BPM|Background Process Manager|
-|BSM|Button State Manager|
-|LSM|LED State Manager|
+|XSM|eXclusive Service Manager|
+|BSM|Button Service Manager|
+|LSM|LED Service Manager|
 |DSM|Diagnostic Service Manager|
 
 <br>
@@ -90,6 +91,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 - [BSM](#BSM)
 - [LSM](#LSM)
 - [DSM](#DSM)
+- [DIAG](#DIAG)
 
 </details>
 
@@ -100,6 +102,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 - [Features](#Features)
 - GSL plays a counter role between UA and GSL.
 - GSL is comprised of APIs, configuration, and callbacks.
+- GSL also provide define and data types stride over GSL modules.
 - Folder structure
 
 | Path | File Name |
@@ -112,7 +115,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 |GSL/source|gsl.c|
 
 \+ ***include***<br>
-Each of files in include folder provides common feature between GSL and UA.<br>
+Each of files in include folder provides shared features between GSL and UA.<br>
 
 \* ***gsl_def.h***<br>
 gsl_def.h defines GSL types.<br>
@@ -132,17 +135,18 @@ GSL is aims to be platform independent, gsl_def.h might change according to the 
 
 \* ***gsl_feature.h***<br>
 gsl_feature.h specify GSL features.<br>
-gsl_feature.h defines high level view of the GSL library.<br>
+gsl_feature.h defines macros that control GSL.<br>
 
 ```C
 #define FEATURE_DSM
 #define FEATURE_BSM
 #define FEATURE_LSM
+#define FEATURE_DIAG
 ```
 
 \* ***gsl_config.h***<br>
 gsl_config.h contains defines, types and callbacks.
-UA shall redefine UA specification and and implement callbacks for device specific features.
+UA shall redefine defines according to requirement specifications and implement callbacks for device specific features.
 
 ```C
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
@@ -151,12 +155,10 @@ EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
 EXTERN U32 u32DsmCntCallback(void* pvArgs);
 EXTERN U32 u32DsmCntPrdCallback(void* pvArgs);
 EXTERN void vidDsmTraceCallback(char* pcTrace);
-
-
 ```
 
 \* ***gsl_api.h***<br>
-gsl_api.h provides Callback APIs for UA.
+gsl_api.h provides callback APIs shall be called by UA.
 
 ```C
 PUBLIC void vidGslSrvcCallback(void* pvArgs);
@@ -166,20 +168,15 @@ PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ```
 
 \* ***gsl.h***<br>
-gsl.h provides defines, data types and extern configuration tables for GSL modules, e.g., gcpstrBsmCfgTbl.
+gsl.h provides defines and data types for GSL modules.
 
 ```C
-PUBLIC const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
-  /* u32Period  pfPsmService        */
-  {  (U32)1,    vidPsmServiceDsm  },  /* PSM_TYPE_CLK */
-  {  (U32)1,    vidPsmServiceBsm    },  /* PSM_TYPE_BSM */
-  {  (U32)1,    vidPsmServiceLsm    },  /* PSM_TYPE_LSM */
-};
+
 ```
 
 \* gsl.c<br>
-gsl.c implements GSL APIs and GSL configuration tables for UA and GSL itself.
-
+gsl.c implements GSL APIs.
+UA shall call them comply with GSL specification.
 
 - Configuration <div id="Configuration"></div>
 
