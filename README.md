@@ -256,20 +256,69 @@ UA shall call them comply with GSL specification.<br>
 
 \+ ***NOOS/Inc***<br>
 There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
-Each of APIs is privided through header files below.<br>
+APIs for each of features shall privide through header files below.<br>
 \* ***gsl_psm.h***<br>
 
 ```C
+typedef enum {
+  PSM_TYPE_DSM = 0, /**< PSM type : DIAG service. */
+  PSM_TYPE_BSM,     /**< PSM type : BSM service. */
+  PSM_TYPE_LSM,     /**< PSM type : LSM service. */
+  PSM_TYPE_MAX,     /**< PSM type maximum. */
+} tenuPsmType;
+
+typedef struct {
+  const CH* pcSrvName;  /**< PSM service name.  */
+  gBOOL bIsRegistered;  /**< PSM is registered or not.  */
+  U64   u64TusElapsed;  /**< PSM elapsed time.  */
+} tstrPsmSrvDiag;
+
+typedef struct {
+  const CH* pcName;                     /**< PSM name. */
+  U64   u64TusElapsed;                  /**< PSM elapsed time.  */
+  tstrPsmSrvDiag strDiag[PSM_TYPE_MAX]; /**< PSM diagnostic information. */
+} tstrPsmDiag;
+
+typedef void (*tpfPsmInit)(void* pvArgs);
+typedef void (*tpfPsmSrvc)(void* pvArgs);
+typedef struct {
+  U32         u32Period;  /**< PSM period. */
+  tpfPsmInit  pfPsmInit;  /**< PSM Initialize. */
+  tpfPsmSrvc  pfPsmSrvc;  /**< PSM service. */
+} tstrPsmCfg;
+
+/* Exported functions prototypes ----------------------------------- */
+PUBLIC void vidPsmInit(void* pvArgs);
+PUBLIC void vidPsmSrvc(void* pvArgs);
+PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
 ```
 
 \* ***gsl_bpm.h***<br>
 
 ```C
+PUBLIC void vidBpmInit(void* pvArgs);
+PUBLIC void vidBpmProc(void* pvArgs);
 ```
 
 \* ***gsl_queue.h***<br>
 
 ```C
+#define GSL_QUE_LEN       10
+#define GSL_QUE_TRACE_LEN 72
+
+/* Exported types -------------------------------------------------- */
+typedef enum {
+  GSL_QUE_TRACE = 0,
+  GSL_QUE_DIAG,
+  GSL_QUE_MAX,
+} tenuGslQueType;
+
+/* Exported functions ---------------------------------------------- */
+PUBLIC void vidGslQueInit(void* pvArgs);
+PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
+//PRIVATE gBOOL bGslQueIsFull(tenuGslQueType enuType);
+PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
+PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
 ```
 
 - BPM is responsible for background  processes and shall be invoked by GSL API, vidGslProc.<br>
