@@ -111,8 +111,8 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 ||gsl_feature.h|
 ||gsl_config.h|
 ||gsl_api.h|
-|GSL/include|gsl.h|
-|GSL/source|gsl.c|
+|GSL/Inc|gsl.h|
+|GSL/Src|gsl.c|
 
 \+ ***include***<br>
 Each of files in include folder provides shared features between GSL and UA.<br>
@@ -214,7 +214,7 @@ PUBLIC void vidGslProcCallback(void* pvArgs);
 PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
 EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ```
-\+ ***GSL/include***<br>
+\+ ***GSL/Inc***<br>
 \* ***gsl.h***<br>
 gsl.h provides defines and data types for GSL modules.<br>
 
@@ -226,7 +226,7 @@ typedef enum {
   XSM_STT_FTN_MAX,        /**< XSM maximum state function. */
 } tenuXsmSttFtn;
 ```
-\+ ***GSL/source***<br>
+\+ ***GSL/Src***<br>
 \* gsl.c<br>
 gsl.c implements GSL APIs.<br>
 UA shall call them comply with GSL specification.<br>
@@ -247,17 +247,27 @@ UA shall call them comply with GSL specification.<br>
 
 | Path | File Name |
 |:--|:--|
-|NOOS/include|gsl_psm.h|
+|NOOS/Inc|gsl_psm.h|
 ||gsl_bpm.h|
 ||gsl_queue.h|
-|NOOS/source|gsl_psm.c|
+|NOOS/Src|gsl_psm.c|
 ||gsl_bpm.c|
 ||gsl_queue.c|
 
-\+ ***NOOS/include***<br>
-\* ***gsl_psm.***<br>
-PSM is responsible for periodic services and shall be invoked by GSL API, vidGslSrvc.<br>
-There are 3 preset types, i.e., DSM, BSM, LSM.<br>
+\+ ***NOOS/Inc***<br>
+There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
+Each of APIs is privided through header files below.<br>
+\* ***gsl_psm.h***<br>
+
+```C
+```
+
+\* ***gsl_bpm.h***<br>
+
+```C
+```
+
+\* ***gsl_queue.h***<br>
 
 ```C
 ```
