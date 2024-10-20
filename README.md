@@ -257,7 +257,8 @@ UA shall call them comply with GSL specification.<br>
 \+ ***NOOS/include***<br>
 \* ***gsl_psm.***<br>
 PSM is responsible for periodic services and shall be invoked by GSL API, vidGslSrvc.<br>
-There are 3 preset types, i.e., 
+There are 3 preset types, i.e., DSM, BSM, LSM.<br>
+
 ```C
 ```
 
