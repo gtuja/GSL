@@ -145,8 +145,8 @@ gsl_feature.h defines macros that control GSL.<br>
 ```
 
 \* ***gsl_config.h***<br>
-gsl_config.h contains defines, types and callbacks.
-UA shall redefine defines according to requirement specifications and implement callbacks for device specific features.
+gsl_config.h contains defines, types and callbacks.<br>
+UA shall redefine defines according to requirement specifications and implement callbacks for device specific features.<br>
 
 ```C
 /* Application callback -------------------------------------------- */
@@ -204,9 +204,8 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 #define BSM_NTF_CB_B4 gNULL
 #endif /* FEATURE_BSM */
 ```
-
 \* ***gsl_api.h***<br>
-gsl_api.h provides callback APIs shall be called by UA.
+gsl_api.h provides callback APIs shall be called by UA.<br>
 
 ```C
 PUBLIC void vidGslInitCallback(void* pvArgs);
@@ -217,7 +216,7 @@ EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ```
 \+ ***GSL/include***<br>
 \* ***gsl.h***<br>
-gsl.h provides defines and data types for GSL modules.
+gsl.h provides defines and data types for GSL modules.<br>
 
 ```C
 typedef enum {
@@ -229,8 +228,8 @@ typedef enum {
 ```
 \+ ***GSL/source***<br>
 \* gsl.c<br>
-gsl.c implements GSL APIs.
-UA shall call them comply with GSL specification.
+gsl.c implements GSL APIs.<br>
+UA shall call them comply with GSL specification.<br>
 
 </details>
 
@@ -242,7 +241,7 @@ UA shall call them comply with GSL specification.
 - NOOS provides OS-like features below.<br>
 \- PSM (Periodic Service Manager)<br>
 \- BPM (Background Process Manager)<br>
-\- Simpe queue provides IPC among GCL features.<br>
+\- Simple queue provides IPC among GCL features.<br>
 
 - Folder structure
 
@@ -255,15 +254,15 @@ UA shall call them comply with GSL specification.
 ||gsl_bpm.c|
 ||gsl_queue.c|
 
-- PSM is responsible for periodic services and shall be invoked by GSL API, vidGslSrvc.
-
+\+ ***NOOS/include***<br>
+\* ***gsl_psm.***<br>
+PSM is responsible for periodic services and shall be invoked by GSL API, vidGslSrvc.<br>
+There are 3 preset types, i.e., 
 ```C
 ```
 
-- BPM is responsible for background  processes and shall be invoked by GSL API, vidGslProc.
-- Each of processes might have 
-
- own queue and handle enqueued requests as a background task.
+- BPM is responsible for background  processes and shall be invoked by GSL API, vidGslProc.<br>
+- Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
 - Preset processes are below and might change according to the UA specification.
 
 ```C
