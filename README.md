@@ -131,6 +131,8 @@ GSL is aims to be platform independent, gsl_def.h might change according to the 
 #undef gBOOL
 #define gBOOL U32
 #endif
+...
+
 ```
 
 \* ***gsl_feature.h***<br>
@@ -142,6 +144,8 @@ gsl_feature.h defines macros that control GSL.<br>
 #define FEATURE_BSM
 #define FEATURE_LSM
 #define FEATURE_DIAG
+...
+
 ```
 
 \* ***gsl_config.h***<br>
@@ -203,6 +207,8 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 #define BSM_NTF_CB_B3 gNULL
 #define BSM_NTF_CB_B4 gNULL
 #endif /* FEATURE_BSM */
+...
+
 ```
 \* ***gsl_api.h***<br>
 gsl_api.h provides callback APIs shall be called by UA.<br>
@@ -213,6 +219,8 @@ PUBLIC void vidGslSrvcCallback(void* pvArgs);
 PUBLIC void vidGslProcCallback(void* pvArgs);
 PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
 EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
+...
+
 ```
 \+ ***GSL/Inc***<br>
 \* ***gsl.h***<br>
@@ -225,6 +233,8 @@ typedef enum {
   XSM_STT_FTN_EXIT,       /**< XSM state function, exit. */
   XSM_STT_FTN_MAX,        /**< XSM maximum state function. */
 } tenuXsmSttFtn;
+...
+
 ```
 \+ ***GSL/Src***<br>
 \* gsl.c<br>
@@ -291,6 +301,8 @@ typedef struct {
 PUBLIC void vidPsmInit(void* pvArgs);
 PUBLIC void vidPsmSrvc(void* pvArgs);
 PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
+...
+
 ```
 
 \* ***gsl_bpm.h***<br>
@@ -298,6 +310,8 @@ PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
 ```C
 PUBLIC void vidBpmInit(void* pvArgs);
 PUBLIC void vidBpmProc(void* pvArgs);
+...
+
 ```
 
 \* ***gsl_queue.h***<br>
@@ -319,6 +333,8 @@ PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
 //PRIVATE gBOOL bGslQueIsFull(tenuGslQueType enuType);
 PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
 PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
+...
+
 ```
 
 - BPM is responsible for background  processes and shall be invoked by GSL API, vidGslProc.<br>
@@ -332,6 +348,8 @@ PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
   {  vidBtmProcDiag },   /* BTM_TYPE_DIAG */
   {  vidBtmProcTrace },  /* BTM_TYPE_TRACE */
 };
+...
+
 ```
 - Queue provides generic features, i.e., enqueue, dequeue.
 - Enqueue is available for each feature of GSL.
