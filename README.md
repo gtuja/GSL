@@ -215,7 +215,7 @@ PUBLIC void vidGslProcCallback(void* pvArgs);
 PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
 EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ```
-
+\+ ***GSL/include***<br>
 \* ***gsl.h***<br>
 gsl.h provides defines and data types for GSL modules.
 
@@ -227,15 +227,10 @@ typedef enum {
   XSM_STT_FTN_MAX,        /**< XSM maximum state function. */
 } tenuXsmSttFtn;
 ```
-
+\+ ***GSL/source***<br>
 \* gsl.c<br>
 gsl.c implements GSL APIs.
 UA shall call them comply with GSL specification.
-
-- Configuration <div id="Configuration"></div>
-
-```C
-```
 
 </details>
 
