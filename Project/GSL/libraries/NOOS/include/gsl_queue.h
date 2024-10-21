@@ -14,12 +14,13 @@
 #include "gsl_config.h"
 
 /* Exported defines ------------------------------------------------ */
-#define GSL_QUE_LEN       10
+#define GSL_QUE_LEN       20
 #define GSL_QUE_TRACE_LEN 72
 
 /* Exported types -------------------------------------------------- */
 typedef enum {
   GSL_QUE_TRACE = 0,
+  GSL_QUE_KEEP_ALIVE,
   GSL_QUE_DIAG,
   GSL_QUE_MAX,
 } tenuGslQueType;

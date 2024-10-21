@@ -102,10 +102,7 @@ PUBLIC U64 u64DiagGetTusTotal(void *pvArgs) {
  * @return  void
  */
 PUBLIC void vidDiagKeepAlive(void* pvArgs) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
-
-  snprintf(pchTrace, GSL_QUE_TRACE_LEN, "keep alive...");
-  vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+  vidGslQueEnqueue(GSL_QUE_KEEP_ALIVE, (void*)&gu4DiagTusTotal);
 }
 
 /* Weak functions -------------------------------------------------- */

@@ -30,6 +30,7 @@ PRIVATE S32   gps32QueTail[GSL_QUE_MAX] = {0};
  * @brief gpcQueTraceBuf is a private buffer holding items of GSL_QUE_TRACE.
  */
 PRIVATE char  gpcQueTraceBuf[GSL_QUE_LEN][GSL_QUE_TRACE_LEN] = {0};
+PRIVATE U64   gu64QueKeepAliveBuf[GSL_QUE_LEN] = {0};
 
 /* Public functions ------------------------------------------------ */
 /**
@@ -82,6 +83,15 @@ PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem) {
         }
       }
       break;
+    case GSL_QUE_KEEP_ALIVE :
+      if (bGslQueIsFull(enuType) != gTRUE) {
+        gu64QueKeepAliveBuf[gps32QueTail[(U32)enuType]] = *((U64*)pvItem);
+        gps32QueTail[(U32)enuType]++;
+        if (gps32QueTail[(U32)enuType] == GSL_QUE_LEN) {
+          gps32QueTail[(U32)enuType] = (S32)0;
+        }
+      }
+      break;
     default :
       break;
   }
@@ -99,6 +109,14 @@ PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType) {
     case GSL_QUE_TRACE :
       if (bGslQueIsEmpty(enuType) != gTRUE) {
         pvReturn = (void*)(gpcQueTraceBuf[gps32QueHead[(U32)enuType]]);
+        gps32QueHead[(U32)enuType]++;
+        if (gps32QueHead[(U32)enuType] == GSL_QUE_LEN) {
+          gps32QueHead[(U32)enuType] = (S32)0;
+        }
+      }
+    case GSL_QUE_KEEP_ALIVE :
+      if (bGslQueIsEmpty(enuType) != gTRUE) {
+        pvReturn = (void*)(&gu64QueKeepAliveBuf[gps32QueHead[(U32)enuType]]);
         gps32QueHead[(U32)enuType]++;
         if (gps32QueHead[(U32)enuType] == GSL_QUE_LEN) {
           gps32QueHead[(U32)enuType] = (S32)0;
