@@ -31,7 +31,7 @@
 
 - [TOC](#toc)
 
-<center>
+<div align="center">
 
 | Abbrev. | Meaning |
 |:--|:--|
@@ -45,7 +45,8 @@
 |LSM|LED Service Manager|
 |DSM|Diagnostic Service Manager|
 
-</center>
+</div>
+
 <br>
 </details>
 
