@@ -336,10 +336,16 @@ PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
 ...
 
 ```
+\+ ***NOOS/Src***<br>
+\* ***gsl_psm.c***<br>
+PSM is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
+PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
+Preset services are below and might change according to the UA specification.<br>
 
-- BPM is responsible for background  processes and shall be invoked by GSL API, vidGslProc.<br>
-- Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
-- Preset processes are below and might change according to the UA specification.
+\* ***gsl_bpm.c***<br>
+BPM is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
+Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
+Preset processes are below and might change according to the UA specification.<br>
 
 ```C
 PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
@@ -351,12 +357,138 @@ PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
 ...
 
 ```
-- Queue provides generic features, i.e., enqueue, dequeue.
-- Enqueue is available for each feature of GSL.
-- Dequeue shall be processed by BTM, background task.
-- Natural born simple library, there is no context switching on dequeue process.
+\* ***gsl_queue.c***<br>
+Queue provides generic features, i.e., enqueue, dequeue.<br>
+Enqueue is available for evert features of GSL.<br>
+Dequeue shall be processed by BTM, background task.<br>
+Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks.<br>
+Preset queues are below and might change according to the UA specification.<br>
 
 </details>
+
+<div id="XSM"></div>
+<details open>
+<summary><font size="5"><b>XSM</b></font></summary>
+
+- [Features](#Features)
+- XSM provides service management features below.<br>
+\- DSM (Diagnostic Service Manager)<br>
+\- BSM (Button Service Manager)<br>
+\- LSM (LED Service Manager)<br>
+
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|NOOS/Inc|gsl_psm.h|
+||gsl_bpm.h|
+||gsl_queue.h|
+|NOOS/Src|gsl_psm.c|
+||gsl_bpm.c|
+||gsl_queue.c|
+
+\+ ***NOOS/Inc***<br>
+There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
+APIs for each of features shall privide through header files below.<br>
+\* ***gsl_psm.h***<br>
+
+```C
+typedef enum {
+  PSM_TYPE_DSM = 0, /**< PSM type : DIAG service. */
+  PSM_TYPE_BSM,     /**< PSM type : BSM service. */
+  PSM_TYPE_LSM,     /**< PSM type : LSM service. */
+  PSM_TYPE_MAX,     /**< PSM type maximum. */
+} tenuPsmType;
+
+typedef struct {
+  const CH* pcSrvName;  /**< PSM service name.  */
+  gBOOL bIsRegistered;  /**< PSM is registered or not.  */
+  U64   u64TusElapsed;  /**< PSM elapsed time.  */
+} tstrPsmSrvDiag;
+
+typedef struct {
+  const CH* pcName;                     /**< PSM name. */
+  U64   u64TusElapsed;                  /**< PSM elapsed time.  */
+  tstrPsmSrvDiag strDiag[PSM_TYPE_MAX]; /**< PSM diagnostic information. */
+} tstrPsmDiag;
+
+typedef void (*tpfPsmInit)(void* pvArgs);
+typedef void (*tpfPsmSrvc)(void* pvArgs);
+typedef struct {
+  U32         u32Period;  /**< PSM period. */
+  tpfPsmInit  pfPsmInit;  /**< PSM Initialize. */
+  tpfPsmSrvc  pfPsmSrvc;  /**< PSM service. */
+} tstrPsmCfg;
+
+/* Exported functions prototypes ----------------------------------- */
+PUBLIC void vidPsmInit(void* pvArgs);
+PUBLIC void vidPsmSrvc(void* pvArgs);
+PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
+...
+
+```
+
+\* ***gsl_bpm.h***<br>
+
+```C
+PUBLIC void vidBpmInit(void* pvArgs);
+PUBLIC void vidBpmProc(void* pvArgs);
+...
+
+```
+
+\* ***gsl_queue.h***<br>
+
+```C
+#define GSL_QUE_LEN       10
+#define GSL_QUE_TRACE_LEN 72
+
+/* Exported types -------------------------------------------------- */
+typedef enum {
+  GSL_QUE_TRACE = 0,
+  GSL_QUE_DIAG,
+  GSL_QUE_MAX,
+} tenuGslQueType;
+
+/* Exported functions ---------------------------------------------- */
+PUBLIC void vidGslQueInit(void* pvArgs);
+PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
+//PRIVATE gBOOL bGslQueIsFull(tenuGslQueType enuType);
+PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
+PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
+...
+
+```
+\+ ***NOOS/Src***<br>
+\* ***gsl_psm.c***<br>
+PSM is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
+PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
+Preset services are below and might change according to the UA specification.<br>
+
+\* ***gsl_bpm.c***<br>
+BPM is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
+Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
+Preset processes are below and might change according to the UA specification.<br>
+
+```C
+PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
+  /* pfBtmProcess        */
+  {  vidBtmProcIdle  },  /* BTM_TYPE_IDLE */
+  {  vidBtmProcDiag },   /* BTM_TYPE_DIAG */
+  {  vidBtmProcTrace },  /* BTM_TYPE_TRACE */
+};
+...
+
+```
+\* ***gsl_queue.c***<br>
+Queue provides generic features, i.e., enqueue, dequeue.<br>
+Enqueue is available for evert features of GSL.<br>
+Dequeue shall be processed by BTM, background task.<br>
+Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks.<br>
+Preset queues are below and might change according to the UA specification.<br>
+
+</details>
+
 
 <div id="Reference"></div>
 <details open>
