@@ -366,16 +366,13 @@ Preset queues are below and might change according to the UA specification.<br>
 
 </details>
 
-<div id="XSM"></div>
+<div id="BSM"></div>
 <details open>
-<summary><font size="5"><b>XSM</b></font></summary>
+<summary><font size="5"><b>BSM</b></font></summary>
 
 - [Features](#Features)
-- XSM provides service management features below.<br>
-\- DSM (Diagnostic Service Manager)<br>
-\- BSM (Button Service Manager)<br>
-\- LSM (LED Service Manager)<br>
-
+- BSM provides button service management.<br>
+- 
 - Folder structure
 
 | Path | File Name |
