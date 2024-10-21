@@ -134,7 +134,7 @@ GSL is aims to be platform independent, gsl_def.h might change according to the 
 
 ```
 
-\* ***gsl_feature.h***<br>
+- ***gsl_feature.h***<br>
 gsl_feature.h specify GSL features.<br>
 gsl_feature.h defines macros that control GSL.<br>
 
@@ -147,7 +147,7 @@ gsl_feature.h defines macros that control GSL.<br>
 
 ```
 
-\* ***gsl_config.h***<br>
+- ***gsl_config.h***<br>
 gsl_config.h contains defines, types and callbacks.<br>
 UA shall redefine defines according to requirement specifications and implement callbacks for device specific features.<br>
 
@@ -209,7 +209,7 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 ...
 
 ```
-\* ***gsl_api.h***<br>
+- ***gsl_api.h***<br>
 gsl_api.h provides callback APIs shall be called by UA.<br>
 
 ```C
@@ -221,8 +221,8 @@ EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ...
 
 ```
-\+ ***GSL/Inc***<br>
-\* ***gsl.h***<br>
+- ***GSL/Inc***
+- ***gsl.h***
 gsl.h provides defines and data types for GSL modules.<br>
 
 ```C
@@ -235,8 +235,9 @@ typedef enum {
 ...
 
 ```
-\+ ***GSL/Src***<br>
-\* gsl.c<br>
+
+- ***GSL/Src***<br>
+- gsl.c<br>
 gsl.c implements GSL APIs.<br>
 UA shall call them comply with GSL specification.<br>
 
@@ -248,9 +249,9 @@ UA shall call them comply with GSL specification.<br>
 
 - [Features](#Features)
 - NOOS provides OS-like features below.<br>
-\- PSM (Periodic Service Manager)<br>
-\- BPM (Background Process Manager)<br>
-\- Simple queue provides IPC among GCL features.<br>
+PSM (Periodic Service Manager)<br>
+BPM (Background Process Manager)<br>
+Simple queue provides IPC among GCL features.<br>
 
 - Folder structure
 
@@ -263,10 +264,10 @@ UA shall call them comply with GSL specification.<br>
 ||gsl_bpm.c|
 ||gsl_queue.c|
 
-\+ ***NOOS/Inc***<br>
+- ***NOOS/Inc***<br>
 There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
 APIs for each of features shall privide through header files below.<br>
-\* ***gsl_psm.h***<br>
+- ***gsl_psm.h***<br>
 
 ```C
 typedef enum {
@@ -304,7 +305,7 @@ PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
 
 ```
 
-\* ***gsl_bpm.h***<br>
+- ***gsl_bpm.h***<br>
 
 ```C
 PUBLIC void vidBpmInit(void* pvArgs);
@@ -313,7 +314,7 @@ PUBLIC void vidBpmProc(void* pvArgs);
 
 ```
 
-\* ***gsl_queue.h***<br>
+- ***gsl_queue.h***<br>
 
 ```C
 #define GSL_QUE_LEN       10
@@ -335,13 +336,13 @@ PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
 ...
 
 ```
-\+ ***NOOS/Src***<br>
-\* ***gsl_psm.c***<br>
+- ***NOOS/Src***<br>
+- ***gsl_psm.c***<br>
 PSM is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
 PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
 Preset services are below and might change according to the UA specification.<br>
 
-\* ***gsl_bpm.c***<br>
+- ***gsl_bpm.c***<br>
 BPM is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
 Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
 Preset processes are below and might change according to the UA specification.<br>
@@ -356,7 +357,7 @@ PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
 ...
 
 ```
-\* ***gsl_queue.c***<br>
+- ***gsl_queue.c***<br>
 Queue provides generic features, i.e., enqueue, dequeue.<br>
 Enqueue is available for evert features of GSL.<br>
 Dequeue shall be processed by BTM, background task.<br>
@@ -371,17 +372,12 @@ Preset queues are below and might change according to the UA specification.<br>
 
 - [Features](#Features)
 - BSM provides button service management.<br>
-- 
 - Folder structure
 
 | Path | File Name |
 |:--|:--|
-|NOOS/Inc|gsl_psm.h|
-||gsl_bpm.h|
-||gsl_queue.h|
-|NOOS/Src|gsl_psm.c|
-||gsl_bpm.c|
-||gsl_queue.c|
+|XSM/Inc|gsl_bsm.h|
+|XSM/Src|gsl_bsm.c|
 
 \+ ***NOOS/Inc***<br>
 There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
