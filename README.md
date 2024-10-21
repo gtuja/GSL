@@ -324,7 +324,33 @@ PRIVATE void vidBpmProcDiag(void* pvArgs);
 
 - ***XSM/Inc***<br>
 There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
-- ***gsl_xsm.h*** contains 
+- ***gsl_xsm.h*** provides shared interface between XSM features.<br> 
+
+```C
+
+...
+```
+- ***gsl_bsm.h*** provides shared interface between XSM features.<br> 
+
+```C
+
+...
+```
+- ***gsl_lsm.h*** provides shared interface between XSM features.<br> 
+
+```C
+
+...
+```
+- ***gsl_dsm.h*** provides shared interface between XSM features.<br> 
+
+```C
+
+...
+```
+- ***XSM/Src***<br>
+- ****gsl_bsm.c*** implements BSM features below.<br>
+\+ State machine for 
 
 </details>
 
@@ -348,7 +374,8 @@ There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
 
 - ***XSM/Inc***<br>
 There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
-- ***gsl_xsm.h*** contains 
+- ***gsl_xsm.h*** provides shared interface between XSM features.<br>
+
 
 </details>
 
