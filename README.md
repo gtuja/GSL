@@ -31,7 +31,7 @@
 
 - [TOC](#toc)<br>
 
-&nbsp;| Abbrev. | Meaning |
+| Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
 |UA|User Application|
