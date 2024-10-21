@@ -30,6 +30,7 @@
 <summary><font size="5"><b>Abbreviation</b></font></summary>
 
 - [TOC](#toc)<br>
+
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
