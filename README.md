@@ -1,4 +1,4 @@
-![latest tag](https://img.shields.io/github/v/tag/gtuja/CSC_MS.svg?color=brightgreen)
+![latest tag](https://img.shields.io/github/v/tag/gtuja/GSL.svg?color=brightgreen)
 [![Language](https://img.shields.io/badge/Language-%E6%97%A5%E6%9C%AC%E8%AA%9E-brightgreen)](https://github.com/gtuja/CSC_MS/blob/main/README.md)
 
 # GSL(G? Static Library)
@@ -88,9 +88,7 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 - GSL is comprised of features below.
 - [GSL](#GSL)
 - [NOOS](#NOOS)
-- [BSM](#BSM)
-- [LSM](#LSM)
-- [DSM](#DSM)
+- [XSM](#XSM)
 - [DIAG](#DIAG)
 
 </details>
@@ -107,15 +105,14 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 
 | Path | File Name |
 |:--|:--|
-|include|gsl_def.h|
+|Inc|gsl_def.h|
 ||gsl_feature.h|
 ||gsl_config.h|
 ||gsl_api.h|
-|GSL/Inc|gsl.h|
-|GSL/Src|gsl.c|
+|gsl.c||
 
-- ***include***<br>
-Each of files in include folder provides shared features between GSL and UA.<br>
+- ***Inc***<br>
+Each of files in this folder provides shared interfaces between GSL and UA.<br>
 - ***gsl_def.h***<br>
 gsl_def.h defines GSL types.<br>
 GSL is aims to be platform independent, gsl_def.h might change according to the UA environment, e.g., tool chain.<br>
@@ -125,18 +122,11 @@ GSL is aims to be platform independent, gsl_def.h might change according to the 
 #undef U32
 #define U32 unsigned long
 #endif 
-
-#ifdef gBOOL
-#undef gBOOL
-#define gBOOL U32
-#endif
 ...
-
 ```
 
 - ***gsl_feature.h***<br>
-gsl_feature.h specify GSL features.<br>
-gsl_feature.h defines macros that control GSL.<br>
+gsl_feature.h is comprised of defines, i.e., macros, those specify GSL features.<br>
 
 ```C
 #define FEATURE_DSM
@@ -144,40 +134,19 @@ gsl_feature.h defines macros that control GSL.<br>
 #define FEATURE_LSM
 #define FEATURE_DIAG
 ...
-
 ```
 
 - ***gsl_config.h***<br>
-gsl_config.h contains defines, types and callbacks.<br>
-UA shall redefine defines according to requirement specifications and implement callbacks for device specific features.<br>
+gsl_config.h is comprised of interfaces, i.e., defines, types, callbacks.<br>
+UA shall redefine and implement callbacks for device specific features.<br>
 
 ```C
+/* Exported defines ------------------------------------------------ */
+
 /* Application callback -------------------------------------------- */
-#ifdef FEATURE_BSM
 typedef tenuBsmEvent (*tpfBsmEventCallback)(tenuBsmType enuType);
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
-#endif /* FEATURE_BSM */
 
-#ifdef FEATURE_LSM
-typedef tenuLsmEvent (*tpfLsmEventCallback)(tenuBsmType enuBsmType, tenuLsmType enuType);
-EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuType);
-typedef void (*tpfLsmOutputCallback)(tenuLsmType enuType, U32 u32PwmDuty);
-EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
-typedef U32 (*tpfLsmPwmMaxCallback)(tenuLsmType enuType);
-EXTERN U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType);
-#endif /* FEATURE_LSM */
-
-#ifdef FEATURE_DIAG
-typedef U32 (*tpfDiagCntCallback)(void* pvArgs);
-EXTERN U32 u32DiagCntCallback(void* pvArgs);
-typedef U32 (*tpfDiagCntPrdCallback)(void* pvArgs);
-EXTERN U32 u32DiagCntPrdCallback(void* pvArgs);
-typedef void (*tpfDiagTraceCallback)(char* pcTrace);
-EXTERN void vidDiagTraceCallback(char* pcTrace);
-#endif /* FEATURE_DIAG */
-
-/* Exported defines ------------------------------------------------ */
-#ifdef FEATURE_BSM
 #define PSM_PRD_BSM   (U32)1    /* The period of BSM service. */
 #define BSM_CP_MC     (U32)5    /* The match count of chattering prevention for buttons. */
 #define BSM_NTF_TH    (U32)1000 /* The threshold between short and long press on buttons. */
@@ -199,18 +168,11 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 #define BSM_EVT_CB_B2 gNULL
 #define BSM_EVT_CB_B3 gNULL
 #define BSM_EVT_CB_B4 gNULL
-
-#define BSM_NTF_CB_B0 enuGslBsmNotifyCallback
-#define BSM_NTF_CB_B1 gNULL
-#define BSM_NTF_CB_B2 gNULL
-#define BSM_NTF_CB_B3 gNULL
-#define BSM_NTF_CB_B4 gNULL
-#endif /* FEATURE_BSM */
 ...
-
 ```
+
 - ***gsl_api.h***<br>
-gsl_api.h provides callback APIs shall be called by UA.<br>
+gsl_api.h provides GSL callback APIs shall be called by UA.<br>
 
 ```C
 PUBLIC void vidGslInitCallback(void* pvArgs);
@@ -219,28 +181,11 @@ PUBLIC void vidGslProcCallback(void* pvArgs);
 PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
 EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 ...
-
-```
-- ***GSL/Inc***
-- ***gsl.h***
-gsl.h provides defines and data types for GSL modules.<br>
-
-```C
-typedef enum {
-  XSM_STT_FTN_ENTRY = 0,  /**< XSM state function, entry. */
-  XSM_STT_FTN_DO,         /**< XSM state function, do. */
-  XSM_STT_FTN_EXIT,       /**< XSM state function, exit. */
-  XSM_STT_FTN_MAX,        /**< XSM maximum state function. */
-} tenuXsmSttFtn;
-...
-
 ```
 
-- ***GSL/Src***<br>
-- gsl.c<br>
-gsl.c implements GSL APIs.<br>
-UA shall call them comply with GSL specification.<br>
-
+- ***gsl.c***<br>
+gsl.c implements GSL APIs provided through gsl_api.h<br>
+UA shall call those APIs adhere to GSL specification.<br>
 </details>
 
 <div id="NOOS"></div>
@@ -249,9 +194,9 @@ UA shall call them comply with GSL specification.<br>
 
 - [Features](#Features)
 - NOOS provides OS-like features below.<br>
-PSM (Periodic Service Manager)<br>
-BPM (Background Process Manager)<br>
-Simple queue provides IPC among GCL features.<br>
+- PSM (Periodic Service Manager)<br>
+- BPM (Background Process Manager)<br>
+- Simple queue provides IPC features among GSL features.<br>
 
 - Folder structure
 
@@ -265,9 +210,10 @@ Simple queue provides IPC among GCL features.<br>
 ||gsl_queue.c|
 
 - ***NOOS/Inc***<br>
-There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
-APIs for each of features shall privide through header files below.<br>
-- ***gsl_psm.h***<br>
+- Each of files in folder provides interfaces among GSL.<br>
+- There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
+- APIs for each of features shall provide through its header files.<br>
+- ***gsl_psm.h*** provides PSM interfaces, i.e., defines, data types, APIs, among GSL.<br>
 
 ```C
 typedef enum {
@@ -276,18 +222,6 @@ typedef enum {
   PSM_TYPE_LSM,     /**< PSM type : LSM service. */
   PSM_TYPE_MAX,     /**< PSM type maximum. */
 } tenuPsmType;
-
-typedef struct {
-  const CH* pcSrvName;  /**< PSM service name.  */
-  gBOOL bIsRegistered;  /**< PSM is registered or not.  */
-  U64   u64TusElapsed;  /**< PSM elapsed time.  */
-} tstrPsmSrvDiag;
-
-typedef struct {
-  const CH* pcName;                     /**< PSM name. */
-  U64   u64TusElapsed;                  /**< PSM elapsed time.  */
-  tstrPsmSrvDiag strDiag[PSM_TYPE_MAX]; /**< PSM diagnostic information. */
-} tstrPsmDiag;
 
 typedef void (*tpfPsmInit)(void* pvArgs);
 typedef void (*tpfPsmSrvc)(void* pvArgs);
@@ -300,184 +234,121 @@ typedef struct {
 /* Exported functions prototypes ----------------------------------- */
 PUBLIC void vidPsmInit(void* pvArgs);
 PUBLIC void vidPsmSrvc(void* pvArgs);
-PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
 ...
-
 ```
 
-- ***gsl_bpm.h***<br>
+- ***gsl_bpm.h*** provides BPM interfaces, i.e., APIs, among GSL.<br>
 
 ```C
 PUBLIC void vidBpmInit(void* pvArgs);
 PUBLIC void vidBpmProc(void* pvArgs);
 ...
-
 ```
 
-- ***gsl_queue.h***<br>
+- ***gsl_queue.h*** provides simple queue interfaces, i.e., defines, data types, APIs, among GSL.<br>
 
 ```C
-#define GSL_QUE_LEN       10
-#define GSL_QUE_TRACE_LEN 72
+/* Exported defines ------------------------------------------------ */
+#define QUE_ITM_MAX     20
+#define QUE_TRACE_LEN   72
 
 /* Exported types -------------------------------------------------- */
 typedef enum {
-  GSL_QUE_TRACE = 0,
-  GSL_QUE_DIAG,
-  GSL_QUE_MAX,
-} tenuGslQueType;
+  QUE_TRACE = 0,
+  QUE_DIAG_KEEP_ALIVE,
+  QUE_MAX,
+} tenuQueType;
 
 /* Exported functions ---------------------------------------------- */
-PUBLIC void vidGslQueInit(void* pvArgs);
-PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
-//PRIVATE gBOOL bGslQueIsFull(tenuGslQueType enuType);
-PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
-PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
+PUBLIC void vidQueInit(void* pvArgs);
+PUBLIC gBOOL bQueIsEmpty(tenuQueType enuType);
+PUBLIC gBOOL bQueIsFull(tenuQueType enuType);
+PUBLIC void vidQueEnqueue(tenuQueType enuType, void* pvItem);
+PUBLIC void* pvQueDequeue(tenuQueType enuType);
 ...
-
 ```
-- ***NOOS/Src***<br>
-- ***gsl_psm.c***<br>
-PSM is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
-PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
-Preset services are below and might change according to the UA specification.<br>
 
-- ***gsl_bpm.c***<br>
-BPM is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
-Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
-Preset processes are below and might change according to the UA specification.<br>
+- ***NOOS/Src***<br>
+- ***gsl_psm.c*** is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
+- PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
+- Preset services are below and might change according to the UA specification.<br>
 
 ```C
-PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
-  /* pfBtmProcess        */
-  {  vidBtmProcIdle  },  /* BTM_TYPE_IDLE */
-  {  vidBtmProcDiag },   /* BTM_TYPE_DIAG */
-  {  vidBtmProcTrace },  /* BTM_TYPE_TRACE */
+/**
+ * @brief gcpstrPsmCfgTbl is a private table holding PSM services.
+ * @sa    tstrPsmCfg
+ * @sa    tenuPsmType
+ */
+PRIVATE const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
+  /* u32Period    tpfPsmInit  pfPsmService  */
+  {  PSM_PRD_DSM, vidDsmInit, vidDsmSrvc  },  /* PSM_TYPE_DSM */
+  {  PSM_PRD_BSM, vidBsmInit, vidBsmSrvc  },  /* PSM_TYPE_BSM */
+  {  PSM_PRD_LSM, vidLsmInit, vidLsmSrvc  },  /* PSM_TYPE_LSM */
 };
 ...
-
 ```
-- ***gsl_queue.c***<br>
-Queue provides generic features, i.e., enqueue, dequeue.<br>
-Enqueue is available for evert features of GSL.<br>
-Dequeue shall be processed by BTM, background task.<br>
-Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks.<br>
-Preset queues are below and might change according to the UA specification.<br>
+
+- ***gsl_bpm.c*** is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
+- Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
+- Preset processes are below and might change according to the UA specification.<br>
+
+```C
+PRIVATE void vidBpmProcIdle(void* pvArgs);
+PRIVATE void vidBpmProcDiag(void* pvArgs);
+...
+```
+- ***gsl_queue.c*** provides generic queue features, i.e., enqueue, dequeue.<br>
+- Enqueue is available for evert features of GSL.<br>
+- Dequeue shall be processed by BTM, background task.<br>
+- Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks.<br>
 
 </details>
 
-<div id="BSM"></div>
+<div id="XSM"></div>
 <details open>
-<summary><font size="5"><b>BSM</b></font></summary>
+<summary><font size="5"><b>XSM</b></font></summary>
 
 - [Features](#Features)
-- BSM provides button service management.<br>
+- Each of XSM, i.e., DSM, BSM, LSM, provides periodic service management.<br>
 - Folder structure
 
 | Path | File Name |
 |:--|:--|
-|XSM/Inc|gsl_bsm.h|
+|XSM/Inc|gsl_xsm.h|
+||gsl_bsm.h|
+||gsl_lsm.h|
+||gsl_dsm.h|
 |XSM/Src|gsl_bsm.c|
+||gsl_lsm.c|
+||gsl_dsm.c|
 
-\+ ***NOOS/Inc***<br>
-There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
-APIs for each of features shall privide through header files below.<br>
-\* ***gsl_psm.h***<br>
+- ***XSM/Inc***<br>
+There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
+- ***gsl_xsm.h*** contains 
 
-```C
-typedef enum {
-  PSM_TYPE_DSM = 0, /**< PSM type : DIAG service. */
-  PSM_TYPE_BSM,     /**< PSM type : BSM service. */
-  PSM_TYPE_LSM,     /**< PSM type : LSM service. */
-  PSM_TYPE_MAX,     /**< PSM type maximum. */
-} tenuPsmType;
+</details>
 
-typedef struct {
-  const CH* pcSrvName;  /**< PSM service name.  */
-  gBOOL bIsRegistered;  /**< PSM is registered or not.  */
-  U64   u64TusElapsed;  /**< PSM elapsed time.  */
-} tstrPsmSrvDiag;
+<div id="DIAG"></div>
+<details open>
+<summary><font size="5"><b>DIAG</b></font></summary>
 
-typedef struct {
-  const CH* pcName;                     /**< PSM name. */
-  U64   u64TusElapsed;                  /**< PSM elapsed time.  */
-  tstrPsmSrvDiag strDiag[PSM_TYPE_MAX]; /**< PSM diagnostic information. */
-} tstrPsmDiag;
+- [Features](#Features)
+- Each of XSM, i.e., DSM, BSM, LSM, provides periodic service management.<br>
+- Folder structure
 
-typedef void (*tpfPsmInit)(void* pvArgs);
-typedef void (*tpfPsmSrvc)(void* pvArgs);
-typedef struct {
-  U32         u32Period;  /**< PSM period. */
-  tpfPsmInit  pfPsmInit;  /**< PSM Initialize. */
-  tpfPsmSrvc  pfPsmSrvc;  /**< PSM service. */
-} tstrPsmCfg;
+| Path | File Name |
+|:--|:--|
+|XSM/Inc|gsl_xsm.h|
+||gsl_bsm.h|
+||gsl_lsm.h|
+||gsl_dsm.h|
+|XSM/Src|gsl_bsm.c|
+||gsl_lsm.c|
+||gsl_dsm.c|
 
-/* Exported functions prototypes ----------------------------------- */
-PUBLIC void vidPsmInit(void* pvArgs);
-PUBLIC void vidPsmSrvc(void* pvArgs);
-PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
-...
-
-```
-
-\* ***gsl_bpm.h***<br>
-
-```C
-PUBLIC void vidBpmInit(void* pvArgs);
-PUBLIC void vidBpmProc(void* pvArgs);
-...
-
-```
-
-\* ***gsl_queue.h***<br>
-
-```C
-#define GSL_QUE_LEN       10
-#define GSL_QUE_TRACE_LEN 72
-
-/* Exported types -------------------------------------------------- */
-typedef enum {
-  GSL_QUE_TRACE = 0,
-  GSL_QUE_DIAG,
-  GSL_QUE_MAX,
-} tenuGslQueType;
-
-/* Exported functions ---------------------------------------------- */
-PUBLIC void vidGslQueInit(void* pvArgs);
-PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
-//PRIVATE gBOOL bGslQueIsFull(tenuGslQueType enuType);
-PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
-PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
-...
-
-```
-\+ ***NOOS/Src***<br>
-\* ***gsl_psm.c***<br>
-PSM is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
-PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
-Preset services are below and might change according to the UA specification.<br>
-
-\* ***gsl_bpm.c***<br>
-BPM is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
-Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
-Preset processes are below and might change according to the UA specification.<br>
-
-```C
-PUBLIC const tstrBtmCfg gcpstrBtmCfgTbl[BTM_TYPE_MAX] = {
-  /* pfBtmProcess        */
-  {  vidBtmProcIdle  },  /* BTM_TYPE_IDLE */
-  {  vidBtmProcDiag },   /* BTM_TYPE_DIAG */
-  {  vidBtmProcTrace },  /* BTM_TYPE_TRACE */
-};
-...
-
-```
-\* ***gsl_queue.c***<br>
-Queue provides generic features, i.e., enqueue, dequeue.<br>
-Enqueue is available for evert features of GSL.<br>
-Dequeue shall be processed by BTM, background task.<br>
-Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks.<br>
-Preset queues are below and might change according to the UA specification.<br>
+- ***XSM/Inc***<br>
+There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
+- ***gsl_xsm.h*** contains 
 
 </details>
 

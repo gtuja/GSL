@@ -8,11 +8,9 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_psm.h"
+#include "gsl_dsm.h"
 #include "gsl_bsm.h"
 #include "gsl_lsm.h"
-#include "gsl_dsm.h"
-#include "gsl_queue.h"
-#include <stdio.h>
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
@@ -32,8 +30,8 @@ PRIVATE U32 gu32PsmClkCnt;
 PRIVATE const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
   /* u32Period    tpfPsmInit  pfPsmService  */
   {  PSM_PRD_DSM, vidDsmInit, vidDsmSrvc  },  /* PSM_TYPE_DSM */
-  {  PSM_PRD_BSM, vidBsmInit, vidBsmSrvc  },  /* PSM_TYPE_DSM */
-  {  PSM_PRD_LSM, vidLsmInit, gNULL       },  /* PSM_TYPE_BSM */
+  {  PSM_PRD_BSM, vidBsmInit, vidBsmSrvc  },  /* PSM_TYPE_BSM */
+  {  PSM_PRD_LSM, vidLsmInit, vidLsmSrvc  },  /* PSM_TYPE_LSM */
 };
 
 /**
@@ -117,6 +115,7 @@ PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs) {
  * @return  void
  */
 PUBLIC void vidDiagPsm(void* pvArgs) {
+#if 0
   CH pchTrace[GSL_QUE_TRACE_LEN];
   tstrPsmDiag* pstrPsmDiag;
   U32 i;
@@ -129,5 +128,6 @@ PUBLIC void vidDiagPsm(void* pvArgs) {
       vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
     }
   }
+#endif
 }
 

@@ -7,14 +7,9 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
-#include "gsl_feature.h"
-#include "gsl_config.h"
-#include "gsl_api.h"
-#include "gsl.h"
+#include "gsl_xsm.h"
 #include "gsl_lsm.h"
 #include "gsl_queue.h"
-#include <string.h>
 #include <stdio.h>
 
 /* External variables --------------------------------------------------------*/
@@ -138,7 +133,6 @@ PRIVATE U64 gu32LsmTusElapsed;
 PUBLIC void vidLsmInit(void* pvArgs) {
   U32 i;
 
-  memset(gpstrLsmCtrl, 0, sizeof(gpstrLsmCtrl));
   gu32LsmCnt = (U32)0;
   gu32LsmTusElapsed = 0;
 
@@ -149,6 +143,7 @@ PUBLIC void vidLsmInit(void* pvArgs) {
 }
 
 PUBLIC void vidLsmSrvc(void* pvArgs) {
+#if 0  
   tenuLsmEvent enuEvent;
   tenuLsmState enuStateNext;
   U32 i;
@@ -173,6 +168,7 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
       }
     }
   }
+#endif
 }
 
 /* Private functions ---------------------------------------------------------*/
@@ -184,7 +180,7 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
  * @return  void
  */
 PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
+  CH pchTrace[QUE_TRACE_LEN];
 
   if (enuStateNext != LSM_STT_NA) {
     /* Process the exit state function of the current state. */
@@ -201,11 +197,11 @@ PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext) {
       gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_ENTRY](enuType);
     }
 
-    snprintf(pchTrace, GSL_QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
+    snprintf(pchTrace, QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
         gcpcLsm,  \
         gcpcLsmSttNameTbl[gpstrLsmCtrl[(U32)enuType].enuSttPrev], \
         gcpcLsmSttNameTbl[gpstrLsmCtrl[(U32)enuType].enuSttCur]);
-    vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+    vidQueEnqueue(QUE_TRACE, (void*)pchTrace);
   }
 }
 

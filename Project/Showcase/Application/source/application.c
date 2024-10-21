@@ -9,8 +9,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "app_feature.h"
 #include "app_api.h"
-#include "gsl_api.h"
 #include "stm32l0xx_hal.h"
+#include "../../../GSL/Inc/gsl_api.h"
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

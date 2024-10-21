@@ -7,14 +7,8 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_def.h"
-#include "gsl_feature.h"
-#include "gsl_config.h"
 #include "gsl_bsm.h"
-#include "gsl.h"
 #include "gsl_diag.h"
-#include "gsl_queue.h"
-#include <stdio.h>
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */

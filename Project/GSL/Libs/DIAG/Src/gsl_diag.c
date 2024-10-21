@@ -7,12 +7,8 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_config.h"
+#include "gsl_diag.h"
 #include "gsl_queue.h"
-#include "gsl_psm.h"
-#include "gsl_bsm.h"
-#include "gsl_lsm.h"
-#include <stdio.h>
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
@@ -102,7 +98,7 @@ PUBLIC U64 u64DiagGetTusTotal(void *pvArgs) {
  * @return  void
  */
 PUBLIC void vidDiagKeepAlive(void* pvArgs) {
-  vidGslQueEnqueue(GSL_QUE_KEEP_ALIVE, (void*)&gu4DiagTusTotal);
+  vidQueEnqueue(QUE_DIAG_KEEP_ALIVE, (void*)&gu4DiagTusTotal);
 }
 
 /* Weak functions -------------------------------------------------- */

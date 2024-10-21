@@ -7,8 +7,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef XSM_INCLUDE_GSL_BSM_H_
-#define XSM_INCLUDE_GSL_BSM_H_
+#ifndef XSM_INC_GSL_BSM_H_
+#define XSM_INC_GSL_BSM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -42,4 +42,4 @@ PUBLIC void vidBsmInit(void* pvArgs);
 PUBLIC void vidBsmSrvc(void* pvArgs);
 PUBLIC void vidBsmDiag(void* pvArgs);
 
-#endif /* XSM_INCLUDE_GSL_BSM_H_ */
+#endif /* XSM_INC_GSL_BSM_H_ */

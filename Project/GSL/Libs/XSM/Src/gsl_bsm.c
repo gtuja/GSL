@@ -7,10 +7,8 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_config.h"
-#include "gsl.h"
+#include "gsl_xsm.h"
 #include "gsl_bsm.h"
-#include "gsl_dsm.h"
 #include "gsl_queue.h"
 #include <stdio.h>
 
@@ -205,19 +203,21 @@ PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType) {
  * @return  void
  */
 PUBLIC void vidBsmDiag(void* pvArgs) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
+#if 0
+  CH pchTrace[QUE_TRACE_LEN];
   U32 i, j;
 
   for (i=0; i<BSM_TYPE_MAX; i++) {
     if (gstrBsmDiag.strDiag[i].bIsRegistered == gTRUE) {
-      snprintf(pchTrace, GSL_QUE_TRACE_LEN, "## %s[%s] ------------------", gstrBsmDiag.pcName, gstrBsmDiag.strDiag[i].pcSrvName);
-      vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+      snprintf(pchTrace, QUE_TRACE_LEN, "## %s[%s] ------------------", gstrBsmDiag.pcName, gstrBsmDiag.strDiag[i].pcSrvName);
+      vidGslQueEnqueue(QUE_TRACE, (void*)pchTrace);
       for (j=0; j<BSM_STT_MAX; j++) {
-        snprintf(pchTrace, GSL_QUE_TRACE_LEN, "## %s[%08ld]", gstrBsmDiag.strDiag[i].pcSttName[j], gstrBsmDiag.strDiag[i].pu32SttCnt[j]);
-        vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+        snprintf(pchTrace, QUE_TRACE_LEN, "## %s[%08ld]", gstrBsmDiag.strDiag[i].pcSttName[j], gstrBsmDiag.strDiag[i].pu32SttCnt[j]);
+        vidGslQueEnqueue(QUE_TRACE, (void*)pchTrace);
       }
     }
   }
+#endif
 }
 
 /* Private functions ----------------------------------------------- */
@@ -229,7 +229,7 @@ PUBLIC void vidBsmDiag(void* pvArgs) {
  * @return  void
  */
 PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
+  CH pchTrace[QUE_TRACE_LEN];
 
   if (enuStateNext != BSM_STT_NA) {
     /* Process the exit state function of the current state. */
@@ -244,11 +244,11 @@ PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
     if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY] != gNULL) {
       gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY](enuType);
     }
-    snprintf(pchTrace, GSL_QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
+    snprintf(pchTrace, QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
         gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->pcName,  \
         gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttPrev], \
         gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttCur]);
-    vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
+    vidQueEnqueue(QUE_TRACE, (void*)pchTrace);
   }
 }
 

@@ -11,8 +11,8 @@
 #define INCLUDE_APP_API_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
 #include "stm32l0xx_hal.h"
+#include "../../../GSL/Inc/gsl_def.h"
 
 /* Exported defines ----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/

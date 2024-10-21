@@ -7,31 +7,30 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef NOOS_INCLUDE_GSL_QUEUE_H_
-#define NOOS_INCLUDE_GSL_QUEUE_H_
+#ifndef NOOS_INC_GSL_QUEUE_H_
+#define NOOS_INC_GSL_QUEUE_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
 
 /* Exported defines ------------------------------------------------ */
-#define GSL_QUE_LEN       20
-#define GSL_QUE_TRACE_LEN 72
+#define QUE_ITM_MAX     20
+#define QUE_TRACE_LEN   72
 
 /* Exported types -------------------------------------------------- */
 typedef enum {
-  GSL_QUE_TRACE = 0,
-  GSL_QUE_KEEP_ALIVE,
-  GSL_QUE_DIAG,
-  GSL_QUE_MAX,
-} tenuGslQueType;
+  QUE_TRACE = 0,
+  QUE_DIAG_KEEP_ALIVE,
+  QUE_MAX,
+} tenuQueType;
 
 /* Exported functions ---------------------------------------------- */
-PUBLIC void vidGslQueInit(void* pvArgs);
-PUBLIC gBOOL bGslQueIsEmpty(tenuGslQueType enuType);
-PUBLIC gBOOL bGslQueIsFull(tenuGslQueType enuType);
-PUBLIC void vidGslQueEnqueue(tenuGslQueType enuType, void* pvItem);
-PUBLIC void* pvGslQueDequeue(tenuGslQueType enuType);
+PUBLIC void vidQueInit(void* pvArgs);
+PUBLIC gBOOL bQueIsEmpty(tenuQueType enuType);
+PUBLIC gBOOL bQueIsFull(tenuQueType enuType);
+PUBLIC void vidQueEnqueue(tenuQueType enuType, void* pvItem);
+PUBLIC void* pvQueDequeue(tenuQueType enuType);
 
 /* Exported variables ---------------------------------------------- */
 
-#endif /* NOOS_INCLUDE_GSL_QUEUE_H_ */
+#endif /* NOOS_INC_GSL_QUEUE_H_ */

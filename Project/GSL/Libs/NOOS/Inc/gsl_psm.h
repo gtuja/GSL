@@ -7,8 +7,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef NOOS_INCLUDE_GSL_PSM_H_
-#define NOOS_INCLUDE_GSL_PSM_H_
+#ifndef NOOS_INC_GSL_PSM_H_
+#define NOOS_INC_GSL_PSM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -49,4 +49,4 @@ PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 
-#endif /* NOOS_INCLUDE_GSL_PSM_H_ */
+#endif /* NOOS_INC_GSL_PSM_H_ */

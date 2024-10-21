@@ -1,25 +1,18 @@
 /**
  * @file    gsl.c
  * @brief   This file is used to implement GSL that
- *          plays a counter role between GSL and UA. 
+ *          plays a counter role between GSL and UA.
  * @author  Gtuja
  * @date    Oct 18, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_def.h"
-#include "gsl_feature.h"
 #include "gsl_config.h"
-#include "gsl_api.h"
 #include "gsl_psm.h"
 #include "gsl_bpm.h"
-#include "gsl_bsm.h"
-#include "gsl_dsm.h"
 #include "gsl_queue.h"
 #include "gsl_diag.h"
-
-#include <string.h>
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
@@ -36,7 +29,8 @@
 PUBLIC void vidGslInitCallback(void* pvArgs) {
   vidPsmInit(gNULL);
   vidBpmInit(gNULL);
-  vidGslQueInit(gNULL);
+  vidDiagInit(gNULL);
+  vidQueInit(gNULL);
 }
 
 /**
@@ -71,4 +65,3 @@ PUBLIC void vidGslProcCallback(void* pvArgs) {
 PUBLIC void vidGslDiagElapsedCallback(void* pvArgs) {
   vidDiagTusAccumulate(gNULL);
 }
-

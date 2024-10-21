@@ -7,8 +7,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef XSM_INCLUDE_GSL_DSM_H_
-#define XSM_INCLUDE_GSL_DSM_H_
+#ifndef XSM_INC_GSL_DSM_H_
+#define XSM_INC_GSL_DSM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -25,4 +25,4 @@ PUBLIC U64  u64DsmGetTusTotal(void *pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 
-#endif /* XSM_INCLUDE_GSL_DSM_H_ */
+#endif /* XSM_INC_GSL_DSM_H_ */

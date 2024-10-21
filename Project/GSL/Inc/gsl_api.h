@@ -11,8 +11,6 @@
 #define GSL_API_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
-#include "gsl_feature.h"
 #include "gsl_config.h"
 
 /* Exported defines ----------------------------------------------------------*/

@@ -7,9 +7,9 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_def.h"
-#include "gsl_config.h"
-#include "gsl_api.h"
+#include "../../../GSL/Inc/gsl_api.h"
+#include "../../../GSL/Inc/gsl_config.h"
+#include "../../../GSL/Inc/gsl_def.h"
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/

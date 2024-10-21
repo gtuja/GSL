@@ -7,8 +7,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef DIAG_INCLUDE_GSL_DIAG_H_
-#define DIAG_INCLUDE_GSL_DIAG_H_
+#ifndef DIAG_INC_GSL_DIAG_H_
+#define DIAG_INC_GSL_DIAG_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -16,6 +16,7 @@
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
 /* Exported functions ---------------------------------------------- */
+PUBLIC void vidDiagInit(void* pvArgs);
 PUBLIC void vidDiagTusAccumulate(void* pvArgs);
 PUBLIC void vidDiagTusStart(void* pvArgs);
 PUBLIC U32  u32DiagTusElapsed(void* pvArgs);
@@ -25,4 +26,4 @@ PUBLIC void vidDiagPsm(void* pvArgs);
 PUBLIC void vidDiagBsm(void* pvArgs);
 /* Exported variables ---------------------------------------------- */
 
-#endif /* DIAG_INCLUDE_GSL_DIAG_H_ */
+#endif /* DIAG_INC_GSL_DIAG_H_ */

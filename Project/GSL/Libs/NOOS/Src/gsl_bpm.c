@@ -58,12 +58,12 @@ PRIVATE void vidBpmProcIdle(void* pvArgs) {
  */
 PRIVATE void vidBpmProcDiag(void* pvArgs) {
   
-  if (bGslQueIsEmpty(GSL_QUE_KEEP_ALIVE) != gTRUE) {
-    vidBpmProcDiagKeepAlive(*((U64*)pvGslQueDequeue(GSL_QUE_KEEP_ALIVE)));
+  if (bQueIsEmpty(QUE_DIAG_KEEP_ALIVE) != gTRUE) {
+    vidBpmProcDiagKeepAlive(*((U64*)pvQueDequeue(QUE_DIAG_KEEP_ALIVE)));
   }
   
-  if (bGslQueIsEmpty(GSL_QUE_TRACE) != gTRUE) {
-    vidDiagTraceCallback((char*)pvGslQueDequeue(GSL_QUE_TRACE));
+  if (bQueIsEmpty(QUE_TRACE) != gTRUE) {
+    vidDiagTraceCallback((char*)pvQueDequeue(QUE_TRACE));
   }
 }
 
@@ -74,7 +74,7 @@ PRIVATE void vidBpmProcDiag(void* pvArgs) {
  * @return  void
  */
 PRIVATE void vidBpmProcDiagKeepAlive(U64 u64TusElapsed) {
-  CH pchTrace[GSL_QUE_TRACE_LEN];
+  CH pchTrace[QUE_TRACE_LEN];
   U32 u32hour;
   U32 u32min;
   U32 u32sec;
@@ -87,7 +87,7 @@ PRIVATE void vidBpmProcDiagKeepAlive(U64 u64TusElapsed) {
   u32min = (U32)((U32)(u64TusElapsed / 60000000) % 60);
   u32hour = (U32)((U32)(u64TusElapsed / 3600000000) % 24);
 
-  snprintf(pchTrace, GSL_QUE_TRACE_LEN, \
+  snprintf(pchTrace, QUE_TRACE_LEN, \
           "keep alive...  %2ld:%2ld:%2ld.%3ld%3ld", \
           u32hour, u32min, u32sec, u32ms, u32us);
   vidDiagTraceCallback(pchTrace);
