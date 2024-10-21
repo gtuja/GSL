@@ -31,6 +31,8 @@
 
 - [TOC](#toc)
 
+<center>
+
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
@@ -43,6 +45,7 @@
 |LSM|LED Service Manager|
 |DSM|Diagnostic Service Manager|
 
+</center>
 <br>
 </details>
 
