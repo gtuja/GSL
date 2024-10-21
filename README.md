@@ -32,7 +32,6 @@
 - [TOC](#toc)
 
 <div align="center">
-
 | Abbrev. | Meaning |
 |:--|:--|
 |GSL|G? Static Library|
@@ -44,7 +43,6 @@
 |BSM|Button Service Manager|
 |LSM|LED Service Manager|
 |DSM|Diagnostic Service Manager|
-
 </div>
 
 <br>
