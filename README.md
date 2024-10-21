@@ -114,10 +114,9 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 |GSL/Inc|gsl.h|
 |GSL/Src|gsl.c|
 
-\+ ***include***<br>
+- ***include***<br>
 Each of files in include folder provides shared features between GSL and UA.<br>
-
-\* ***gsl_def.h***<br>
+- ***gsl_def.h***<br>
 gsl_def.h defines GSL types.<br>
 GSL is aims to be platform independent, gsl_def.h might change according to the UA environment, e.g., tool chain.<br>
 
