@@ -43,21 +43,51 @@
 - The **software block diagram** shall be below.<br>
 ![Software Block Diagram](https://github.com/gtuja/CSC_MS/blob/main/Resources/Part2/Part2_ALM_SoftwareBlockDiagram.drawio.png)<br>
 - GSL is comprised of 6 software modules, i.e., CONFIG, GSL API, GSL, NOOS, XSM, DIAG.
-- Those relationship among modules and UA are described as HLD below.
+- Those relationship among GSL modules and UA are described as HLD below.
 ![High Level Design](https://github.com/gtuja/CSC_MS/blob/main/Resources/Part2/Part2_ALM_SoftwareBlockDiagram.drawio.png)<br>
 - CONFIG shall provide interfaces, i.e., defines, data types, APIs, between GSL and UA.
-- As GSL is platform independent library, platform specific features are defined at this module.
+- As the GSL is platform independent library, platform specific features are defined at this module.
 - UA shall redefine defines and implement APIs on the HLD.
-- GSL API is comprised of APIs provided by GSL.
-- UA shall call those APIs in place on the HLD.
+- GSL API is comprised of APIs for UA.
+- UA shall call those APIs in place adhere to the HLD.
 - GSL plays counter role between UA and GSL.
-- GSL shall implement GSL API and invoke GSL modules.
-- NOOS shall provide os-like features, e.g., PSM, BTM, Queue.
-- PSM shall be responsible for periodic services, e.g., XSM, triggered by UA.
-- PSM shall also provide diagnostic feature for system feasibility, e.g., occupation time.
-- BPM shall be responsible for background processes triggered by UA.
-- Time consuming peocesses, e.g., serial communication, E2P, shall be done wirh IPC method, e.g., Queue of NOOS.
-- XSM is eXtended Service Manager for 
+- GSL shall implement GSL API and invoke APIs provided by GSL modules.
+- NOOS shall provide OS-like features, e.g., periodic service, background process, IPC, etc.
+- PSM shall be responsible for periodic services, e.g., XSM, triggered by the GSL API, vidGslSrvc.
+- PSM shall also provide diagnostic feature for system feasibility, e.g., occupation times.
+- BPM shall be responsible for background processes triggered by the GSL API, vidGslProc.
+- Time consuming peocesses, e.g., serial communication, E2P manipulation, shall be done wirh IPC method, e.g., Queue of NOOS.
+- XSM is eXtended Service Manager that is part of PSM.
+- XSM is comprised of BSM, LSM, DSM.
+- Each of modules in XSM has its own period.
+- BSM shall manage button stataes with its internal state machine.
+- BSM shall manage more than one buttons.
+- The preset maximu of buttons is 5 that can change with UA requirements.
+- Platform specific features below shall be configured by UA through the CONFIG module.
+  - The name of button, e.g., #define BSM_NAME_B[0..5] "B1_BLUE"
+  - The period of BSM, e.g., #define BSM_PRD_B[0..5] (U32)1
+  - The match counts for chattering prevention, e.g., #define BSM_MCCP_B[0..5] (U32)5
+  - The threshold of BSM event notificarion between short and long press, e.g., #define BSM_TBEN_B[0..5] (U32)1000
+  - The BSM event callback, e.g., #define BSM_EVT_CB enuGslBsmEventCallback
+- LSM shall manage LED stataes with its internal state machine.
+- LSM shall manage more than one LEDs.
+- The preset maximu of LEDs is 5 that can change with UA requirements.
+- Platform specific features below shall be configured by UA through the CONFIG module.
+  - The name of LED, e.g., #define LSM_NAME_L[0..5] "LD2_GREEN"
+  - The period of LSM, e.g., #define LSM_PRD_L[0..5] (U32)1
+  - The fade-in time out, e.g., #define LSM_FI_TMO_L[0..5] (U32)1000
+  - The fade-out time out, e.g., #define LSM_FO_TMO_L[0..5] (U32)2000
+  - The maximum PWM duty, e.g., #define LSM_PD_MAX_L[0..5] (U32)3199
+  - The minum PWM duty, e.g., #define LSM_PD_MIN[0..5] (U32)0
+  - The LSM event callback, e.g., #define LSM_EVT_CB enuGslLsmEventCallback
+  - The LSM output callback, e.g., #define LSM_OUT_CB enuGslLsmOutputCallback
+- DSM shall manage diagnostic services.
+- DSM is comprised of keep alive, etc.
+- Keep alive shall provide features below.
+  - Notify "KA" and diagnostics information to connected device every 5 seconds after power on.
+  - Notification data example
+
+
 </details>
 
 <div id="Reference"></div>
