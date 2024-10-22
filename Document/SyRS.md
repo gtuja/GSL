@@ -87,6 +87,10 @@
   - Notify "KA" and diagnostics information to connected device every 5 seconds after power on.
   - Notification data example
 
+```C
+
+...
+```
 
 </details>
 
