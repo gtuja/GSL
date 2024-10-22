@@ -38,10 +38,11 @@
 |NOOS|NO Operating System|
 |PSM|Periodic Service Manager|
 |BPM|Background Process Manager|
-|XSM|eXclusive Service Manager|
+|XSM|eXtended Service Manager|
 |BSM|Button Service Manager|
 |LSM|LED Service Manager|
 |DSM|Diagnostic Service Manager|
+|DIAG|Diagnostics|
 
 <br>
 </details>
