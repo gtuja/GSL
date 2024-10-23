@@ -55,8 +55,6 @@
 - NOOS shall provide OS-like features, e.g., periodic service, background process, IPC, etc.
 - PSM shall be responsible for periodic services, e.g., XSM, triggered by the GSL API, vidGslSrvc.
 - PSM shall also provide diagnostic feature for system feasibility, e.g., occupation times.
-- BPM shall be responsible for background processes triggered by the GSL API, vidGslProc.
-- Time consuming peocesses, e.g., serial communication, E2P manipulation, shall be done wirh IPC method, e.g., Queue of NOOS.
 - XSM is eXtended Service Manager that is part of PSM.
 - XSM is comprised of BSM, LSM, DSM.
 - Each of modules in XSM has its own period.
@@ -82,16 +80,18 @@
   - The LSM event callback, e.g., #define LSM_EVT_CB enuGslLsmEventCallback
   - The LSM output callback, e.g., #define LSM_OUT_CB enuGslLsmOutputCallback
 - DSM shall manage diagnostic services.
-- DSM is comprised of keep alive, etc.
-- Keep alive shall provide features below.
-  - Notify "KA" and diagnostics information to connected device every 5 seconds after power on.
-  - Notification data example
-
-```C
-
-...
-```
-
+- DSM is comprised of trace, keep alive, etc.
+- Trace shall enqueue data below.
+  - BSM state transition
+  - LSM state transition
+- Keep alive shall enqueue data below.
+  - Elapsed time after power on
+  - Occupation time of PSM
+- BPM shall be triggered by the GSL API, vidGslProc.
+- Time consuming peocesses, e.g., serial communication, E2P manipulation, shall be done wirh IPC method, e.g., Queue of NOOS.
+- BPM shall be responsible for background processes below.
+  - Dequeue trace data and transmit them to connected device.
+  - Dequeue keep alive data and transmit them to connected device.
 </details>
 
 <div id="Reference"></div>
