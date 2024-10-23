@@ -28,9 +28,9 @@
 
 - [TOC](#toc)
 - In this document we're gonna specify GSL requirements.
-- As the GSL is a platform independent static library, there is no application for now, SR and SyRS shall be specified as needed.
+- GSL is platform independent static library, there is no application for now, SR and SyRS shall be specified as needed.
 - GSL project shall provide more than one showcases to explain GSL feasibility and evaluate itself.
-- Evaluation report may be used as criteria for the SyRS even the SR.
+- Evaluation report may be used as criterias for the SyRS even the SR.
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
 
 </details>
@@ -43,15 +43,18 @@
 - The **software block diagram** shall be below.<br>
 ![Software Block Diagram](https://github.com/gtuja/CSC_MS/blob/main/Resources/Part2/Part2_ALM_SoftwareBlockDiagram.drawio.png)<br>
 - GSL is comprised of 6 software modules, i.e., CONFIG, GSL API, GSL, NOOS, XSM, DIAG.
-- Those relationship among GSL modules and UA are described as HLD below.
+- Those relationship among GSL modules and UA are described in HLDs below.<br>
 ![High Level Design](https://github.com/gtuja/CSC_MS/blob/main/Resources/Part2/Part2_ALM_SoftwareBlockDiagram.drawio.png)<br>
 - CONFIG shall provide interfaces, i.e., defines, data types, APIs, between GSL and UA.
-- As the GSL is platform independent library, platform specific features are defined at this module.
-- UA shall redefine defines and implement APIs on the HLD.
-- GSL API is comprised of APIs for UA.
-- UA shall call those APIs in place adhere to the HLD.
+- As the GSL is platform independent library, platform specific features are exported in this module.
+- UA shall redefine defines and implement APIs on this module.
+- GSL API is comprised of APIs triggered by UA.
+- UA shall call those APIs in place timing below.
+  - vidGslInit shall be called during UA initialization.
+  - vidGslSrvc shall be called every 1ms, e.g., TIM ISR.
+  - vidGslProc shall be called in main loop.
 - GSL plays counter role between UA and GSL.
-- GSL shall implement GSL API and invoke APIs provided by GSL modules.
+- GSL shall implement GSL API and invoke APIs provided by GSL modules, e.g., NOOS, DIAG.
 - NOOS shall provide OS-like features, e.g., periodic service, background process, IPC, etc.
 - PSM shall be responsible for periodic services, e.g., XSM, triggered by the GSL API, vidGslSrvc.
 - PSM shall also provide diagnostic feature for system feasibility, e.g., occupation times.
