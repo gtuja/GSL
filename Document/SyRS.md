@@ -49,7 +49,7 @@
 - As the GSL is platform independent library, platform specific features are exported in this module.
 - UA shall redefine defines and implement APIs on this module.
 - GSL API is comprised of APIs triggered by UA.
-- UA shall call those APIs in place timing below.
+- UA shall call those APIs in place as below.
   - vidGslInit shall be called during UA initialization.
   - vidGslSrvc shall be called every 1ms, e.g., TIM ISR.
   - vidGslProc shall be called in main loop.
@@ -95,6 +95,8 @@
 - BPM shall be responsible for background processes below.
   - Dequeue trace data and transmit them to connected device.
   - Dequeue keep alive data and transmit them to connected device.
+- DIAG is an independent module that provide diagnostic 
+
 </details>
 
 <div id="Reference"></div>
