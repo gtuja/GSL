@@ -100,6 +100,26 @@
   - Get the us unit elapsed time, e.g., u64DiagTusElapses.
   - Make up diagnostic PDU, vidDiagMakeUpPdu(tenuDiagType enuType, void*pvArgs)
 - DIAG shall provide data types below those are shared among GSL modules.
+
+```C
+typede enum {
+  DIAG_TYPE_TRACE = 0,
+  DIAG_TYPE_KEEP_ALIVE,
+  DIAG_TYPE_MAX,
+} tenuDiagType;
+
+typedef struct {
+  CH* pcTrace;
+} tstrDiagTrace;
+
+typedef struct {
+  U64 u64TusNow;
+  U64 u64TusPsmElapsed
+} tstrDiagKeepAlive;
+
+...
+```
+
   - DIAG_TYPE_KEEP_ALIVE
   - pstrQueItmKeepAlive
   - u64TusNow, u64TusPsmElapsed, 
