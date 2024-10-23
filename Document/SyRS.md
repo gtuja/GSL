@@ -95,7 +95,18 @@
 - BPM shall be responsible for background processes below.
   - Dequeue trace data and transmit them to connected device.
   - Dequeue keep alive data and transmit them to connected device.
-- DIAG is an independent module that provide diagnostic 
+- DIAG is an independent module that provides diagnostic methods below.
+  - Start us unit counter, e.g., vidDiagTusStart.
+  - Get the us unit elapsed time, e.g., u64DiagTusElapses.
+  - Make up diagnostic PDU, vidDiagMakeUpPdu(tenuDiagType enuType, void*pvArgs)
+- DIAG shall provide data types below those are shared among GSL modules.
+  - DIAG_TYPE_KEEP_ALIVE
+  - pstrQueItmKeepAlive
+  - u64TusNow, u64TusPsmElapsed, 
+  - DIAG_TYPE_TRACE
+  - pcTrace
+  
+- DIAG shall export us unit timer callback, e.g., u32GslDiagTusCntCallback, that shall be implemented by UA.
 
 </details>
 
