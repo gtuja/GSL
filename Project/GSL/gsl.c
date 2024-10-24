@@ -30,8 +30,8 @@
 PUBLIC void vidGslInitCallback(void* pvArgs) {
   vidPsmInit(gNULL);
   vidBpmInit(gNULL);
-  vidDiagInit(gNULL);
   vidQueInit(gNULL);
+  vidDiagInit(gNULL);
 }
 
 /**
