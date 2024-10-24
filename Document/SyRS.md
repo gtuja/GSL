@@ -28,7 +28,7 @@
 
 - [TOC](#toc)
 - In this document we're gonna specify GSL requirements.
-- GSL is platform independent static library, there is no application for now, SR and SyRS shall be specified as needed.
+- GSL is a platform independent static library, there is no application for now, SR and SyRS shall be specified as needed.
 - GSL project shall provide more than one showcases to explain GSL feasibility and evaluate itself.
 - Evaluation report may be used as criterias for the SyRS even the SR.
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
@@ -113,20 +113,11 @@ typedef struct {
 } tstrDiagTrace;
 
 typedef struct {
-  U64 u64TusNow;
-  U64 u64TusPsmElapsed
+  U64 u64TusTotal;
+  U64 u64TusElapsed;
 } tstrDiagKeepAlive;
-
 ...
 ```
-
-  - DIAG_TYPE_KEEP_ALIVE
-  - pstrQueItmKeepAlive
-  - u64TusNow, u64TusPsmElapsed, 
-  - DIAG_TYPE_TRACE
-  - pcTrace
-  
-- DIAG shall export us unit timer callback, e.g., u32GslDiagTusCntCallback, that shall be implemented by UA.
 
 </details>
 
