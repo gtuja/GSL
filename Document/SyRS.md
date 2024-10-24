@@ -129,7 +129,7 @@ typedef struct {
 - QUEUE is a simple IPC method among GSL modules.
 - Enqueuing shall be available every where in GSL.
 - Dequeuing shall be only available in XPM modules.
-- 
+- Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks if needed.
 
 </details>
 
