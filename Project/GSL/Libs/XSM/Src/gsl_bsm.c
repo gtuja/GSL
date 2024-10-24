@@ -18,7 +18,7 @@
 typedef struct {
   const CH*           pcName;               /**< The name of BSM service. */
   U32                 u32Period;            /**< The cycle of execution. */
-  U32                 u32CPMC;              /**< The match count of same button state for chattering prevention. */
+  U32                 u32MCCP;              /**< The match count of same button state for chattering prevention. */
   U32                 u32PressedThreshHold; /**< The threshold for fetching tenuBsmEventNotify, short or long press. */
   tpfBsmEventCallback pfBsmEventCallback;   /**< Callback for retrieving tenuBsmEvent. */
 } tstrBsmCfg;
@@ -32,7 +32,7 @@ typedef struct {
 
 typedef struct {
   const tstrBsmCfg* pcstrBsmCfg;  /**< BSM configuration. */
-  U32               u32CPMCCnt;   /**< u32CPMCCnt is used for chattering prevention within BSM state machine. */
+  U32               u32MCCPCnt;   /**< u32MCCPCnt is used for chattering prevention within BSM state machine. */
   U32               u32PressCnt;  /**< u32PressCnt is used for fetching ISB event(tenuIsbEvent) within BSM state machine. */
   tenuBsmStt        enuSttCur;    /**< The current BSM state. */
   tenuBsmStt        enuSttPrev;   /**< The previous BSM state. */
@@ -70,12 +70,12 @@ PRIVATE tstrBsmCtrl gpstrBsmCtrl[BSM_TYPE_MAX] = {0};
  * @sa    tenuBsmType
  */
 PRIVATE const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
-  /* pcName       u32Period    u32CPMC     u32PressedThreshHold  pfBsmEventCallback  */
-  {  BSM_NAME_B0, BSM_PRD_B0,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B0 },  /* BSM_TYPE_B0 */
-  {  BSM_NAME_B1, BSM_PRD_B1,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B1 },  /* BSM_TYPE_B1 */
-  {  BSM_NAME_B2, BSM_PRD_B2,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B2 },  /* BSM_TYPE_B2 */
-  {  BSM_NAME_B3, BSM_PRD_B3,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B3 },  /* BSM_TYPE_B3 */
-  {  BSM_NAME_B4, BSM_PRD_B4,  BSM_CP_MC,  BSM_NTF_TH,           BSM_EVT_CB_B4 },  /* BSM_TYPE_B4 */
+  /* pcName       u32Period    u32MCCP     u32PressedThreshHold  pfBsmEventCallback  */
+  {  BSM_NAME_B0, BSM_PRD_B0,  BSM_MCCP_B0,  BSM_THN_B0,         enuGslBsmEventCallback },  /* BSM_TYPE_B0 */
+  {  BSM_NAME_B1, BSM_PRD_B1,  BSM_MCCP_B1,  BSM_THN_B1,         enuGslBsmEventCallback },  /* BSM_TYPE_B1 */
+  {  BSM_NAME_B2, BSM_PRD_B2,  BSM_MCCP_B2,  BSM_THN_B2,         enuGslBsmEventCallback },  /* BSM_TYPE_B2 */
+  {  BSM_NAME_B3, BSM_PRD_B3,  BSM_MCCP_B3,  BSM_THN_B3,         enuGslBsmEventCallback },  /* BSM_TYPE_B3 */
+  {  BSM_NAME_B4, BSM_PRD_B4,  BSM_MCCP_B4,  BSM_THN_B4,         enuGslBsmEventCallback },  /* BSM_TYPE_B4 */
 };
 
 /** 
@@ -193,7 +193,7 @@ PUBLIC void vidBsmSrvc(void* pvArgs) {
  * @note    UA shall call this callback while extracting LSM events.
  * @return  tenuBsmNotify
  */
-PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType) {
+PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType) {
   return gpstrBsmCtrl[(U32)enuType].enuNotify;
 }
 
@@ -288,7 +288,7 @@ PRIVATE void vidBsmRlsExit(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmPshCfmEntry(tenuBsmType enuType) {
-  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32MCCPCnt = (U32)0;
 }
 
 /**
@@ -298,9 +298,9 @@ PRIVATE void vidBsmPshCfmEntry(tenuBsmType enuType) {
  */
 PRIVATE void vidBsmPshCfmDo(tenuBsmType enuType) {
   gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH_CFM]++;
-  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt++;
+  gpstrBsmCtrl[(U32)enuType].u32MCCPCnt++;
   
-  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
+  if (gpstrBsmCtrl[(U32)enuType].u32MCCPCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32MCCP)
   {
     vidBsmTransit(enuType, BSM_STT_PSH);
   }
@@ -312,7 +312,7 @@ PRIVATE void vidBsmPshCfmDo(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmPshCfmExit(tenuBsmType enuType) {
-  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32MCCPCnt = (U32)0;
 }
 
 /**
@@ -352,7 +352,7 @@ PRIVATE void vidBsmPshExit(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmRlsCfmEntry(tenuBsmType enuType) {
-  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32MCCPCnt = (U32)0;
 }
 
 /**
@@ -362,9 +362,9 @@ PRIVATE void vidBsmRlsCfmEntry(tenuBsmType enuType) {
  */
 PRIVATE void vidBsmRlsCfmDo(tenuBsmType enuType) {
   gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_RLS_CFM]++;
-  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt++;
+  gpstrBsmCtrl[(U32)enuType].u32MCCPCnt++;
 
-  if (gpstrBsmCtrl[(U32)enuType].u32CPMCCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32CPMC)
+  if (gpstrBsmCtrl[(U32)enuType].u32MCCPCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32MCCP)
   {
     vidBsmTransit(enuType, BSM_STT_RLS);
   }
@@ -376,7 +376,7 @@ PRIVATE void vidBsmRlsCfmDo(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType) {
-  gpstrBsmCtrl[(U32)enuType].u32CPMCCnt = (U32)0;
+  gpstrBsmCtrl[(U32)enuType].u32MCCPCnt = (U32)0;
 }
 
 /* Weak functions -------------------------------------------------- */
@@ -388,5 +388,5 @@ PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType) {
  * @return  tenuBsmEvent  BSM button event.
  */
 PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
-  return BSM_TYPE_B0;
+  return BSM_EVT_NA;
 }

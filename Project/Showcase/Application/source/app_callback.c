@@ -89,6 +89,19 @@ PUBLIC void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
   return;
 }
 
+PUBLIC U32 enuGslLsmPwmMinCallback(tenuLsmType enuType) {
+  U32 u32Return = (U32)0;
+
+  switch (enuType) {
+    case LSM_TYPE_L0 :
+      u32Return = (U32)0;
+      break;
+    default :
+      break;
+  }
+  return u32Return;
+}
+
 PUBLIC U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
   U32 u32Return = (U32)0;
 

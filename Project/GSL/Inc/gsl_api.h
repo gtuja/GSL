@@ -20,7 +20,7 @@ PUBLIC void vidGslInitCallback(void* pvArgs);
 PUBLIC void vidGslSrvcCallback(void* pvArgs);
 PUBLIC void vidGslProcCallback(void* pvArgs);
 PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
-EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
+PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 
 /* Exported variables ---------------------------------------------- */
 #endif /* GSL_API_H_ */

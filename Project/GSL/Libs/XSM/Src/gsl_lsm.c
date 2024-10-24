@@ -25,12 +25,15 @@ typedef enum {
 } tenuLsmState;
 
 typedef struct {
-  U32 u32Period;                            /**< The periodic cycle for fading. */
-  tenuBsmType enuBsmType;                   /**< BSM linked with LSM */
-  U32 u32FadeInTmo;                         /**< The fade in timeout. */
-  U16 u32FadeOutTmo;                        /**< The fade out timeout. */
+  const CH*           pcName;               /**< The name of LSM service. */
+  U32                 u32Period;            /**< The periodic cycle for fading. */
+  tenuBsmType         enuBsmType;           /**< BSM linked with LSM */
+  U32                 u32FadeInTmo;         /**< The fade in timeout. */
+  U16                 u32FadeOutTmo;        /**< The fade out timeout. */
   tpfLsmEventCallback pfLsmEventCallback;   /**< Callback for retrieving tenuLlmState. */
   tpfLsmOutputCallback pfLsmOutputCallback; /**< Callback for LED output. */
+  tpfLsmPwmMinCallback pfLsmPwmMinCallback; /**< Callback to get the minimum PWM duty. */
+  tpfLsmPwmMaxCallback pfLsmPwmMaxCallback; /**< Callback to get the maximum PWM duty. */
 } tstrLsmCfg;
 
 typedef void (*tpfLsmSttFtn)(tenuLsmType enuType);  /** LSM state functions */
@@ -68,16 +71,15 @@ PRIVATE void vidLsmFadeOffEntry(tenuLsmType enuType);
 PRIVATE void vidLsmFadeOffDo(tenuLsmType enuType);
 PRIVATE void vidLsmFadeOffExit(tenuLsmType enuType);
 
-
 /* Private variables ---------------------------------------------------------*/
 PRIVATE tstrLsmControl gpstrLsmCtrl[LSM_TYPE_MAX] = {0};  /** gpstrLsmCtrl is a private variable holding information for BSM. */
 PRIVATE const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
-  /* u32Period    tenuBsmType       u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback  pfLsmOutputCallback     */
-  {  LSM_PRD_L0,  LSM_BSM_TYPE_L0,  LSM_FI_TMO_L0,    LSM_FO_TMO_L0,    LSM_EVT_CB_B0,      LSM_OUT_CB_B0 },  /* LSM_TYPE_LD2_GREEN */
-  {  LSM_PRD_L1,  LSM_BSM_TYPE_L1,  LSM_FI_TMO_L1,    LSM_FO_TMO_L1,    LSM_EVT_CB_B1,      LSM_OUT_CB_B1 },  /* LSM_TYPE_LD2_GREEN */
-  {  LSM_PRD_L2,  LSM_BSM_TYPE_L2,  LSM_FI_TMO_L2,    LSM_FO_TMO_L2,    LSM_EVT_CB_B2,      LSM_OUT_CB_B2 },  /* LSM_TYPE_LD2_GREEN */
-  {  LSM_PRD_L3,  LSM_BSM_TYPE_L3,  LSM_FI_TMO_L3,    LSM_FO_TMO_L3,    LSM_EVT_CB_B3,      LSM_OUT_CB_B3 },  /* LSM_TYPE_LD2_GREEN */
-  {  LSM_PRD_L4,  LSM_BSM_TYPE_L4,  LSM_FI_TMO_L4,    LSM_FO_TMO_L4,    LSM_EVT_CB_B4,      LSM_OUT_CB_B4 },  /* LSM_TYPE_LD2_GREEN */
+  /* pcName       u32Period    tenuBsmType       u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback       tpfLsmPwmMinCallback      tpfLsmPwmMaxCallback    */
+  {  LSM_NAME_L0, LSM_PRD_L0,  LSM_BSM_TYPE_L0,  LSM_FI_TMO_L0,    LSM_FO_TMO_L0,    enuGslLsmEventCallback, vidGslLsmOutputCallback,  enuGslLsmPwmMinCallback,  enuGslLsmPwmMaxCallback },  /* LSM_TYPE_LD2_GREEN */
+  {  LSM_NAME_L1, LSM_PRD_L1,  LSM_BSM_TYPE_L1,  LSM_FI_TMO_L1,    LSM_FO_TMO_L1,    enuGslLsmEventCallback, vidGslLsmOutputCallback,  enuGslLsmPwmMinCallback,  enuGslLsmPwmMaxCallback },  /* Dummy */
+  {  LSM_NAME_L2, LSM_PRD_L2,  LSM_BSM_TYPE_L2,  LSM_FI_TMO_L2,    LSM_FO_TMO_L2,    enuGslLsmEventCallback, vidGslLsmOutputCallback,  enuGslLsmPwmMinCallback,  enuGslLsmPwmMaxCallback },  /* Dummy */
+  {  LSM_NAME_L3, LSM_PRD_L3,  LSM_BSM_TYPE_L3,  LSM_FI_TMO_L3,    LSM_FO_TMO_L3,    enuGslLsmEventCallback, vidGslLsmOutputCallback,  enuGslLsmPwmMinCallback,  enuGslLsmPwmMaxCallback },  /* Dummy */
+  {  LSM_NAME_L4, LSM_PRD_L4,  LSM_BSM_TYPE_L4,  LSM_FI_TMO_L4,    LSM_FO_TMO_L4,    enuGslLsmEventCallback, vidGslLsmOutputCallback,  enuGslLsmPwmMinCallback,  enuGslLsmPwmMaxCallback },  /* Dummy */
 };
 
 /** gpfLsmSttFtnTbl is a private constant table holding LSM state functions. */
@@ -355,6 +357,17 @@ PUBLIC __attribute__((weak)) void vidGslLsmOutputCallback(tenuLsmType enuType, U
 }
 
 /**
+ * @brief   A public weak function for getting the minimum counter period for each of LEDs.
+ * @param   enuType The LSM type for each of LEDs.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  U32 The minimum counter period for each of LEDs.
+ */
+PUBLIC __attribute__((weak)) U32 enuGslLsmPwmMinCallback(tenuLsmType enuType) {
+  return (U32)0;
+}
+
+/**
  * @brief   A public weak function for getting the maximum counter period for each of LEDs.
  * @param   enuType The LSM type for each of LEDs.
  * @note    This is an weak function!
@@ -364,4 +377,3 @@ PUBLIC __attribute__((weak)) void vidGslLsmOutputCallback(tenuLsmType enuType, U
 PUBLIC __attribute__((weak)) U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
   return (U32)0;
 }
-

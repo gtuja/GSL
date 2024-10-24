@@ -11,6 +11,7 @@
 #include "gsl_config.h"
 #include "gsl_psm.h"
 #include "gsl_bpm.h"
+#include "gsl_bsm.h"
 #include "gsl_queue.h"
 #include "gsl_diag.h"
 
@@ -52,6 +53,16 @@ PUBLIC void vidGslSrvcCallback(void* pvArgs) {
  */
 PUBLIC void vidGslProcCallback(void* pvArgs) {
   vidBpmProc(gNULL);
+}
+
+/**
+ * @brief   A public function shall get the BSM notification.
+ * @param   enuType The type of BSM.
+ * @note    UA shall call this callback while extracting LSM event.
+ * @return  tenuBsmNotify The notification of BSM.
+ */
+PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType) {
+  return enuBsmNotifyCallback(enuType);
 }
 
 /**
