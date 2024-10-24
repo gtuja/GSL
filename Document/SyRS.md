@@ -28,7 +28,7 @@
 
 - [TOC](#toc)
 - In this document we're gonna specify GSL requirements.
-- GSL is a platform independent static library, there is no application for now, SR and SyRS shall be specified as needed.
+- As the GSL is a platform independent static library, there is no application for now, SR and SyRS shall be specified as needed.
 - GSL project shall provide more than one showcases to explain GSL feasibility and evaluate itself.
 - Evaluation report may be used as criterias for the SyRS even the SR.
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
@@ -42,7 +42,7 @@
 - [TOC](#toc)
 - The **software block diagram** shall be below.<br>
 ![Software Block Diagram](https://github.com/gtuja/CSC_MS/blob/main/Resources/Part2/Part2_ALM_SoftwareBlockDiagram.drawio.png)<br>
-- GSL is comprised of 7 software modules, i.e., CONFIG, GSL API, GSL, NOOS, XSM, XPM, QUEUE and DIAG.
+- As described in the software block diagram, GSL is comprised of 7 software modules, i.e., CONFIG, GSL API, GSL, NOOS, XSM, XPM, QUEUE and DIAG.
 - Those relationship among GSL modules and UA are described in HLDs below.<br>
 ![High Level Design](https://github.com/gtuja/CSC_MS/blob/main/Resources/Part2/Part2_ALM_SoftwareBlockDiagram.drawio.png)<br>
 - CONFIG shall define UA interfaces, i.e., defines, data types, APIs, those are referenced by GSL.
@@ -56,11 +56,12 @@
   - enuGslBsmNotifyCallback shall be called while extracting LSM event.
 - GSL plays counter role between UA and GSL.
 - GSL shall implement GSL API and invoke APIs provided by GSL modules, e.g., NOOS, DIAG.
-- NOOS shall provide OS-like features, e.g., periodic service, background process, IPC, etc.
-- PSM shall be responsible for periodic services, e.g., XSM, triggered by the GSL API, vidGslSrvc.
+- NOOS shall provide OS-like features, e.g., periodic service, background process.
+- NOOS is comprised of PSM and BPM.
+- PSM shall be responsible for periodic services triggered by the GSL API, vidGslSrvcCallback.
 - PSM is comprised of XSMs, i.e., BSM, LSM, DSM.
 - PSM shall also provide diagnostic feature for GSL feasibilities, e.g., occupation times.
-- XSM is eXtended Service Manager that is part of PSM.
+- XSM is eXtended Service Manager part of PSM.
 - XSM is comprised of BSM, LSM, DSM.
 - Each of modules in XSM has its own period.
 - BSM shall manage button stataes with its internal state machine.
@@ -95,7 +96,7 @@
 - BPM shall be triggered by the GSL API, vidGslProcCallback.
 - Time consuming peocesses, e.g., serial communication, E2P manipulation, shall be done in this module.
 - BPM is comprised of XPMs, i.e., IPM, DPM, EPM.
-- XPM is eXtended Process Manager those are part of BPM.
+- XPM is eXtended Process Manager part of BPM.
 - XPM is comprised of IPM, DPM, EPM.
 - IPM shall be responsible for idle processes, e.g., watch dog clear.
 - DPM shall be responsible for diagnostic processes below.
@@ -129,6 +130,7 @@ typedef struct {
 - Enqueuing shall be available every where in GSL.
 - Dequeuing shall be only available in XPM modules.
 - 
+
 </details>
 
 <div id="Reference"></div>
