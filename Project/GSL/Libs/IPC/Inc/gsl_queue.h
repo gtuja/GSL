@@ -14,8 +14,9 @@
 #include "gsl_config.h"
 
 /* Exported defines ------------------------------------------------ */
-#define QUE_ITM_MAX     20
-#define QUE_TRACE_LEN   72
+#define QUE_ITM_MAX         10
+#define QUE_TRACE_LEN       72
+#define QUE_KEEP_ALIVE_LEN  200
 
 /* Exported types -------------------------------------------------- */
 typedef enum {
@@ -25,10 +26,10 @@ typedef enum {
 } tenuQueType;
 
 /* Exported functions ---------------------------------------------- */
-PUBLIC void vidQueInit(void* pvArgs);
+PUBLIC void  vidQueInit(void* pvArgs);
 PUBLIC gBOOL bQueIsEmpty(tenuQueType enuType);
 PUBLIC gBOOL bQueIsFull(tenuQueType enuType);
-PUBLIC void vidQueEnqueue(tenuQueType enuType, void* pvItem);
+PUBLIC void  vidQueEnqueue(tenuQueType enuType, void* pvItem);
 PUBLIC void* pvQueDequeue(tenuQueType enuType);
 
 /* Exported variables ---------------------------------------------- */

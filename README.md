@@ -22,7 +22,8 @@
 
 - [TOC](#toc)
 - v0.1 2024/10/11 Seho.Seo Brand new repository..
-
+- v0.2 2024/10/24 Seho.Seo Update overall.
+  
 </details>
 
 <div id="Abbreviation"></div>
@@ -35,14 +36,18 @@
 |:--|:--|
 |GSL|G? Static Library|
 |UA|User Application|
+|DIAG|Diagnostics|
+|IPC|Inter Process Communication|
 |NOOS|NO Operating System|
-|PSM|Periodic Service Manager|
 |BPM|Background Process Manager|
+|PSM|Periodic Service Manager|
+|XPM|eXtended Process Manager|
+|DPM|Diagnostic Process Manager|
+|IPM|Idle Process Manage
 |XSM|eXtended Service Manager|
 |BSM|Button Service Manager|
-|LSM|LED Service Manager|
 |DSM|Diagnostic Service Manager|
-|DIAG|Diagnostics|
+|LSM|LED Service Manager|
 
 <br>
 </details>
@@ -65,20 +70,21 @@
 
 - [TOC](#toc)
 - Nucleo Evaluation Board<br>
-\- [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-l053r8.html)
+  - [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-l053r8.html)
+  - [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-f429zi.html)
 - PC
 - Wifi
 - [Github account](https://github.com)
 - [STM account](https://www.st.com)
 - Application<br>
 The latest version is always a good choice, but let's use CubeIDE with ***1.16.0***, which does not have any minor features.<br>
-\- [![Git](https://img.shields.io/badge/Git-brightgreen?style=flat&logo=Git&logoColor=%23F05032&labelColor=white)](https://git-scm.com/)<br>
-\- [![TortoiseGit](https://img.shields.io/badge/TortoiseGit-brightgreen?style=flat)](https://tortoisegit.org/)<br>
-\- [![Winmerge](https://img.shields.io/badge/Winmerge-brightgreen?style=flat)](https://winmerge.org/)<br>
-\- [![Stm Cube IDE](https://img.shields.io/badge/Stm-brightgreen?style=flat&logo=stmicroelectronics&logoColor=%2303234B&labelColor=white)](https://www.st.com/en/development-tools/stm32cubeide.html)　***1.16.0***<br>
-\- [![draw.io](https://img.shields.io/badge/Drawio-brightgreen?style=flat&logo=diagramsdotnet&logoColor=%23F08705&labelColor=white)](https://app.diagrams.net/)<br>
-\- [![Doxygen](https://img.shields.io/badge/Doxygen-brightgreen?style=flat)](https://www.doxygen.nl/)<br>
-\- [![Graphviz](https://img.shields.io/badge/Graphviz-brightgreen?style=flat)](https://graphviz.org/)<br>
+  [![Git](https://img.shields.io/badge/Git-brightgreen?style=flat&logo=Git&logoColor=%23F05032&labelColor=white)](https://git-scm.com/)<br>
+  [![TortoiseGit](https://img.shields.io/badge/TortoiseGit-brightgreen?style=flat)](https://tortoisegit.org/)<br>
+  [![Winmerge](https://img.shields.io/badge/Winmerge-brightgreen?style=flat)](https://winmerge.org/)<br>
+  [![Stm Cube IDE](https://img.shields.io/badge/Stm-brightgreen?style=flat&logo=stmicroelectronics&logoColor=%2303234B&labelColor=white)](https://www.st.com/en/development-tools/stm32cubeide.html)　***1.16.0***<br>
+  [![draw.io](https://img.shields.io/badge/Drawio-brightgreen?style=flat&logo=diagramsdotnet&logoColor=%23F08705&labelColor=white)](https://app.diagrams.net/)<br>
+  [![Doxygen](https://img.shields.io/badge/Doxygen-brightgreen?style=flat)](https://www.doxygen.nl/)<br>
+  [![Graphviz](https://img.shields.io/badge/Graphviz-brightgreen?style=flat)](https://graphviz.org/)<br>
 
 </details>
 
@@ -88,9 +94,11 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 
 - GSL is comprised of features below.
 - [GSL](#GSL)
-- [NOOS](#NOOS)
-- [XSM](#XSM)
 - [DIAG](#DIAG)
+- [IPC](#IPC)
+- [NOOS](#NOOS)
+- [XPM](#XPM)
+- [XSM](#XSM)
 
 </details>
 
@@ -99,24 +107,52 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 <summary><font size="5"><b>GSL</b></font></summary>
 
 - [Features](#Features)
-- GSL plays a counter role between UA and GSL.
+- GSL plays a counter role between UA and GSL modules.
 - GSL is comprised of APIs, configuration, and callbacks.
 - GSL also provide define and data types stride over GSL modules.
 - Folder structure
 
 | Path | File Name |
 |:--|:--|
-|Inc|gsl_def.h|
-||gsl_feature.h|
+|Inc|gsl_api.h|
 ||gsl_config.h|
-||gsl_api.h|
+||gsl_def.h|
+||gsl_feature.h|
 |gsl.c||
+|||
 
 - ***Inc***<br>
-Each of files in this folder provides shared interfaces between GSL and UA.<br>
+Each of files in this folder provides interfaces between GSL and UA (User Application).<br>
+
+- ***gsl_api.h***<br>
+gsl_api.h provides GSL callback APIs below shall be called by UA.<br>
+
+```C
+PUBLIC void vidGslInitCallback(void* pvArgs);
+PUBLIC void vidGslSrvcCallback(void* pvArgs);
+PUBLIC void vidGslProcCallback(void* pvArgs);
+EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
+EXTERN void vidGslDiagElapsedCallback(void* pvArgs);
+...
+```
+
+- ***gsl_config.h***<br>
+gsl_config.h is comprised of interfaces, i.e., defines, types, callbacks.<br>
+UA shall redefine and implement callbacks for device specific features.<br>
+
+```C
+#define BSM_NAME_B0   (const char*)"B1_BLUE" /**< B1_BLUE PC13 on L053R8TX. */
+#define BSM_PRD_B0    (U32)1  /**< B1_BLUE PC13 on L053R8TX. */
+#define BSM_MCCP_B0   (U32)5    /* The match count of chattering prevention for buttons. */
+#define BSM_THN_B0    (U32)1000 /* The threshold between short and long press on buttons. */
+typedef tenuBsmEvent (*tpfBsmEventCallback)(tenuBsmType enuType);
+EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
+...
+```
+
 - ***gsl_def.h***<br>
 gsl_def.h defines GSL types.<br>
-GSL is aims to be platform independent, gsl_def.h might change according to the UA environment, e.g., tool chain.<br>
+As the GSL is aims to be platform independent static library, gsl_def.h may change according to the UA environment, e.g., tool chain.<br>
 
 ```C
 #ifdef U32
@@ -137,221 +173,8 @@ gsl_feature.h is comprised of defines, i.e., macros, those specify GSL features.
 ...
 ```
 
-- ***gsl_config.h***<br>
-gsl_config.h is comprised of interfaces, i.e., defines, types, callbacks.<br>
-UA shall redefine and implement callbacks for device specific features.<br>
-
-```C
-/* Exported defines ------------------------------------------------ */
-
-/* Application callback -------------------------------------------- */
-typedef tenuBsmEvent (*tpfBsmEventCallback)(tenuBsmType enuType);
-EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
-
-#define PSM_PRD_BSM   (U32)1    /* The period of BSM service. */
-#define BSM_CP_MC     (U32)5    /* The match count of chattering prevention for buttons. */
-#define BSM_NTF_TH    (U32)1000 /* The threshold between short and long press on buttons. */
-
-#define BSM_PRD_B0    (U32)1  /**< B1_BLUE PC13 on L053R8TX. */
-#define BSM_PRD_B1    (U32)0
-#define BSM_PRD_B2    (U32)0
-#define BSM_PRD_B3    (U32)0
-#define BSM_PRD_B4    (U32)0
-
-#define BSM_NAME_B0   (const char*)"B1_BLUE" /**< B1_BLUE PC13 on L053R8TX. */
-#define BSM_NAME_B1   (const char*)""
-#define BSM_NAME_B2   (const char*)""
-#define BSM_NAME_B3   (const char*)""
-#define BSM_NAME_B4   (const char*)""
-
-#define BSM_EVT_CB_B0 enuGslBsmEventCallback
-#define BSM_EVT_CB_B1 gNULL
-#define BSM_EVT_CB_B2 gNULL
-#define BSM_EVT_CB_B3 gNULL
-#define BSM_EVT_CB_B4 gNULL
-...
-```
-
-- ***gsl_api.h***<br>
-gsl_api.h provides GSL callback APIs shall be called by UA.<br>
-
-```C
-PUBLIC void vidGslInitCallback(void* pvArgs);
-PUBLIC void vidGslSrvcCallback(void* pvArgs);
-PUBLIC void vidGslProcCallback(void* pvArgs);
-PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
-EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
-...
-```
-
 - ***gsl.c***<br>
-gsl.c implements GSL APIs provided through gsl_api.h<br>
-UA shall call those APIs adhere to GSL specification.<br>
-</details>
-
-<div id="NOOS"></div>
-<details open>
-<summary><font size="5"><b>NOOS</b></font></summary>
-
-- [Features](#Features)
-- NOOS provides OS-like features below.<br>
-- PSM (Periodic Service Manager)<br>
-- BPM (Background Process Manager)<br>
-- Simple queue provides IPC features among GSL features.<br>
-
-- Folder structure
-
-| Path | File Name |
-|:--|:--|
-|NOOS/Inc|gsl_psm.h|
-||gsl_bpm.h|
-||gsl_queue.h|
-|NOOS/Src|gsl_psm.c|
-||gsl_bpm.c|
-||gsl_queue.c|
-
-- ***NOOS/Inc***<br>
-- Each of files in folder provides interfaces among GSL.<br>
-- There are 3 preset NOOS features, i.e., PSM, BPM, and a Queue.<br>
-- APIs for each of features shall provide through its header files.<br>
-- ***gsl_psm.h*** provides PSM interfaces, i.e., defines, data types, APIs, among GSL.<br>
-
-```C
-typedef enum {
-  PSM_TYPE_DSM = 0, /**< PSM type : DIAG service. */
-  PSM_TYPE_BSM,     /**< PSM type : BSM service. */
-  PSM_TYPE_LSM,     /**< PSM type : LSM service. */
-  PSM_TYPE_MAX,     /**< PSM type maximum. */
-} tenuPsmType;
-
-typedef void (*tpfPsmInit)(void* pvArgs);
-typedef void (*tpfPsmSrvc)(void* pvArgs);
-typedef struct {
-  U32         u32Period;  /**< PSM period. */
-  tpfPsmInit  pfPsmInit;  /**< PSM Initialize. */
-  tpfPsmSrvc  pfPsmSrvc;  /**< PSM service. */
-} tstrPsmCfg;
-
-/* Exported functions prototypes ----------------------------------- */
-PUBLIC void vidPsmInit(void* pvArgs);
-PUBLIC void vidPsmSrvc(void* pvArgs);
-...
-```
-
-- ***gsl_bpm.h*** provides BPM interfaces, i.e., APIs, among GSL.<br>
-
-```C
-PUBLIC void vidBpmInit(void* pvArgs);
-PUBLIC void vidBpmProc(void* pvArgs);
-...
-```
-
-- ***gsl_queue.h*** provides simple queue interfaces, i.e., defines, data types, APIs, among GSL.<br>
-
-```C
-/* Exported defines ------------------------------------------------ */
-#define QUE_ITM_MAX     20
-#define QUE_TRACE_LEN   72
-
-/* Exported types -------------------------------------------------- */
-typedef enum {
-  QUE_TRACE = 0,
-  QUE_DIAG_KEEP_ALIVE,
-  QUE_MAX,
-} tenuQueType;
-
-/* Exported functions ---------------------------------------------- */
-PUBLIC void vidQueInit(void* pvArgs);
-PUBLIC gBOOL bQueIsEmpty(tenuQueType enuType);
-PUBLIC gBOOL bQueIsFull(tenuQueType enuType);
-PUBLIC void vidQueEnqueue(tenuQueType enuType, void* pvItem);
-PUBLIC void* pvQueDequeue(tenuQueType enuType);
-...
-```
-
-- ***NOOS/Src***<br>
-- ***gsl_psm.c*** is responsible for periodic services, e.g., DSM, BSM, LSM, and shall be invoked by GSL API, vidGslSrvc.<br>
-- PSM also provide diagnostic information for measuring occupancy time of PSM.<br>
-- Preset services are below and might change according to the UA specification.<br>
-
-```C
-/**
- * @brief gcpstrPsmCfgTbl is a private table holding PSM services.
- * @sa    tstrPsmCfg
- * @sa    tenuPsmType
- */
-PRIVATE const tstrPsmCfg gcpstrPsmCfgTbl[PSM_TYPE_MAX] = {
-  /* u32Period    tpfPsmInit  pfPsmService  */
-  {  PSM_PRD_DSM, vidDsmInit, vidDsmSrvc  },  /* PSM_TYPE_DSM */
-  {  PSM_PRD_BSM, vidBsmInit, vidBsmSrvc  },  /* PSM_TYPE_BSM */
-  {  PSM_PRD_LSM, vidLsmInit, vidLsmSrvc  },  /* PSM_TYPE_LSM */
-};
-...
-```
-
-- ***gsl_bpm.c*** is responsible for background processes and shall be invoked by GSL API, vidGslProc.<br>
-- Each of processes might have more than one queue and handle enqueued requests as a background task.<br>
-- Preset processes are below and might change according to the UA specification.<br>
-
-```C
-PRIVATE void vidBpmProcIdle(void* pvArgs);
-PRIVATE void vidBpmProcDiag(void* pvArgs);
-...
-```
-- ***gsl_queue.c*** provides generic queue features, i.e., enqueue, dequeue.<br>
-- Enqueue is available for evert features of GSL.<br>
-- Dequeue shall be processed by BTM, background task.<br>
-- Natural born simple library, there is no context switching on dequeue process, just polling in the background tasks.<br>
-
-</details>
-
-<div id="XSM"></div>
-<details open>
-<summary><font size="5"><b>XSM</b></font></summary>
-
-- [Features](#Features)
-- Each of XSM, i.e., DSM, BSM, LSM, provides periodic service management.<br>
-- Folder structure
-
-| Path | File Name |
-|:--|:--|
-|XSM/Inc|gsl_xsm.h|
-||gsl_bsm.h|
-||gsl_lsm.h|
-||gsl_dsm.h|
-|XSM/Src|gsl_bsm.c|
-||gsl_lsm.c|
-||gsl_dsm.c|
-
-- ***XSM/Inc***<br>
-There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
-- ***gsl_xsm.h*** provides shared interface between XSM features.<br> 
-
-```C
-
-...
-```
-- ***gsl_bsm.h*** provides shared interface between XSM features.<br> 
-
-```C
-
-...
-```
-- ***gsl_lsm.h*** provides shared interface between XSM features.<br> 
-
-```C
-
-...
-```
-- ***gsl_dsm.h*** provides shared interface between XSM features.<br> 
-
-```C
-
-...
-```
-- ***XSM/Src***<br>
-- ****gsl_bsm.c*** implements BSM features below.<br>
-\+ State machine for 
+gsl.c implements GSL APIs provided through gsl_api.h to UA.<br>
 
 </details>
 
@@ -360,26 +183,224 @@ There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
 <summary><font size="5"><b>DIAG</b></font></summary>
 
 - [Features](#Features)
-- Each of XSM, i.e., DSM, BSM, LSM, provides periodic service management.<br>
+- DIAG provides diagnostic method stride over GSL modules.
 - Folder structure
 
 | Path | File Name |
 |:--|:--|
-|XSM/Inc|gsl_xsm.h|
-||gsl_bsm.h|
-||gsl_lsm.h|
-||gsl_dsm.h|
-|XSM/Src|gsl_bsm.c|
-||gsl_lsm.c|
-||gsl_dsm.c|
+|Libs/DIAG/Inc|gsl_diag.h|
+|Libs/DIAG/Src|gsl_diag.c|
+|||
 
-- ***XSM/Inc***<br>
-There are 3 preset XSM features, i.e., BSM, LPM, DSM.<br>
-- ***gsl_xsm.h*** provides shared interface between XSM features.<br>
+- ***gsl_diag.h***<br>
+gsl_diag.h provides diagnostic method, e.g., vidDiagTusStart, vidDiagTrace, etc, stride over GSL.<br>
 
+```C
+PUBLIC void vidDiagInit(void* pvArgs);
+PUBLIC void vidDiagTusAccumulate(void* pvArgs);
+PUBLIC void vidDiagTusStart(void* pvArgs);
+PUBLIC U32  u32DiagTusElapsed(void* pvArgs);
+PUBLIC U64  u64DiagGetTusTotal(void *pvArgs);
+PUBLIC void vidDiagTrace(CH* pcTrace);
+PUBLIC void vidDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
+...
+```
+
+- ***gsl_diag.c***<br>
+gsl_diag.c implements DIAG interfaces and UA callbacks as week functions.<br>
+
+```C
+PUBLIC __attribute__((weak)) U32 u32DiagTusCntCallback(void* pvArgs) { return (U32)0; }
+PUBLIC __attribute__((weak)) U32 u32DiagTusCntPrdCallback(void* pvArgs) { return (U32)0; }
+PUBLIC __attribute__((weak)) void vidDiagTraceCallback(char* pcTrace) {}
+...
+```
 
 </details>
 
+<div id="IPC"></div>
+<details open>
+<summary><font size="5"><b>IPC</b></font></summary>
+
+- [Features](#Features)
+- IPC (Inter Process Communication) provides communication between ISR (Interrupt Service Routine) and Thread, i.e., background process
+- Time consuming requests, e.g., serial communication, E2P manipulation, from ISR shall be done in thread with IPC interfaces.
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|Libs/IPC/Inc|gsl_queue.h|
+|Libs/IPC/Src|gsl_queue.c|
+|||
+
+- ***gsl_queue.h***<br>
+gsl_queue.h provides simple queue APIs, e.g, vidQueEnqueue, pvQueDequeue.<br>
+
+```C
+PUBLIC void  vidQueInit(void* pvArgs);
+PUBLIC gBOOL bQueIsEmpty(tenuQueType enuType);
+PUBLIC gBOOL bQueIsFull(tenuQueType enuType);
+PUBLIC void  vidQueEnqueue(tenuQueType enuType, void* pvItem);
+PUBLIC void* pvQueDequeue(tenuQueType enuType);
+...
+```
+
+- ***gsl_queue.c***<br>
+gsl_queue.c implements simple queue features and interfaces.<br>
+
+</details>
+
+<div id="NOOS"></div>
+<details open>
+<summary><font size="5"><b>NOOS</b></font></summary>
+
+- [Features](#Features)
+- NOOS (NO Operating System) provides OS-like features, e.g., periodic service, background process.
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|Libs/NOOS/Inc|gsl_bpm.h|
+||gsl_psm.h|
+|Libs/NOOS/Src|gsl_bpm.c|
+||gsl_psm.c|
+|||
+
+- ***gsl_bpm.h***<br>
+gsl_bpm.h provides BPM (Background Process Manager) interfaces, e.g., vidBpmInit, vidBpmProc, etc.<br>
+
+```C
+PUBLIC void vidBpmInit(void* pvArgs);
+PUBLIC void vidBpmProc(void* pvArgs);
+...
+```
+
+- ***gsl_psm.h***<br>
+gsl_psm.h provides PSM (Periodic Service Manager) interfaces, e.g., vidPsmInit, vidPsmSrvc, etc..<br>
+
+```C
+PUBLIC void vidPsmInit(void* pvArgs);
+PUBLIC void vidPsmSrvc(void* pvArgs);
+...
+```
+
+- ***gsl_bpm.c***<br>
+gsl_bpm.c implements BPM features and interfaces, e.g., vidBpmInit, vidBpmProc, etc.<br>
+
+- ***gsl_psm.c***<br>
+gsl_psm.c implements PSM features and interfaces, e.g., vidPsmInit, vidPsmSrvc, etc.<br>
+
+</details>
+
+<div id="XPM"></div>
+<details open>
+<summary><font size="5"><b>XPM</b></font></summary>
+
+- [Features](#Features)
+- XPM (eXtended Process Manager) provide polling processes as part of BPM.
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|Libs/XPM/Inc|gsl_dpm.h|
+||gsl_ipm.h|
+||gsl_xpm.h|
+|Libs/XPM/Src|gsl_dpm.c|
+||gsl_ipm.c|
+||gsl_xsm.c|
+|||
+
+- ***gsl_dpm.h***<br>
+gsl_dpm.h provides DPM (Diagnostic Process Manager) interfaces, e.g., vidDpmInit, vidDpmProc, etc.<br>
+
+```C
+PUBLIC void vidDpmInit(void* pvArgs);
+PUBLIC void vidDpmProc(void* pvArgs);
+...
+```
+
+- ***gsl_ipm.h***<br>
+gsl_ipm.h provides IPM (Idle Process Manager) interfaces, e.g., vidIpmInit, vidIpmProc <br>
+
+```C
+PUBLIC void vidIpmInit(void* pvArgs);
+PUBLIC void vidIpmProc(void* pvArgs);
+...
+```
+
+- ***gsl_xpm.h***<br>
+gsl_xpm.h provides XPM shared data types among XPM modules.<br>
+
+
+- ***gsl_dpm.c***<br>
+gsl_dpm.c implements DPM features and interfaces.<br>
+
+- ***gsl_ipm.c***<br>
+gsl_ipm.c implements IPM features and interfaces.<br>
+
+</details>
+
+<div id="XSM"></div>
+<details open>
+<summary><font size="5"><b>XSM</b></font></summary>
+
+- [Features](#Features)
+- XSM (exTended Service Manager) provides button, LED, Diag services as part of PSM.<br>
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|XSM/Inc|gsl_bsm.h|
+||gsl_dsm.h|
+||gsl_lsm.h|
+||gsl_xsm.h|
+|XSM/Src|gsl_bsm.c|
+||gsl_dsm.c|
+||gsl_lsm.c|
+
+- ***gsl_bsm.h***<br>
+gsl_bsm.h provides BSM (Button Service Manager) interfaces.<br>
+gsl_bsm.h also provide callback function for button notification, i.e., short-press, long-press.<br>
+UA shall use that when extracting LED events.<br>
+
+```C
+PUBLIC void vidBsmInit(void* pvArgs);
+PUBLIC void vidBsmSrvc(void* pvArgs);
+PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType);
+...
+```
+
+- ***gsl_dsm.h***<br>
+gsl_dsm.h provides DSM (Diagnostic Service Manager) features and interfaces. <br>
+
+```C
+PUBLIC void vidDsmInit(void* pvArgs);
+PUBLIC void vidDsmSrvc(void* pvArgs);
+...
+```
+
+- ***gsl_lsm.h***<br>
+gsl_lsm.h provides LSM (LED Service Manager) interfaces.<br>
+
+```C
+PUBLIC void vidLsmInit(void* pvArgs);
+PUBLIC void vidLsmSrvc(void* pvArgs);
+...
+```
+
+- ***gsl_xsm.h***<br>
+gsl_xsm.h provides XSM shared data types among XSM modules.<br>
+
+- ***gsl_bsm.c***<br>
+gsl_bsm.c implements BSM features and interfaces with its internal state machine to control button states.<br>
+
+- ***gsl_dsm.c***<br>
+gsl_dsm.c implements DSM features and interfaces.<br>
+
+- ***gsl_lsm.c***<br>
+gsl_lsm.c implements LSM features and interfaces with its internal state machine to control LED states.<br>
+
+</details>
 
 <div id="Reference"></div>
 <details open>

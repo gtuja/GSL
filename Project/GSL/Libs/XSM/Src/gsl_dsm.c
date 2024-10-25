@@ -7,18 +7,17 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_bsm.h"
+#include "gsl_psm.h"
 #include "gsl_diag.h"
+#include "gsl_queue.h"
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
 #define DSM_PRD_KEEP_ALIVE  (U32)5000
-#define DSM_PRD_XSM_STATE   (U32)10000
 
 /* Private typedef ------------------------------------------------- */
 typedef enum {
   DSM_TYPE_KEEP_ALIVE = 0,  /**< Diagnostic service type : Keep Alive. */
-  DSM_TYPE_XSM_STT,         /**< Diagnostic service type : XSM state */
   DSM_TYPE_MAX,
 } tenuDsmType;
 
@@ -26,7 +25,6 @@ typedef void (*tpfDsmSrvc)(void* pvArgs);
 
 /* Private functions ----------------------------------------------- */
 PRIVATE void vidDsmKeepAlive(void* pvArgs);
-PRIVATE void vidDsmDiag(void* pvArgs);
 
 /* Private variables ----------------------------------------------- */
 typedef struct {
@@ -39,7 +37,6 @@ PRIVATE U32 gu32DsmCnt = (U32)0;
 PRIVATE const tstrDsmCfg gcpstrDsmCfgTbl[DSM_TYPE_MAX] = {
   /* u32Period            tpfDsmSrvc */
   {  DSM_PRD_KEEP_ALIVE,  vidDsmKeepAlive },  /* DSM_TYPE_KEEP_ALIVE */
-  {  DSM_PRD_XSM_STATE,   vidDsmDiag      },  /* DSM_TYPE_XSM_STT */
 };
 
 /* A public functions ------------------------------------------------ */
@@ -61,7 +58,6 @@ PUBLIC void vidDsmInit(void* pvArgs) {
  */
 PUBLIC void vidDsmSrvc(void* pvArgs) {
   U32 i;
-  gu32DsmCnt++;
 
   for (i=0; i<(U32)DSM_TYPE_MAX; i++) {
     if (gcpstrDsmCfgTbl[(U32)i].u32Period != (U32)0) {
@@ -72,6 +68,7 @@ PUBLIC void vidDsmSrvc(void* pvArgs) {
       }
     }
   }
+  gu32DsmCnt++;
 }
 
 /* Private functions ----------------------------------------------- */
@@ -82,17 +79,5 @@ PUBLIC void vidDsmSrvc(void* pvArgs) {
  * @return  void
  */
 PRIVATE void vidDsmKeepAlive(void* pvArgs) {
-  vidDiagKeepAlive(gNULL);
+  vidQueEnqueue(QUE_DIAG_KEEP_ALIVE, (void*)pstrPsmKeepAlive(gNULL));
 }
-
-/**
- * @brief   A private function that process DSM diagnostic service.
- * @param   void
- * @sa      vidDsmSrvc
- * @return  void
- */
-PRIVATE void vidDsmDiag(void* pvArgs) {
-  vidBsmDiag(gNULL);
-}
-
-

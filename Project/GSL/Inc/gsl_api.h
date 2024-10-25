@@ -16,11 +16,11 @@
 /* Exported defines ----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions ---------------------------------------------- */
-PUBLIC void vidGslInitCallback(void* pvArgs);
-PUBLIC void vidGslSrvcCallback(void* pvArgs);
-PUBLIC void vidGslProcCallback(void* pvArgs);
-PUBLIC void vidGslDiagElapsedCallback(void* pvArgs);
-PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
+EXTERN void vidGslInitCallback(void* pvArgs);
+EXTERN void vidGslSrvcCallback(void* pvArgs);
+EXTERN void vidGslProcCallback(void* pvArgs);
+EXTERN void vidGslDiagElapsedCallback(void* pvArgs);
+EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 
 /* Exported variables ---------------------------------------------- */
 #endif /* GSL_API_H_ */

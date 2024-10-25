@@ -8,6 +8,7 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_bpm.h"
+#include "gsl_diag.h"
 #include "gsl_queue.h"
 #include <stdio.h>
 
@@ -17,7 +18,7 @@
 /* Private function prototypes -------------------------------------- */
 PRIVATE void vidBpmProcIdle(void* pvArgs);
 PRIVATE void vidBpmProcDiag(void* pvArgs);
-PRIVATE void vidBpmProcDiagKeepAlive(U64 u64TusElapsed);
+PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
 
 /* Private variables ------------------------------------------------ */
 /* Public functions ------------------------------------------------- */
@@ -59,7 +60,7 @@ PRIVATE void vidBpmProcIdle(void* pvArgs) {
 PRIVATE void vidBpmProcDiag(void* pvArgs) {
   
   if (bQueIsEmpty(QUE_DIAG_KEEP_ALIVE) != gTRUE) {
-    vidBpmProcDiagKeepAlive(*((U64*)pvQueDequeue(QUE_DIAG_KEEP_ALIVE)));
+    vidBpmProcDiagKeepAlive((tstrDiagKeepAlive*)pvQueDequeue(QUE_DIAG_KEEP_ALIVE));
   }
   
   if (bQueIsEmpty(QUE_TRACE) != gTRUE) {
@@ -70,25 +71,39 @@ PRIVATE void vidBpmProcDiag(void* pvArgs) {
 /**
  * @brief   A private function that do keep alive diagnostic process.
  * @param   pvArgs        arguments reserved.
- * @sa      u64TusElapsed us unit elapsed time.
+ * @sa      u32TusElapsed us unit elapsed time.
  * @return  void
  */
-PRIVATE void vidBpmProcDiagKeepAlive(U64 u64TusElapsed) {
-  CH pchTrace[QUE_TRACE_LEN];
+PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive) {
+  CH pchTrace[QUE_KEEP_ALIVE_LEN];
+  
   U32 u32hour;
   U32 u32min;
   U32 u32sec;
   U32 u32ms;
   U32 u32us;
+  U32 u32hourTotal;
+  U32 u32minTotal;
+  U32 u32secTotal;
+  U32 u32msTotal;
+  U32 u32usTotal;
 
-  u32us = (U32)(u64TusElapsed % 1000);
-  u32ms = (U32)((U32)(u64TusElapsed / 1000) % 1000);
-  u32sec = (U32)((U32)(u64TusElapsed / 1000000) % 60);
-  u32min = (U32)((U32)(u64TusElapsed / 60000000) % 60);
-  u32hour = (U32)((U32)(u64TusElapsed / 3600000000) % 24);
+  u32usTotal    = (U32)(pstrKeepAlive->u32TusElapsedTotal % 1000);
+  u32msTotal    = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  /       1000) % 1000);
+  u32secTotal   = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  /    1000000) % 60);
+  u32minTotal   = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  /   60000000) % 60);
+  u32hourTotal  = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  / 3600000000) % 24);
 
-  snprintf(pchTrace, QUE_TRACE_LEN, \
-          "keep alive...  %2ld:%2ld:%2ld.%3ld%3ld", \
-          u32hour, u32min, u32sec, u32ms, u32us);
+  u32us   = (U32)(pstrKeepAlive->u32TusElapsed % 1000);
+  u32ms   = (U32)((U32)(pstrKeepAlive->u32TusElapsed /       1000) % 1000);
+  u32sec  = (U32)((U32)(pstrKeepAlive->u32TusElapsed /    1000000) % 60);
+  u32min  = (U32)((U32)(pstrKeepAlive->u32TusElapsed /   60000000) % 60);
+  u32hour = (U32)((U32)(pstrKeepAlive->u32TusElapsed / 3600000000) % 24);
+
+  snprintf(pchTrace, QUE_KEEP_ALIVE_LEN, \
+          "Keep alive... ET[%02ld:%02ld:%02ld.%03ld%03ld] PS[%02ld:%02ld:%02ld.%03ld%03ld] OTM[%02ld.%02ld%%]", \
+          u32hourTotal, u32minTotal, u32secTotal, u32msTotal, u32usTotal, \
+          u32hour, u32min, u32sec, u32ms, u32us, \
+          (pstrKeepAlive->u32TusElapsedMax / 10), (pstrKeepAlive->u32TusElapsedMax % 10));
   vidDiagTraceCallback(pchTrace);
 }

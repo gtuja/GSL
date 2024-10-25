@@ -17,7 +17,7 @@
 /* Private variables ----------------------------------------------- */
 PRIVATE U32   gu32DiagTusPast = (U32)0;
 PRIVATE gBOOL gbIsDiagTusMeas = gFALSE;
-PRIVATE U64   gu4DiagTusTotal = (U64)0;
+PRIVATE U32   gu32DiagTusTotal = (U32)0;
 PRIVATE U32   gu32DiagTusCntPrd = (U32)0;
 
 /* Public functions ------------------------------------------------ */
@@ -27,14 +27,14 @@ PRIVATE U32   gu32DiagTusCntPrd = (U32)0;
  * @param   pvArgs  arguments reserved.
  * @sa      gbIsDiagTusMeas
  * @sa      gu32DiagTusPast
- * @sa      u32DiagCntCallback
+ * @sa      u32DiagTusCntCallback
  * @return  void
  */
 PUBLIC void vidDiagInit(void* pvArgs) {
   gu32DiagTusPast = (U32)0;
   gbIsDiagTusMeas = gFALSE;
-  gu4DiagTusTotal = (U64)0;
-  gu32DiagTusCntPrd = u32DiagCntPrdCallback(gNULL);
+  gu32DiagTusTotal = (U32)0;
+  gu32DiagTusCntPrd = u32DiagTusCntPrdCallback(gNULL);
 }
 
 /**
@@ -42,11 +42,11 @@ PUBLIC void vidDiagInit(void* pvArgs) {
  * @param   pvArgs  arguments reserved.
  * @sa      gbIsDiagTusMeas
  * @sa      gu32DiagTusPast
- * @sa      u32DiagCntCallback
+ * @sa      u32DiagTusCntCallback
  * @return  void
  */
 PUBLIC void vidDiagTusStart(void* pvArgs) {
-  gu32DiagTusPast = u32DiagCntCallback(gNULL);
+  gu32DiagTusPast = u32DiagTusCntCallback(gNULL);
   gbIsDiagTusMeas = gTRUE;
 }
 
@@ -55,7 +55,7 @@ PUBLIC void vidDiagTusStart(void* pvArgs) {
  * @param   pvArgs  arguments reserved.
  * @sa      gbIsDiagTusMeas
  * @sa      gu32DiagTusPast
- * @sa      u32DiagCntCallback
+ * @sa      u32DiagTusCntCallback
  * @return  U32     us unit timer elapsed time.
  */
 PUBLIC U32 u32DiagTusElapsed(void* pvArgs) {
@@ -64,7 +64,7 @@ PUBLIC U32 u32DiagTusElapsed(void* pvArgs) {
 
   u32TusElapsed = (U32)0;
   if (gbIsDiagTusMeas == gTRUE) {
-    u32TusCur = u32DiagCntCallback(gNULL);
+    u32TusCur = u32DiagTusCntCallback(gNULL);
     if (u32TusCur >= gu32DiagTusPast) {
       u32TusElapsed = u32TusCur - gu32DiagTusPast;
     } else {
@@ -80,25 +80,34 @@ PUBLIC U32 u32DiagTusElapsed(void* pvArgs) {
  * @return  void
  */
 PUBLIC void vidDiagTusAccumulate(void *pvArgs) {
-  gu4DiagTusTotal += (U64)gu32DiagTusCntPrd;
+  gu32DiagTusTotal += (U32)gu32DiagTusCntPrd;
 }
 
 /**
  * @brief   A public function for getting us unit timer period count accumulated.
  * @param   pvArgs  arguments reserved.
- * @return  U64     us unit timer period count accumulated.
+ * @return  U32     us unit timer period count accumulated.
  */
-PUBLIC U64 u64DiagGetTusTotal(void *pvArgs) {
-  return gu4DiagTusTotal;
+PUBLIC U32 u32DiagGetTusTotal(void *pvArgs) {
+  return gu32DiagTusTotal;
 }
 
 /**
- * @brief   A public function to indicate alive with GSL features.
- * @param   pvArgs  arguments reserved.
+ * @brief   A public function to trace GSL.
+ * @param   CH* pcTrace  String to trace GSL
  * @return  void
  */
-PUBLIC void vidDiagKeepAlive(void* pvArgs) {
-  vidQueEnqueue(QUE_DIAG_KEEP_ALIVE, (void*)&gu4DiagTusTotal);
+PUBLIC void vidDiagTrace(CH* pcTrace) {
+  vidQueEnqueue(QUE_TRACE, (void*)pcTrace);
+}
+
+/**
+ * @brief   A public function to request keep alive.
+ * @param   tstrDiagKeepAlive* pstrKeepAlive  Keep alive request information.
+ * @return  void
+ */
+PUBLIC void vidDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive) {
+  /* TBD */
 }
 
 /* Weak functions -------------------------------------------------- */
@@ -109,7 +118,7 @@ PUBLIC void vidDiagKeepAlive(void* pvArgs) {
  *          UA shall override this and implement device specific features.
  * @return  U32     Count of us unit timer.
  */
-PUBLIC __attribute__((weak)) U32 u32DiagCntCallback(void* pvArgs) {
+PUBLIC __attribute__((weak)) U32 u32DiagTusCntCallback(void* pvArgs) {
   return (U32)0;
 }
 
@@ -120,7 +129,7 @@ PUBLIC __attribute__((weak)) U32 u32DiagCntCallback(void* pvArgs) {
  *          UA shall override this and implement device specific features.
  * @return  U32     Counter period of us unit timer.
  */
-PUBLIC __attribute__((weak)) U32 u32DiagCntPrdCallback(void* pvArgs) {
+PUBLIC __attribute__((weak)) U32 u32DiagTusCntPrdCallback(void* pvArgs) {
   return (U32)0;
 }
 

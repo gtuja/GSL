@@ -11,9 +11,14 @@
 #define XPM_INC_GSL_IPM_H_
 
 /* Includes -------------------------------------------------------- */
+#include "gsl_config.h"
+
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
 /* Exported functions ---------------------------------------------- */
+PUBLIC void vidIpmInit(void* pvArgs);
+PUBLIC void vidIpmProc(void* pvArgs);
+
 /* Exported variables ---------------------------------------------- */
 
 #endif /* XPM_INC_GSL_IPM_H_ */

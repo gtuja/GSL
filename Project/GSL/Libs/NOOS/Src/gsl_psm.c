@@ -11,6 +11,7 @@
 #include "gsl_dsm.h"
 #include "gsl_bsm.h"
 #include "gsl_lsm.h"
+#include "gsl_diag.h"
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
@@ -21,6 +22,11 @@
  * @brief gu32PsmClkCnt is a private variable accumulating process count.
  */
 PRIVATE U32 gu32PsmClkCnt;
+
+/**
+ * @brief gstrPsmKeepAlive is a private variable holding occupancy time of PSM.
+ */
+PRIVATE tstrDiagKeepAlive gstrPsmKeepAlive = {0};
 
 /**
  * @brief gcpstrPsmCfgTbl is a private table holding PSM services.
@@ -44,12 +50,6 @@ PRIVATE const char* gcpcPsmSrvcNameTbl[PSM_TYPE_MAX] = {
   "LSM",
 };
 
-/** 
- * @brief gpstrPsmDiag is a private table holding diagnostic information of PSM.
- * @sa    tstrPsmDiag
- */
-PRIVATE tstrPsmDiag gstrPsmDiag = {0};
-
 /**
  * @brief gcpcPsmName is the name of PSM.
  */
@@ -66,13 +66,10 @@ PUBLIC void vidPsmInit(void* pvArgs) {
   U32 i;
 
   gu32PsmClkCnt = (U32)0;
-  gstrPsmDiag.pcName = gcpcPsmName;
   for (i=0; i<(U32)PSM_TYPE_MAX; i++) {
     if (gcpstrPsmCfgTbl[i].u32Period != (U32)0) {
       if (gcpstrPsmCfgTbl[i].pfPsmInit != gNULL) {
         gcpstrPsmCfgTbl[i].pfPsmInit(gNULL);
-        gstrPsmDiag.strDiag[(U32)i].bIsRegistered = gTRUE;
-        gstrPsmDiag.strDiag[(U32)i].pcSrvName = gcpcPsmSrvcNameTbl[(U32)i];
       }
     }
   }
@@ -86,9 +83,11 @@ PUBLIC void vidPsmInit(void* pvArgs) {
  */
 PUBLIC void vidPsmSrvc(void* pvArgs) {
   U32 i;
+  U32 u32TusElapsed;
 
-  
   gu32PsmClkCnt++;
+  vidDiagTusStart(gNULL);
+
   for (i=0; i<(U32)PSM_TYPE_MAX; i++)  {
     if (gcpstrPsmCfgTbl[i].u32Period != gNULL) {
       if ((gu32PsmClkCnt % gcpstrPsmCfgTbl[i].u32Period) == (U32)0) {
@@ -98,36 +97,23 @@ PUBLIC void vidPsmSrvc(void* pvArgs) {
       }
     }
   }
+
+  gstrPsmKeepAlive.u32TusElapsedTotal = (U32)((U32)gu32PsmClkCnt * (U32)1000);
+  u32TusElapsed = u32DiagTusElapsed(gNULL);
+  
+  if (u32TusElapsed > gstrPsmKeepAlive.u32TusElapsedMax) {
+    gstrPsmKeepAlive.u32TusElapsedMax = u32TusElapsed;
+  }
+  gstrPsmKeepAlive.u32TusElapsed += u32TusElapsed;
 }
 
 /**
- * @brief   A public function getting PSM diagnostic information.
+ * @brief   A public function that returns keep alive data.
  * @param   pvArgs  arguments reserved.
- * @return  tstrPsmDiag*
- */
-PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs) {
-  return &gstrPsmDiag;
-}
-
-/**
- * @brief   A public function to trace PSM features.
- * @param   pvArgs  arguments reserved.
+ * @sa      tstrDiagKeepAlive The diagnostic information for keep alive.
  * @return  void
  */
-PUBLIC void vidDiagPsm(void* pvArgs) {
-#if 0
-  CH pchTrace[GSL_QUE_TRACE_LEN];
-  tstrPsmDiag* pstrPsmDiag;
-  U32 i;
-
-  pstrPsmDiag = pstrPsmGetDiag(gNULL);
-
-  for (i=0; i<PSM_TYPE_MAX; i++) {
-    if (pstrPsmDiag->strDiag[i].bIsRegistered == gTRUE) {
-      snprintf(pchTrace, GSL_QUE_TRACE_LEN, "%s:> [%s] ------------------", pstrPsmDiag->pcName, pstrPsmDiag->strDiag[i].pcSrvName);
-      vidGslQueEnqueue(GSL_QUE_TRACE, (void*)pchTrace);
-    }
-  }
-#endif
+PUBLIC tstrDiagKeepAlive* pstrPsmKeepAlive(void *pvArgs) {
+  return &gstrPsmKeepAlive;
 }
 

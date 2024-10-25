@@ -12,6 +12,7 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
+#include "gsl_diag.h"
 
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
@@ -25,14 +26,8 @@ typedef enum {
 typedef struct {
   const CH* pcSrvName;  /**< PSM service name.  */
   gBOOL bIsRegistered;  /**< PSM is registered or not.  */
-  U64   u64TusElapsed;  /**< PSM elapsed time.  */
+  U32   u32TusElapsed;  /**< PSM elapsed time.  */
 } tstrPsmSrvDiag;
-
-typedef struct {
-  const CH* pcName;                     /**< PSM name. */
-  U64   u64TusElapsed;                  /**< PSM elapsed time.  */
-  tstrPsmSrvDiag strDiag[PSM_TYPE_MAX]; /**< PSM diagnostic information. */
-} tstrPsmDiag;
 
 typedef void (*tpfPsmInit)(void* pvArgs);
 typedef void (*tpfPsmSrvc)(void* pvArgs);
@@ -45,7 +40,7 @@ typedef struct {
 /* Exported functions prototypes ----------------------------------- */
 PUBLIC void vidPsmInit(void* pvArgs);
 PUBLIC void vidPsmSrvc(void* pvArgs);
-PUBLIC tstrPsmDiag* pstrPsmGetDiag(void* pvArgs);
+PUBLIC tstrDiagKeepAlive* pstrPsmKeepAlive(void *pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 

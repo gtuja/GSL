@@ -17,7 +17,6 @@
 /* Exported types -------------------------------------------------- */
 /* Exported functions prototypes ----------------------------------- */
 /* Exported variables ---------------------------------------------- */
-
 PUBLIC void vidLsmInit(void* pvArgs);
 PUBLIC void vidLsmSrvc(void* pvArgs);
 

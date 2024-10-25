@@ -8,6 +8,7 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_queue.h"
+#include "gsl_diag.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -31,7 +32,7 @@ PRIVATE S32   gps32QueTail[QUE_MAX] = {0};
  * @brief gpcQueTraceBuf is a private buffer holding items of QUE_TRACE.
  */
 PRIVATE char  gpcQueTraceBuf[QUE_ITM_MAX][QUE_TRACE_LEN] = {0};
-PRIVATE U64   gu64QueKeepAliveBuf[QUE_ITM_MAX] = {0};
+PRIVATE tstrDiagKeepAlive gpstrQueKeepAliveBuf[QUE_ITM_MAX] = {0};
 
 /* Public functions ------------------------------------------------ */
 /**
@@ -86,7 +87,7 @@ PUBLIC void vidQueEnqueue(tenuQueType enuType, void* pvItem) {
       break;
     case QUE_DIAG_KEEP_ALIVE :
       if (bQueIsFull(enuType) != gTRUE) {
-        gu64QueKeepAliveBuf[gps32QueTail[(U32)enuType]] = *((U64*)pvItem);
+        memcpy(&gpstrQueKeepAliveBuf[gps32QueTail[(U32)enuType]], (tstrDiagKeepAlive*)pvItem, sizeof(tstrDiagKeepAlive));
         gps32QueTail[(U32)enuType]++;
         if (gps32QueTail[(U32)enuType] == QUE_ITM_MAX) {
           gps32QueTail[(U32)enuType] = (S32)0;
@@ -117,7 +118,7 @@ PUBLIC void* pvQueDequeue(tenuQueType enuType) {
       }
     case QUE_DIAG_KEEP_ALIVE :
       if (bQueIsEmpty(enuType) != gTRUE) {
-        pvReturn = (void*)(&gu64QueKeepAliveBuf[gps32QueHead[(U32)enuType]]);
+        pvReturn = (void*)(&gpstrQueKeepAliveBuf[gps32QueHead[(U32)enuType]]);
         gps32QueHead[(U32)enuType]++;
         if (gps32QueHead[(U32)enuType] == QUE_ITM_MAX) {
           gps32QueHead[(U32)enuType] = (S32)0;

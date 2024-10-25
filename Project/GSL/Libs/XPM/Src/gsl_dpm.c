@@ -7,6 +7,9 @@
  */
 
 /* Includes -------------------------------------------------------- */
+#include "gsl_xpm.h"
+#include "gsl_dpm.h"
+
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
 /* Private typedef ------------------------------------------------- */
@@ -14,18 +17,10 @@
 /* Private variables ----------------------------------------------- */
 
 /* Public functions ------------------------------------------------ */
+PUBLIC void vidDpmInit(void* pvArgs) {
+}
+
+PUBLIC void vidDpmProc(void* pvArgs) {
+}
+
 /* Private functions ----------------------------------------------- */
-
-/**
- * @brief   A public function that xxx.
- * @param   xxParam  A xxx parameter used for xxxx from Xxx.
- * @sa      vidXxx
- * @return  void
- */
-
-/**
- * @brief   A private function that initialize XXX.
- * @param   xxParam  A xxx parameter used for xxxx.
- * @sa      vidXxx
- * @return  void
- */

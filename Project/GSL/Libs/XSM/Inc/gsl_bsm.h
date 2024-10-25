@@ -40,7 +40,6 @@ typedef struct {
 /* Exported variables ---------------------------------------------- */
 PUBLIC void vidBsmInit(void* pvArgs);
 PUBLIC void vidBsmSrvc(void* pvArgs);
-PUBLIC void vidBsmDiag(void* pvArgs);
 PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType);
 
 #endif /* XSM_INC_GSL_BSM_H_ */

@@ -122,7 +122,7 @@ PRIVATE U32 gu32LsmCnt;
 /**
  * @brief gu32LsmTusElapsed is holding LSM elapsed time accumulated.
  */
-PRIVATE U64 gu32LsmTusElapsed;
+PRIVATE U32 gu32LsmTusElapsed;
 
 /* Public functions ----------------------------------------------------------*/
 

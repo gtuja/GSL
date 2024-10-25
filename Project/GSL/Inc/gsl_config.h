@@ -64,11 +64,8 @@ typedef enum {
 /* Application callback -------------------------------------------- */
 
 #ifdef FEATURE_DIAG
-typedef U32 (*tpfDiagCntCallback)(void* pvArgs);
-EXTERN U32 u32DiagCntCallback(void* pvArgs);
-typedef U32 (*tpfDiagCntPrdCallback)(void* pvArgs);
-EXTERN U32 u32DiagCntPrdCallback(void* pvArgs);
-typedef void (*tpfDiagTraceCallback)(char* pcTrace);
+EXTERN U32 u32DiagTusCntCallback(void* pvArgs);
+EXTERN U32 u32DiagTusCntPrdCallback(void* pvArgs);
 EXTERN void vidDiagTraceCallback(char* pcTrace);
 #endif /* FEATURE_DIAG */
 

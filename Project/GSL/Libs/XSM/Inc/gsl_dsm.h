@@ -18,10 +18,6 @@
 /* Exported functions ---------------------------------------------- */
 PUBLIC void vidDsmInit(void* pvArgs);
 PUBLIC void vidDsmSrvc(void* pvArgs);
-PUBLIC void vidDsmTusMeasStart(void *pvArgs);
-PUBLIC U32  u32DsmGetTusMeasElapsed(void *pvArgs);
-PUBLIC void vidDsmTusAccumulate(void *pvArgs);
-PUBLIC U64  u64DsmGetTusTotal(void *pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 

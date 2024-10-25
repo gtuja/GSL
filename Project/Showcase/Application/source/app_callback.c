@@ -115,11 +115,11 @@ PUBLIC U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType) {
   return u32Return;
 }
 
-PUBLIC U32 u32DiagCntCallback(void* pvArgs) {
+PUBLIC U32 u32DiagTusCntCallback(void* pvArgs) {
   return (U32)TIM22->CNT;
 }
 
-PUBLIC U32 u32DiagCntPrdCallback(void* pvArgs) {
+PUBLIC U32 u32DiagTusCntPrdCallback(void* pvArgs) {
   return (U32)TIM22->ARR;
 }
 
