@@ -45,10 +45,10 @@
 
 - [TOC](#toc)
 - The **software block diagram** shall be below.<br>
-![Software Block Diagram](https://github.com/gtuja/GSL/blob/main/GSL/Document/GSL_Diagram-SoftwareBlockDiagram.drawio.png)<br>
+![Software Block Diagram](https://github.com/gtuja/GSL/blob/main/Document/GSL_Diagram-SoftwareBlockDiagram.drawio.png)<br>
 - As described in the software block diagram, GSL is comprised of 8 software modules, i.e., CONFIG, API, GSL, NOOS, XSM, XPM, QUEUE and DIAG.
 - Those relationship, i.e., interfaces, among GSL modules and UA are described in the HLD below.<br>
-![HLD](https://github.com/gtuja/GSL/blob/main/GSL/Document/GSL_Diagram-PackageDiagram.drawio.png)<br>
+![HLD](https://github.com/gtuja/GSL/blob/main/Document/GSL_Diagram-PackageDiagram.drawio.png)<br>
 - ***CONFIG***<br> 
   The CONFIG shall define UA interfaces, i.e., defines, data types, APIs, those are referenced by GSL modules.<br>
   As the GSL is platform independent, platform specific features are exported in this module.<br>
