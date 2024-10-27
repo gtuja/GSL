@@ -1,8 +1,8 @@
 /**
  * @file    gsl_lsm.h
- * @brief   This file provides LSM interfaces. 
+ * @brief   This file provides LSM (LED Service Manager) interfaces.
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Oct 27, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -15,6 +15,15 @@
 
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
+typedef enum {
+  LSM_STT_NA = 0,   /**< LSM state, not available. */
+  LSM_STT_OFF,      /**< LSM state, LED is off. */
+  LSM_STT_FADE_IN,  /**< LSM state, LED is under fade in. */
+  LSM_STT_ON,       /**< LSM state, LED is on. */
+  LSM_STT_FADE_OUT, /**< LSM state, LED is under fade out. */
+  LSM_STT_MAX,      /**< LSM maximum state. */
+} tenuLsmState;
+
 /* Exported functions prototypes ----------------------------------- */
 /* Exported variables ---------------------------------------------- */
 PUBLIC void vidLsmInit(void* pvArgs);

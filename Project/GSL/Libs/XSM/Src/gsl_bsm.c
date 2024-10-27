@@ -41,7 +41,7 @@ typedef struct {
 } tstrBsmCtrl;
 
 /* Private function prototypes ------------------------------------- */
-PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext);
+PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext, tenuBsmEvent enuEvent);
 
 PRIVATE void vidBsmRlsEntry(tenuBsmType enuType);
 PRIVATE void vidBsmRlsDo(tenuBsmType enuType);
@@ -64,19 +64,19 @@ PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType);
  * @brief gpstrBsmCtrl is a private table holding information for BSM.
  * @sa    tenuBsmType
  */
-PRIVATE tstrBsmCtrl gpstrBsmCtrl[BSM_TYPE_MAX] = {0};
+PRIVATE tstrBsmCtrl gpstrBsmCtrl[BSM_BTN_MAX] = {0};
 
 /** 
  * @brief gcpstrBsmCfgTbl is a private constant table holding BSM features.
  * @sa    tenuBsmType
  */
 PRIVATE const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
-  /* pcName       u32Period    u32MCCP     u32PressedThreshHold  pfBsmEventCallback  */
-  {  BSM_NAME_B0, BSM_PRD_B0,  BSM_MCCP_B0,  BSM_THN_B0,         enuGslBsmEventCallback },  /* BSM_TYPE_B0 */
-  {  BSM_NAME_B1, BSM_PRD_B1,  BSM_MCCP_B1,  BSM_THN_B1,         enuGslBsmEventCallback },  /* BSM_TYPE_B1 */
-  {  BSM_NAME_B2, BSM_PRD_B2,  BSM_MCCP_B2,  BSM_THN_B2,         enuGslBsmEventCallback },  /* BSM_TYPE_B2 */
-  {  BSM_NAME_B3, BSM_PRD_B3,  BSM_MCCP_B3,  BSM_THN_B3,         enuGslBsmEventCallback },  /* BSM_TYPE_B3 */
-  {  BSM_NAME_B4, BSM_PRD_B4,  BSM_MCCP_B4,  BSM_THN_B4,         enuGslBsmEventCallback },  /* BSM_TYPE_B4 */
+  /* pcName       u32Period    u32MCCP      u32PressedThreshHold  pfBsmEventCallback  */
+  {  BSM_NAME_B0, BSM_PRD_B0,  BSM_MCCP_B0, BSM_THN_B0,           enuGslBsmEventCallback },  /* BSM_TYPE_B0 */
+  {  BSM_NAME_B1, BSM_PRD_B1,  BSM_MCCP_B1, BSM_THN_B1,           enuGslBsmEventCallback },  /* BSM_TYPE_B1 */
+  {  BSM_NAME_B2, BSM_PRD_B2,  BSM_MCCP_B2, BSM_THN_B2,           enuGslBsmEventCallback },  /* BSM_TYPE_B2 */
+  {  BSM_NAME_B3, BSM_PRD_B3,  BSM_MCCP_B3, BSM_THN_B3,           enuGslBsmEventCallback },  /* BSM_TYPE_B3 */
+  {  BSM_NAME_B4, BSM_PRD_B4,  BSM_MCCP_B4, BSM_THN_B4,           enuGslBsmEventCallback },  /* BSM_TYPE_B4 */
 };
 
 /** 
@@ -113,27 +113,6 @@ PRIVATE const tenuBsmStt gpstrBsmTransTbl[BSM_STT_MAX][BSM_EVT_MAX] = {
  */
 PRIVATE U32 gu32BsmCnt = (S32)0;
 
-/**
- * @brief gcpcBsmName is the name of BSM.
- */
-PRIVATE const char* gcpcBsmName = "BSM";
-
-/**
- * @brief gstrBsmDiag is the diagnostic information of BSM.
- */
-PRIVATE tstrBsmDiag gstrBsmDiag = {0};
-
-/**
- * @brief gcpcBsmSttNameTbl is a string table holding state names for notification.
- */
-PRIVATE const char* gcpcBsmSttNameTbl[BSM_STT_MAX] = {
-  "BSM_STT_NA",
-  "BSM_STT_RLS",
-  "BSM_STT_PSH_CFM",
-  "BSM_STT_PSH",
-  "BSM_STT_RLS_CFM",
-};
-
 /* Public functions ------------------------------------------------ */
 /**
  * @brief   A public function that initialize BSM called by ISB.
@@ -144,14 +123,9 @@ PRIVATE const char* gcpcBsmSttNameTbl[BSM_STT_MAX] = {
 PUBLIC void vidBsmInit(void* pvArgs) {
   U32 i;
 
-  gstrBsmDiag.pcName = gcpcBsmName;
-  for (i=0; i<(U32)BSM_TYPE_MAX; i++) {
+  for (i=0; i<(U32)BSM_BTN_MAX; i++) {
     gpstrBsmCtrl[i].pcstrBsmCfg = &(gcpstrBsmCfgTbl[i]);
     gpstrBsmCtrl[i].enuSttCur = BSM_STT_RLS;
-    gstrBsmDiag.strDiag[i].pcSrvName = gpstrBsmCtrl[i].pcstrBsmCfg->pcName;
-    gstrBsmDiag.strDiag[i].pcSttName = gcpcBsmSttNameTbl;
-    gstrBsmDiag.strDiag[i].bIsRegistered = (gpstrBsmCtrl[i].pcstrBsmCfg->u32Period != (U32)0) ? gTRUE : gFALSE;
-
   }
   gu32BsmCnt = (U32)0;
 }
@@ -168,7 +142,8 @@ PUBLIC void vidBsmSrvc(void* pvArgs) {
   U32 i;
   
   gu32BsmCnt++;
-  for (i=0; i<(U32)BSM_TYPE_MAX; i++) {
+  for (i=0; i<(U32)BSM_BTN_MAX; i++) {
+    gpstrBsmCtrl[(U32)i].enuNotify = BSM_NTF_NA;
     if (gpstrBsmCtrl[i].pcstrBsmCfg->u32Period != (U32)0) {
       if (gu32BsmCnt % gpstrBsmCtrl[i].pcstrBsmCfg->u32Period == (U32)0) {
         /* Get the next state with data passed and event extracted. */
@@ -177,7 +152,7 @@ PUBLIC void vidBsmSrvc(void* pvArgs) {
 
         /* Transit states if needed. */
         if (enuStateNext != BSM_STT_NA) {
-          vidBsmTransit((tenuBsmType)i, enuStateNext);
+          vidBsmTransit((tenuBsmType)i, enuStateNext, enuEvent);
         }
         /* Process the do state function. */
         if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO] != gNULL) {
@@ -203,12 +178,11 @@ PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType) {
  * @brief   A private function that transit states on BSM.
  * @param   enuType       The BSM type for each of buttons.
  * @param   enuStateNext  The next state to transit.
+ * @param   enuEvent      The event that causes state transition.
  * @param   pvArgs        Arguments shall be set if needed.
  * @return  void
  */
-PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
-  CH pcTrace[QUE_TRACE_LEN];
-
+PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext, tenuBsmEvent enuEvent) {
   if (enuStateNext != BSM_STT_NA) {
     /* Process the exit state function of the current state. */
     if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_EXIT] != gNULL) {
@@ -222,11 +196,13 @@ PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext) {
     if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY] != gNULL) {
       gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY](enuType);
     }
-    snprintf(pcTrace, QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
-        gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->pcName,  \
-        gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttPrev], \
-        gcpcBsmSttNameTbl[gpstrBsmCtrl[(U32)enuType].enuSttCur]);
-    vidDiagTrace(pcTrace);
+
+    vidDiagTraceXsmState(XSM_TYPE_BSM,
+                         gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->pcName,
+                         (U32)gpstrBsmCtrl[(U32)enuType].enuSttPrev,
+                         (U32)gpstrBsmCtrl[(U32)enuType].enuSttCur,
+                         (U32)enuEvent
+                        );
   }
 }
 
@@ -249,7 +225,6 @@ PRIVATE void vidBsmRlsEntry(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmRlsDo(tenuBsmType enuType) {
-  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_RLS]++;
 }
 
 /**
@@ -275,12 +250,11 @@ PRIVATE void vidBsmPshCfmEntry(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmPshCfmDo(tenuBsmType enuType) {
-  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH_CFM]++;
   gpstrBsmCtrl[(U32)enuType].u32MCCPCnt++;
   
   if (gpstrBsmCtrl[(U32)enuType].u32MCCPCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32MCCP)
   {
-    vidBsmTransit(enuType, BSM_STT_PSH);
+    vidBsmTransit(enuType, BSM_STT_PSH, BSM_EVT_NA);
   }
 }
 
@@ -308,7 +282,6 @@ PRIVATE void vidBsmPshEntry(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmPshDo(tenuBsmType enuType) {
-  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_PSH]++;
   gpstrBsmCtrl[(U32)enuType].u32PressCnt++;
   
   if (gpstrBsmCtrl[(U32)enuType].u32PressCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32PressedThreshHold) {
@@ -339,12 +312,11 @@ PRIVATE void vidBsmRlsCfmEntry(tenuBsmType enuType) {
  * @return  void
  */
 PRIVATE void vidBsmRlsCfmDo(tenuBsmType enuType) {
-  gstrBsmDiag.strDiag[enuType].pu32SttCnt[BSM_STT_RLS_CFM]++;
   gpstrBsmCtrl[(U32)enuType].u32MCCPCnt++;
 
   if (gpstrBsmCtrl[(U32)enuType].u32MCCPCnt >= gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->u32MCCP)
   {
-    vidBsmTransit(enuType, BSM_STT_RLS);
+    vidBsmTransit(enuType, BSM_STT_RLS, BSM_EVT_NA);
   }
 }
 

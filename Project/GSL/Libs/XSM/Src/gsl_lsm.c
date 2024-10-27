@@ -9,21 +9,13 @@
 /* Includes ------------------------------------------------------------------*/
 #include "gsl_xsm.h"
 #include "gsl_lsm.h"
+#include "gsl_diag.h"
 #include "gsl_queue.h"
 #include <stdio.h>
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
-typedef enum {
-  LSM_STT_NA = 0,   /**< LSM state, not available. */
-  LSM_STT_OFF,      /**< LSM state, LED is off. */
-  LSM_STT_FADE_IN,  /**< LSM state, LED is under fade in. */
-  LSM_STT_ON,       /**< LSM state, LED is on. */
-  LSM_STT_FADE_OUT, /**< LSM state, LED is under fade out. */
-  LSM_STT_MAX,      /**< LSM maximum state. */
-} tenuLsmState;
-
 typedef struct {
   const CH*           pcName;               /**< The name of LSM service. */
   U32                 u32Period;            /**< The periodic cycle for fading. */
@@ -53,7 +45,7 @@ typedef struct {
 } tstrLsmControl;
 
 /* Private function prototypes -----------------------------------------------*/
-PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext);
+PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext, tenuLsmEvent enuEvent);
 
 PRIVATE void vidLsmOffEntry(tenuLsmType enuType);
 PRIVATE void vidLsmOffDo(tenuLsmType enuType);
@@ -72,7 +64,7 @@ PRIVATE void vidLsmFadeOffDo(tenuLsmType enuType);
 PRIVATE void vidLsmFadeOffExit(tenuLsmType enuType);
 
 /* Private variables ---------------------------------------------------------*/
-PRIVATE tstrLsmControl gpstrLsmCtrl[LSM_TYPE_MAX] = {0};  /** gpstrLsmCtrl is a private variable holding information for BSM. */
+PRIVATE tstrLsmControl gpstrLsmCtrl[LSM_LED_MAX] = {0};  /** gpstrLsmCtrl is a private variable holding information for BSM. */
 PRIVATE const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
   /* pcName       u32Period    tenuBsmType       u32FadeInTimeOut  u32FadeOutTimeOut pfLsmEventCallback      pfLsmOutputCallback       tpfLsmPwmMinCallback      tpfLsmPwmMaxCallback    */
   {  LSM_NAME_L0, LSM_PRD_L0,  LSM_BSM_TYPE_L0,  LSM_FI_TMO_L0,    LSM_FO_TMO_L0,    enuGslLsmEventCallback, vidGslLsmOutputCallback,  enuGslLsmPwmMinCallback,  enuGslLsmPwmMaxCallback },  /* LSM_TYPE_LD2_GREEN */
@@ -95,34 +87,18 @@ PRIVATE const tpfLsmSttFtn gpfLsmSttFtnTbl[LSM_STT_MAX][XSM_STT_FTN_MAX] = {
 /** gstrXlmTransitionTbl is a private constant table holding state transition information with each event. */
 PRIVATE const tenuLsmState gpstrLsmTransTbl[LSM_STT_MAX][LSM_EVT_MAX] =
 {
-                          /* ISB_EVT_NA  ISB_EVT_SHORT      ISB_EVT_LONG  */
-  /* LSM_STT_NA */        {  LSM_STT_NA, LSM_STT_NA,        LSM_STT_NA,   },
-  /* LSM_STT_OFF */       {  LSM_STT_NA, LSM_STT_FADE_IN,   LSM_STT_ON,   },
-  /* LSM_STT_FADE_IN */   {  LSM_STT_NA, LSM_STT_NA,        LSM_STT_OFF,  },
-  /* LSM_STT_ON */        {  LSM_STT_NA, LSM_STT_FADE_OUT,  LSM_STT_OFF,  },
-  /* LSM_STT_FADE_OUT */  {  LSM_STT_NA, LSM_STT_NA,        LSM_STT_OFF,  },
+                          /* LSM_EVT_NA   LSM_EVT_ON        LSM_EVT_OFF       LSM_EVT_FRC_ON  LSM_EVT_FRC_OFF  */
+  /* LSM_STT_NA */        {  LSM_STT_NA,  LSM_STT_NA,       LSM_STT_NA,       LSM_STT_NA,     LSM_STT_NA  },
+  /* LSM_STT_OFF */       {  LSM_STT_NA,  LSM_STT_FADE_IN,  LSM_STT_NA,       LSM_STT_ON,     LSM_STT_NA  },
+  /* LSM_STT_FADE_IN */   {  LSM_STT_NA,  LSM_STT_NA,       LSM_STT_OFF,      LSM_STT_ON,     LSM_STT_OFF },
+  /* LSM_STT_ON */        {  LSM_STT_NA,  LSM_STT_NA,       LSM_STT_FADE_OUT, LSM_STT_NA,     LSM_STT_OFF },
+  /* LSM_STT_FADE_OUT */  {  LSM_STT_NA,  LSM_STT_NA,       LSM_STT_OFF,      LSM_STT_ON,     LSM_STT_OFF },
 };
-
-/** gcpcLsmSttNameTbl is a string table holding state names for notification. */
-PRIVATE const char* gcpcLsmSttNameTbl[LSM_STT_MAX] = {
-  "LSM_STT_NA",
-  "LSM_STT_OFF",
-  "LSM_STT_FADE_IN",
-  "LSM_STT_ON",
-  "LSM_STT_FADE_OUT",
-};
-
-PRIVATE const char* gcpcLsm = "LSM";
 
 /**
  * @brief gu32LsmCnt is a counter accumulated to control each of LSM periods.
  */
 PRIVATE U32 gu32LsmCnt;
-
-/**
- * @brief gu32LsmTusElapsed is holding LSM elapsed time accumulated.
- */
-PRIVATE U32 gu32LsmTusElapsed;
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -136,22 +112,19 @@ PUBLIC void vidLsmInit(void* pvArgs) {
   U32 i;
 
   gu32LsmCnt = (U32)0;
-  gu32LsmTusElapsed = 0;
-
-  for (i=0; i<(U32)LSM_TYPE_MAX; i++) {
+  for (i=0; i<(U32)LSM_LED_MAX; i++) {
     gpstrLsmCtrl[i].pcstrLsmCfg = &(gcpstrLsmCfgTbl[i]);
     gpstrLsmCtrl[i].enuSttCur = LSM_STT_OFF;
   }
 }
 
 PUBLIC void vidLsmSrvc(void* pvArgs) {
-#if 0  
   tenuLsmEvent enuEvent;
   tenuLsmState enuStateNext;
   U32 i;
   
   gu32LsmCnt++;
-  for (i=0; i<(U32)LSM_TYPE_MAX; i++) {
+  for (i=0; i<(U32)LSM_LED_MAX; i++) {
     if (gpstrLsmCtrl[i].pcstrLsmCfg->u32Period != (U32)0) {
       if (gu32LsmCnt % gpstrLsmCtrl[i].pcstrLsmCfg->u32Period == (U32)0) {
 
@@ -161,7 +134,7 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
 
         /* Transit states if needed. */
         if (enuStateNext != LSM_STT_NA) {
-          vidLsmTransit((tenuLsmType)i, enuStateNext);
+          vidLsmTransit((tenuLsmType)i, enuStateNext, enuEvent);
         }
         /* Process the do state function. */
         if (gpfLsmSttFtnTbl[(U32)(gpstrLsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO] != gNULL) {
@@ -170,7 +143,6 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
       }
     }
   }
-#endif
 }
 
 /* Private functions ---------------------------------------------------------*/
@@ -181,9 +153,7 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
  * @param   pvArgs        Arguments shall be set if needed.
  * @return  void
  */
-PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext) {
-  CH pchTrace[QUE_TRACE_LEN];
-
+PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext, tenuLsmEvent enuEvent) {
   if (enuStateNext != LSM_STT_NA) {
     /* Process the exit state function of the current state. */
     if (gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_EXIT] != gNULL) {
@@ -199,16 +169,17 @@ PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext) {
       gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_ENTRY](enuType);
     }
 
-    snprintf(pchTrace, QUE_TRACE_LEN, "%s: State changed [%s]->[%s]", \
-        gcpcLsm,  \
-        gcpcLsmSttNameTbl[gpstrLsmCtrl[(U32)enuType].enuSttPrev], \
-        gcpcLsmSttNameTbl[gpstrLsmCtrl[(U32)enuType].enuSttCur]);
-    vidQueEnqueue(QUE_TRACE, (void*)pchTrace);
+    vidDiagTraceXsmState(XSM_TYPE_LSM,
+                         gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->pcName,
+                         (U32)gpstrLsmCtrl[(U32)enuType].enuSttPrev,
+                         (U32)gpstrLsmCtrl[(U32)enuType].enuSttCur,
+                         (U32)enuEvent
+                        );
   }
 }
 
 /**
- * @brief   Private entry function that is processed when the state is transited to LSM_STT_RLS.
+ * @brief   Private entry function that is processed when the state is transit to LSM_STT_RLS.
  * @param   pvArgs  Arguments reserved.
  * @return  void
  */
@@ -233,7 +204,7 @@ PRIVATE void vidLsmOffExit(tenuLsmType enuType) {
 }
 
 /**
- * @brief   Private entry function that is processed when the state is transited to LSM_STT_FADE_IN.
+ * @brief   Private entry function that is processed when the state is transit to LSM_STT_FADE_IN.
  * @param   pvArgs  Arguments reserved.
  * @return  void
  */
@@ -254,7 +225,7 @@ PRIVATE void vidLsmFadeInDo(tenuLsmType enuType) {
   gpstrLsmCtrl[(U32)enuType].u32FadeCnt++;
   if (gpstrLsmCtrl[(U32)enuType].u32FadeCnt >= gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->u32FadeInTmo)
   {
-    vidLsmTransit(enuType, LSM_STT_ON);
+    vidLsmTransit(enuType, LSM_STT_ON, LSM_EVT_NA);
   } else {
     u16Duty = (U32)((((gpstrLsmCtrl[(U32)enuType].u32FadeDutyDiff<<10)/gpstrLsmCtrl[(U32)enuType].u32FadeCntMax)*gpstrLsmCtrl[(U32)enuType].u32FadeCnt)>>10);
     gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->pfLsmOutputCallback(enuType, u16Duty);
@@ -271,7 +242,7 @@ PRIVATE void vidLsmFadeInExit(tenuLsmType enuType) {
 }
 
 /**
- * @brief   Private entry function that is processed when the state is transited to LSM_STT_ON.
+ * @brief   Private entry function that is processed when the state is transit to LSM_STT_ON.
  * @param   pvArgs  Arguments reserved.
  * @return  void
  */
@@ -296,7 +267,7 @@ PRIVATE void vidLsmOnExit(tenuLsmType enuType) {
 }
 
 /**
- * @brief   Private entry function that is processed when the state is transited to LSM_STT_FADE_OFF.
+ * @brief   Private entry function that is processed when the state is transit to LSM_STT_FADE_OFF.
  * @param   pvArgs  Arguments reserved.
  * @return  void
  */
@@ -317,9 +288,9 @@ PRIVATE void vidLsmFadeOffDo(tenuLsmType enuType) {
   gpstrLsmCtrl[(U32)enuType].u32FadeCnt++;
   if (gpstrLsmCtrl[(U32)enuType].u32FadeCnt >= gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->u32FadeOutTmo)
   {
-    gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->pfLsmOutputCallback(enuType, 0);
+    vidLsmTransit(enuType, LSM_STT_OFF, LSM_EVT_NA);
   } else {
-    u32Duty = (U32)((((gpstrLsmCtrl[(U32)enuType].u32FadeDutyDiff<<10)/gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->u32FadeOutTmo)*gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->u32FadeOutTmo)>>10);
+    u32Duty = (U32)((((gpstrLsmCtrl[(U32)enuType].u32FadeDutyDiff<<10)/gpstrLsmCtrl[(U32)enuType].u32FadeCntMax)*gpstrLsmCtrl[(U32)enuType].u32FadeCnt)>>10);
     u32Duty = (u32Duty < (U32)31999) ? ((U32)31999 - u32Duty) : (U32)0;
     gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->pfLsmOutputCallback(enuType, u32Duty);
   }

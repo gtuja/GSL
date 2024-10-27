@@ -17,8 +17,7 @@
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
 typedef enum {
-  PSM_TYPE_DSM = 0, /**< PSM type : DIAG service. */
-  PSM_TYPE_BSM,     /**< PSM type : BSM service. */
+  PSM_TYPE_BSM = 0, /**< PSM type : BSM service. */
   PSM_TYPE_LSM,     /**< PSM type : LSM service. */
   PSM_TYPE_MAX,     /**< PSM type maximum. */
 } tenuPsmType;
@@ -40,7 +39,6 @@ typedef struct {
 /* Exported functions prototypes ----------------------------------- */
 PUBLIC void vidPsmInit(void* pvArgs);
 PUBLIC void vidPsmSrvc(void* pvArgs);
-PUBLIC tstrDiagKeepAlive* pstrPsmKeepAlive(void *pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 

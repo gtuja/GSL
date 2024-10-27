@@ -7,20 +7,76 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_bpm.h"
+#include "gsl_xsm.h"
+#include "gsl_bsm.h"
+#include "gsl_lsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
+#include "gsl_bpm.h"
 #include <stdio.h>
 
 /* External variables ----------------------------------------------- */
 /* Private define --------------------------------------------------- */
+#define BPM_XSM_NAME(index)      gpcXsmNameTbl[index]
+#define BPM_BSM_STT_NAME(index)  gpcBsmSttNameTbl[index]
+#define BPM_BSM_EVT_NAME(index)  gpcBsmEvtNameTbl[index]
+#define BPM_BSM_NTF_NAME(index)  gpcBsmNtfNameTbl[index]
+
+#define BPM_LSM_STT_NAME(index)  gpcLsmSttNameTbl[index]
+#define BPM_LSM_EVT_NAME(index)  gpcLsmEvtNameTbl[index]
+
 /* Private typedef -------------------------------------------------- */
 /* Private function prototypes -------------------------------------- */
 PRIVATE void vidBpmProcIdle(void* pvArgs);
 PRIVATE void vidBpmProcDiag(void* pvArgs);
+PRIVATE void vidBpmProcDiagTrace(CH* pcTrace);
+PRIVATE void vidBpmProcDiagTraceXsmState(tstrDiagTraceXsmState* tstrDiagTraceXsmState);
 PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
 
 /* Private variables ------------------------------------------------ */
+PRIVATE const char* gpcXsmNameTbl[BSM_STT_MAX] = {
+  "BSM",      /**< XSM type, BSM. */
+  "LSM",      /**< XSM type, LSM. */
+};
+
+PRIVATE const char* gpcBsmSttNameTbl[BSM_STT_MAX] = {
+  "NA",       /**< BSM state, not available. */
+  "RLS",      /**< BSM state, button is released. */
+  "PSH_CFM",  /**< BSM state, button is pushed, but under confirmation. */
+  "PSH",      /**< BSM state, button is pushed. */
+  "RLS_CFM",  /**< BSM state, button is pushed, but under confirmation. */
+};
+
+PRIVATE const char* gpcBsmEvtNameTbl[BSM_EVT_MAX] = {
+  "SPONT",    /**< BSM spontaneous event. */
+  "RLS",      /**< BSM event that button is released. */
+  "PSH",      /**< BSM event that button is pushed. */
+};
+
+#if 0 /* TBD */
+PRIVATE const char* gpcBsmNtfNameTbl[BSM_NTF_MAX] = {
+  "BSM_NTF_NA",       /**< BSM event notified not available. */
+  "BSM_NTF_SHORT",    /**< BSM event notified that is short pressed. */
+  "BSM_NTF_LONG",     /**< BSM event notified that is long pressed. */
+};
+#endif
+
+PRIVATE const char* gpcLsmSttNameTbl[LSM_STT_MAX] = {
+  "NA",       /**< LSM state, not available. */
+  "OFF",      /**< LSM state, LED is off. */
+  "FADE_IN",  /**< LSM state, LED is under fade in. */
+  "ON",       /**< LSM state, LED is on. */
+  "FADE_OUT", /**< LSM state, LED is under fade out. */
+};
+
+PRIVATE const char* gpcLsmEvtNameTbl[LSM_EVT_MAX] = {
+  "SPONT",    /**< LSM spontaneous event. */
+  "ON",       /**< LSM event that requests ON. */
+  "OFF",      /**< LSM event that requests OFF. */
+  "FRC_ON",   /**< LSM event that requests FORCE ON. */
+  "FRC_OFF",  /**< LSM event that requests FORCE OFF. */
+};
+
 /* Public functions ------------------------------------------------- */
 /**
  * @brief   A public function that initialize BPM.
@@ -58,52 +114,84 @@ PRIVATE void vidBpmProcIdle(void* pvArgs) {
  * @return  void
  */
 PRIVATE void vidBpmProcDiag(void* pvArgs) {
-  
+  if (bQueIsEmpty(QUE_DIAG_TRACE) != gTRUE) {
+    vidBpmProcDiagTrace((char*)pvQueDequeue(QUE_DIAG_TRACE));
+  }
+
+  if (bQueIsEmpty(QUE_DIAG_TRACE_XSM_STATE) != gTRUE) {
+    vidBpmProcDiagTraceXsmState((tstrDiagTraceXsmState*)pvQueDequeue(QUE_DIAG_TRACE_XSM_STATE));
+  }
+
   if (bQueIsEmpty(QUE_DIAG_KEEP_ALIVE) != gTRUE) {
     vidBpmProcDiagKeepAlive((tstrDiagKeepAlive*)pvQueDequeue(QUE_DIAG_KEEP_ALIVE));
   }
+}
+
+/**
+ * @brief   A private function that do trace GSL.
+ * @param   pcTrace The string for trace GSL
+ * @return  void
+ */
+PRIVATE void vidBpmProcDiagTrace(CH* pcTrace) {
+  vidDiagTraceCallback(pcTrace);
+}
+
+/**
+ * @brief   A private function that do trace XSM state transition.
+ * @param   tstrDiagTraceXsmState The dequeued state transition information of the XSM.
+ * @return  void
+ */
+PRIVATE void vidBpmProcDiagTraceXsmState(tstrDiagTraceXsmState* pstrDiagTraceXsmState) {
+  CH pcTrace[QUE_DIAG_TRACE_LEN];
   
-  if (bQueIsEmpty(QUE_TRACE) != gTRUE) {
-    vidDiagTraceCallback((char*)pvQueDequeue(QUE_TRACE));
+  switch (pstrDiagTraceXsmState->enuType) {
+  case XSM_TYPE_BSM :
+    snprintf(pcTrace, QUE_DIAG_TRACE_LEN, \
+            "[%s](%s)[%s]->[%s] by [%s]", \
+            gpcXsmNameTbl[(U32)pstrDiagTraceXsmState->enuType], \
+            pstrDiagTraceXsmState->pcName, \
+            gpcBsmSttNameTbl[pstrDiagTraceXsmState->u32SttPrevious], \
+            gpcBsmSttNameTbl[pstrDiagTraceXsmState->u32SttCurrent], \
+            gpcBsmEvtNameTbl[pstrDiagTraceXsmState->u32Event]
+    );
+    vidDiagTraceCallback(pcTrace);
+    break;
+  case XSM_TYPE_LSM :
+    snprintf(pcTrace, QUE_DIAG_TRACE_LEN, \
+            "[%s](%s)> [%s] -> [%s] by Event [%s]", \
+            gpcXsmNameTbl[(U32)pstrDiagTraceXsmState->enuType], \
+            pstrDiagTraceXsmState->pcName, \
+            gpcLsmSttNameTbl[pstrDiagTraceXsmState->u32SttPrevious], \
+            gpcLsmSttNameTbl[pstrDiagTraceXsmState->u32SttCurrent], \
+            gpcLsmEvtNameTbl[pstrDiagTraceXsmState->u32Event]
+    );
+    vidDiagTraceCallback(pcTrace);
+    break;
+  default :
+    break;
   }
 }
 
 /**
  * @brief   A private function that do keep alive diagnostic process.
- * @param   pvArgs        arguments reserved.
- * @sa      u32TusElapsed us unit elapsed time.
+ * @param   pstrKeepAlive The dequeued keep alive information of the PSM.
  * @return  void
  */
 PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive) {
-  CH pchTrace[QUE_KEEP_ALIVE_LEN];
+  CH pcTrace[QUE_DIAG_TRACE_LEN];
   
-  U32 u32hour;
-  U32 u32min;
-  U32 u32sec;
-  U32 u32ms;
-  U32 u32us;
   U32 u32hourTotal;
   U32 u32minTotal;
   U32 u32secTotal;
   U32 u32msTotal;
-  U32 u32usTotal;
 
-  u32usTotal    = (U32)(pstrKeepAlive->u32TusElapsedTotal % 1000);
-  u32msTotal    = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  /       1000) % 1000);
-  u32secTotal   = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  /    1000000) % 60);
-  u32minTotal   = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  /   60000000) % 60);
-  u32hourTotal  = (U32)((U32)(pstrKeepAlive->u32TusElapsedTotal  / 3600000000) % 24);
+  u32msTotal    = (pstrKeepAlive->u32TmsElapsed  % (U32)1000);
+  u32secTotal   = (pstrKeepAlive->u32TmsElapsed  / (U32)1000)     % (U32)60;
+  u32minTotal   = (pstrKeepAlive->u32TmsElapsed  / (U32)60000)    % (U32)60;
+  u32hourTotal  = (pstrKeepAlive->u32TmsElapsed  / (U32)3600000)  % (U32)24;
 
-  u32us   = (U32)(pstrKeepAlive->u32TusElapsed % 1000);
-  u32ms   = (U32)((U32)(pstrKeepAlive->u32TusElapsed /       1000) % 1000);
-  u32sec  = (U32)((U32)(pstrKeepAlive->u32TusElapsed /    1000000) % 60);
-  u32min  = (U32)((U32)(pstrKeepAlive->u32TusElapsed /   60000000) % 60);
-  u32hour = (U32)((U32)(pstrKeepAlive->u32TusElapsed / 3600000000) % 24);
-
-  snprintf(pchTrace, QUE_KEEP_ALIVE_LEN, \
-          "Keep alive... ET[%02ld:%02ld:%02ld.%03ld%03ld] PS[%02ld:%02ld:%02ld.%03ld%03ld] OTM[%02ld.%02ld%%]", \
-          u32hourTotal, u32minTotal, u32secTotal, u32msTotal, u32usTotal, \
-          u32hour, u32min, u32sec, u32ms, u32us, \
-          (pstrKeepAlive->u32TusElapsedMax / 10), (pstrKeepAlive->u32TusElapsedMax % 10));
-  vidDiagTraceCallback(pchTrace);
+  snprintf(pcTrace, QUE_DIAG_TRACE_LEN, \
+          "Keep alive... ET [%02ld:%02ld:%02ld.%03ld] OTM [%03ld us]", \
+          u32hourTotal, u32minTotal, u32secTotal, u32msTotal, pstrKeepAlive->u32TusOtMax);
+  vidDiagTraceCallback(pcTrace);
 }

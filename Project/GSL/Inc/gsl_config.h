@@ -71,7 +71,10 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 
 /* Exported defines ------------------------------------------------ */
 #ifdef FEATURE_BSM
-#define PSM_PRD_BSM   (U32)1    /* The period of BSM service. */
+#define PSM_PRD_BSM   (U32)1  /* The period of BSM service. */
+
+#if defined FEATURE_L053R8
+#define BSM_BTN_MAX   (U32)1  /**< The maximum of buttons managed by BSM. */
 
 #define BSM_NAME_B0   (const char*)"B1_BLUE" /**< B1_BLUE PC13 on L053R8TX. */
 #define BSM_NAME_B1   (const char*)""
@@ -96,6 +99,11 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 #define BSM_THN_B2    (U32)1000 /* The threshold between short and long press on buttons. */
 #define BSM_THN_B3    (U32)1000 /* The threshold between short and long press on buttons. */
 #define BSM_THN_B4    (U32)1000 /* The threshold between short and long press on buttons. */
+#elif defined FEATURE_G0B1RE
+/* TBD */
+#elif defined FEATURE_F429ZI
+/* TBD */
+#endif
 
 typedef tenuBsmEvent (*tpfBsmEventCallback)(tenuBsmType enuType);
 EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
@@ -103,6 +111,9 @@ EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 
 #ifdef FEATURE_LSM
 #define PSM_PRD_LSM   (U32)1  /* The period of LSM service. */
+
+#if defined FEATURE_L053R8
+#define LSM_LED_MAX   (U32)1  /**< The maximum of buttons managed by BSM. */
 
 #define LSM_NAME_L0   (const char*)"LD2_GREEN" /**< LD2_GREEN PA5 on L053R8TX. */
 #define LSM_NAME_L1   (const char*)""
@@ -133,6 +144,11 @@ EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 #define LSM_FO_TMO_L2 (U32)0
 #define LSM_FO_TMO_L3 (U32)0
 #define LSM_FO_TMO_L4 (U32)0
+#elif defined FEATURE_G0B1RE
+/* TBD */
+#elif defined FEATURE_F429ZI
+/* TBD */
+#endif
 
 typedef tenuLsmEvent (*tpfLsmEventCallback)(tenuBsmType enuBsmType, tenuLsmType enuType);
 EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuType);
@@ -144,10 +160,6 @@ typedef U32 (*tpfLsmPwmMaxCallback)(tenuLsmType enuType);
 EXTERN U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType);
 
 #endif /* FEATURE_LSM */
-
-#ifdef FEATURE_DSM
-#define PSM_PRD_DSM   (U32)1 /* The period of DSM service. */
-#endif /* FEATURE_DSM */
 
 /* Exported functions ---------------------------------------------- */
 /* Exported variables ---------------------------------------------- */

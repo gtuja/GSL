@@ -1,12 +1,15 @@
 /**
  * @file    gsl_diag.c
- * @brief   This file is used to ... 
+ * @brief   This file implements DIAG interfaces and UA callbacks as week functions.
  * @author  Gtuja
- * @date    Oct 19, 2024
+ * @date    Oct 27, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Includes -------------------------------------------------------- */
+#include "gsl_xsm.h"
+#include "gsl_bsm.h"
+#include "gsl_lsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
 
@@ -17,11 +20,9 @@
 /* Private variables ----------------------------------------------- */
 PRIVATE U32   gu32DiagTusPast = (U32)0;
 PRIVATE gBOOL gbIsDiagTusMeas = gFALSE;
-PRIVATE U32   gu32DiagTusTotal = (U32)0;
 PRIVATE U32   gu32DiagTusCntPrd = (U32)0;
 
 /* Public functions ------------------------------------------------ */
-
 /**
  * @brief   A public function to initialize diagnostic modules.
  * @param   pvArgs  arguments reserved.
@@ -33,7 +34,6 @@ PRIVATE U32   gu32DiagTusCntPrd = (U32)0;
 PUBLIC void vidDiagInit(void* pvArgs) {
   gu32DiagTusPast = (U32)0;
   gbIsDiagTusMeas = gFALSE;
-  gu32DiagTusTotal = (U32)0;
   gu32DiagTusCntPrd = u32DiagTusCntPrdCallback(gNULL);
 }
 
@@ -75,39 +75,42 @@ PUBLIC U32 u32DiagTusElapsed(void* pvArgs) {
 }
 
 /**
- * @brief   A public function to accumulate us unit timer period count.
- * @param   pvArgs  arguments reserved.
- * @return  void
- */
-PUBLIC void vidDiagTusAccumulate(void *pvArgs) {
-  gu32DiagTusTotal += (U32)gu32DiagTusCntPrd;
-}
-
-/**
- * @brief   A public function for getting us unit timer period count accumulated.
- * @param   pvArgs  arguments reserved.
- * @return  U32     us unit timer period count accumulated.
- */
-PUBLIC U32 u32DiagGetTusTotal(void *pvArgs) {
-  return gu32DiagTusTotal;
-}
-
-/**
  * @brief   A public function to trace GSL.
  * @param   CH* pcTrace  String to trace GSL
  * @return  void
  */
 PUBLIC void vidDiagTrace(CH* pcTrace) {
-  vidQueEnqueue(QUE_TRACE, (void*)pcTrace);
+  vidQueEnqueue(QUE_DIAG_TRACE, (void*)pcTrace);
+}
+
+/**
+ * @brief   A public function to trace the state of XSM.
+ * @param   CH* pcTrace  String to trace GSL
+ * @return  void
+ */
+PUBLIC void vidDiagTraceXsmState(tenuXsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event) {
+  tstrDiagTraceXsmState strTraceXsmState;
+  strTraceXsmState.enuType = enuType;
+  strTraceXsmState.pcName = pcName;
+  strTraceXsmState.u32SttPrevious = u32SttPrevious;
+  strTraceXsmState.u32SttCurrent = u32SttCurrent;
+  strTraceXsmState.u32Event = u32Event;
+
+  vidQueEnqueue(QUE_DIAG_TRACE_XSM_STATE, (void*)&strTraceXsmState);
 }
 
 /**
  * @brief   A public function to request keep alive.
- * @param   tstrDiagKeepAlive* pstrKeepAlive  Keep alive request information.
+ * @param   u32TmsCnt     The ms unit counter after powered on.
+ * @param   u32TusOrtMax  The us unit counter holding maximum occupation time of PSM.
  * @return  void
  */
-PUBLIC void vidDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive) {
-  /* TBD */
+PUBLIC void vidDiagKeepAlive(U32 u32TmsCnt, U32 u32TusOrtMax) {
+  tstrDiagKeepAlive strKeepAlive;
+  strKeepAlive.u32TmsElapsed = u32TmsCnt;
+  strKeepAlive.u32TusOtMax = u32TusOrtMax;
+  
+  vidQueEnqueue(QUE_DIAG_KEEP_ALIVE, (void*)&strKeepAlive);
 }
 
 /* Weak functions -------------------------------------------------- */

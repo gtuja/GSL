@@ -12,23 +12,33 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
+#include "gsl_xsm.h"
 
 /* Exported defines ------------------------------------------------ */
+#define DIAG_PRD_KA   (U32)5000
+
 /* Exported types -------------------------------------------------- */
 typedef struct {
-  U32 u32TusElapsedTotal;
-  U32 u32TusElapsed;
-  U32 u32TusElapsedMax;
+  U32 u32TmsElapsed;
+  U32 u32TusOtMax;
 } tstrDiagKeepAlive;
+
+typedef struct {
+  tenuXsmType enuType;
+  const CH*   pcName;
+  U32         u32SttPrevious;
+  U32         u32SttCurrent;
+  U32         u32Event;
+} tstrDiagTraceXsmState;
 
 /* Exported functions ---------------------------------------------- */
 PUBLIC void vidDiagInit(void* pvArgs);
 PUBLIC void vidDiagTusAccumulate(void* pvArgs);
 PUBLIC void vidDiagTusStart(void* pvArgs);
 PUBLIC U32  u32DiagTusElapsed(void* pvArgs);
-PUBLIC U32  u32DiagGetTusTotal(void *pvArgs);
 PUBLIC void vidDiagTrace(CH* pcTrace);
-PUBLIC void vidDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
+PUBLIC void vidDiagTraceXsmState(tenuXsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event);
+PUBLIC void vidDiagKeepAlive(U32 u32TmsCnt, U32 u32TusOrtMax);
 
 /* Exported variables ---------------------------------------------- */
 

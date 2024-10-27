@@ -199,10 +199,6 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM22_MspInit 0 */
     /* TIM22 clock enable */
     __HAL_RCC_TIM22_CLK_ENABLE();
-
-    /* TIM22 interrupt Init */
-    HAL_NVIC_SetPriority(TIM22_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(TIM22_IRQn);
   /* USER CODE BEGIN TIM22_MspInit 1 */
 
   /* USER CODE END TIM22_MspInit 1 */
@@ -271,9 +267,6 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
   /* USER CODE END TIM22_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_TIM22_CLK_DISABLE();
-
-    /* TIM22 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(TIM22_IRQn);
   /* USER CODE BEGIN TIM22_MspDeInit 1 */
 
   /* USER CODE END TIM22_MspDeInit 1 */

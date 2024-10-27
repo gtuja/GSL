@@ -24,18 +24,6 @@ typedef enum {
   BSM_STT_MAX,      /**< BSM maximum state.  */
 } tenuBsmStt;
 
-typedef struct {
-  const CH* pcSrvName;            /**< BSM service name.  */
-  gBOOL bIsRegistered;            /**< BSM is registered or not.  */
-  const CH** pcSttName;           /**< BSM State name.  */
-  U32   pu32SttCnt[BSM_STT_MAX];  /**< BSM diagnostic : state counter.  */
-} tstrBsmSrvDiag;
-
-typedef struct {
-  const CH* pcName;                     /**< BSM name. */
-  tstrBsmSrvDiag strDiag[BSM_TYPE_MAX]; /**< BSM diagnostic information. */
-} tstrBsmDiag;
-
 /* Exported functions prototypes ----------------------------------- */
 /* Exported variables ---------------------------------------------- */
 PUBLIC void vidBsmInit(void* pvArgs);

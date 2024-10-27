@@ -1,8 +1,8 @@
 /**
  * @file    gsl_xsm.h
- * @brief   This file is used to ... 
+ * @brief   This file is provides XSM shared data types among GSL modules.
  * @author  Gtuja
- * @date    Oct 21, 2024
+ * @date    Oct 27, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -13,6 +13,12 @@
 /* Includes -------------------------------------------------------- */
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
+typedef enum {
+  XSM_TYPE_BSM = 0,       /**< XSM type, BSM. */
+  XSM_TYPE_LSM,           /**< XSM type, LSM. */
+  XSM_TYPE_MAX,           /**< XSM maximum type. */
+} tenuXsmType;
+
 typedef enum {
   XSM_STT_FTN_ENTRY = 0,  /**< XSM state function, entry. */
   XSM_STT_FTN_DO,         /**< XSM state function, do. */

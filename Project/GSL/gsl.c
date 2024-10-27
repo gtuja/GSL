@@ -64,15 +64,3 @@ PUBLIC void vidGslProcCallback(void* pvArgs) {
 PUBLIC tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType) {
   return enuBsmNotifyCallback(enuType);
 }
-
-/**
- * @brief   A public function fetching diagnostic information (DSM).
- * @param   pvArgs  arguments reserved.
- * @note    UA shall call this callback when us unit timer elapsed.
- *          The period counter shall be set in gsl_config.h
- * @sa      u32DsmCntPrdCallback
- * @return  void
- */
-PUBLIC void vidGslDiagElapsedCallback(void* pvArgs) {
-  vidDiagTusAccumulate(gNULL);
-}

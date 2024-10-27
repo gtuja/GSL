@@ -19,7 +19,6 @@
 EXTERN void vidGslInitCallback(void* pvArgs);
 EXTERN void vidGslSrvcCallback(void* pvArgs);
 EXTERN void vidGslProcCallback(void* pvArgs);
-EXTERN void vidGslDiagElapsedCallback(void* pvArgs);
 EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
 
 /* Exported variables ---------------------------------------------- */

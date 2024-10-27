@@ -42,11 +42,6 @@
 #endif /* U32 */
 #define U32 unsigned long
 
-#ifdef U64
-#undef U64
-#endif /* U64 */
-#define U64 unsigned long long
-
 #ifdef S8
 #undef S8
 #endif /* S8 */

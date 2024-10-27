@@ -14,7 +14,6 @@
 
 /* External variables --------------------------------------------------------*/
 EXTERN TIM_HandleTypeDef htim21;
-EXTERN TIM_HandleTypeDef htim22;
 EXTERN TIM_HandleTypeDef htim2;
 
 /* Private define ------------------------------------------------------------*/
@@ -22,6 +21,7 @@ EXTERN TIM_HandleTypeDef htim2;
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U32 gu32TraceCounter = (U32)0;
+PRIVATE tenuBsmNotify genuBsmNtfPrev[BSM_BTN_MAX] = {0};
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -54,27 +54,32 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
     case LSM_TYPE_L0 :
       u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_1);
       enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
-      switch (enuBsmNotify) {
-        case BSM_NTF_SHORT :
-          if (u32PwmDuty == (U32)0) {
-            enuReturn = LSM_EVT_ON;
-          } else {
-            enuReturn = LSM_EVT_OFF;
-          }
-          break;
-        case BSM_NTF_LONG :
-          if (u32PwmDuty == (U32)0) {
-            enuReturn = LSM_EVT_FRC_ON;
-          } else {
-            enuReturn = LSM_EVT_FRC_OFF;
-          }
-          break;
-        default :
-          break;
+      
+      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+        switch (enuBsmNotify) {
+          case BSM_NTF_SHORT :
+            if (u32PwmDuty == (U32)0) {
+              enuReturn = LSM_EVT_ON;
+            } else {
+              enuReturn = LSM_EVT_OFF;
+            }
+            break;
+          case BSM_NTF_LONG :
+            if (u32PwmDuty == (U32)0) {
+              enuReturn = LSM_EVT_FRC_ON;
+            } else {
+              enuReturn = LSM_EVT_FRC_OFF;
+            }
+            break;
+          default :
+            break;
+        }
+        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
       }
     default :
       break;
   }
+
   return enuReturn;
 }
 
@@ -127,31 +132,10 @@ PUBLIC void vidDiagTraceCallback(char* pcTrace) {
   printf("%02d: %s\r\n", (int)((gu32TraceCounter++)%100), pcTrace);
 }
 
-
-//#define __MEASURE_TIM22
-
-#ifdef __MEASURE_TIM22
-static U32 u32Tick22_before[10];
-static U32 u32Tick22_after[10];
-static U32 i = 0;
-#endif /* __MEASURE_TIM22 */
-
 PUBLIC void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   if (htim == &htim21) {
-#if __MEASURE_TIM22
-    u32Tick22_before[i] = u32AppTickCallback(gNULL);
-#endif /* __MEASURE_TIM22 */
     vidGslSrvcCallback(gNULL);
-#if __MEASURE_TIM22
-    u32Tick22_after[i] = u32AppTickCallback(gNULL);
-    i++;
-    if (i >= 10) i=0;
-#endif /* __MEASURE_TIM22 */
-  }
-
-  if (htim == &htim22) {
-    vidGslDiagElapsedCallback(gNULL);
   }
 }
 

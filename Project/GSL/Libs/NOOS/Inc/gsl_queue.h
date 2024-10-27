@@ -15,12 +15,12 @@
 
 /* Exported defines ------------------------------------------------ */
 #define QUE_ITM_MAX         10
-#define QUE_TRACE_LEN       72
-#define QUE_KEEP_ALIVE_LEN  200
+#define QUE_DIAG_TRACE_LEN  72
 
 /* Exported types -------------------------------------------------- */
 typedef enum {
-  QUE_TRACE = 0,
+  QUE_DIAG_TRACE = 0,
+  QUE_DIAG_TRACE_XSM_STATE,
   QUE_DIAG_KEEP_ALIVE,
   QUE_MAX,
 } tenuQueType;
