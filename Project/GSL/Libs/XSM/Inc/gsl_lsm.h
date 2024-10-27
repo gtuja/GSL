@@ -20,7 +20,7 @@ typedef enum {
   LSM_STT_OFF,      /**< LSM state, LED is off. */
   LSM_STT_FADE_IN,  /**< LSM state, LED is under fade in. */
   LSM_STT_ON,       /**< LSM state, LED is on. */
-  LSM_STT_FADE_OUT, /**< LSM state, LED is under fade out. */
+  LSM_STT_FADE_OFF, /**< LSM state, LED is under fade off. */
   LSM_STT_MAX,      /**< LSM maximum state. */
 } tenuLsmState;
 

@@ -144,6 +144,19 @@ EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 #define LSM_FO_TMO_L2 (U32)0
 #define LSM_FO_TMO_L3 (U32)0
 #define LSM_FO_TMO_L4 (U32)0
+
+#define LSM_PWM_MIN_L0   (U32)0
+#define LSM_PWM_MIN_L1   (U32)0
+#define LSM_PWM_MIN_L2   (U32)0
+#define LSM_PWM_MIN_L3   (U32)0
+#define LSM_PWM_MIN_L4   (U32)0
+
+#define LSM_PWM_MAX_L0   (U32)31999  /**< LD2_GREEN PA5 on L053R8TX. */
+#define LSM_PWM_MAX_L1   (U32)0
+#define LSM_PWM_MAX_L2   (U32)0
+#define LSM_PWM_MAX_L3   (U32)0
+#define LSM_PWM_MAX_L4   (U32)0
+
 #elif defined FEATURE_G0B1RE
 /* TBD */
 #elif defined FEATURE_F429ZI
@@ -154,10 +167,6 @@ typedef tenuLsmEvent (*tpfLsmEventCallback)(tenuBsmType enuBsmType, tenuLsmType 
 EXTERN tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType enuType);
 typedef void (*tpfLsmOutputCallback)(tenuLsmType enuType, U32 u32PwmDuty);
 EXTERN void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty);
-typedef U32 (*tpfLsmPwmMinCallback)(tenuLsmType enuType);
-EXTERN U32 enuGslLsmPwmMinCallback(tenuLsmType enuType);
-typedef U32 (*tpfLsmPwmMaxCallback)(tenuLsmType enuType);
-EXTERN U32 enuGslLsmPwmMaxCallback(tenuLsmType enuType);
 
 #endif /* FEATURE_LSM */
 

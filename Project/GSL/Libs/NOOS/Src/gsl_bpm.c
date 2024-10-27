@@ -66,7 +66,7 @@ PRIVATE const char* gpcLsmSttNameTbl[LSM_STT_MAX] = {
   "OFF",      /**< LSM state, LED is off. */
   "FADE_IN",  /**< LSM state, LED is under fade in. */
   "ON",       /**< LSM state, LED is on. */
-  "FADE_OUT", /**< LSM state, LED is under fade out. */
+  "FADE_OFF", /**< LSM state, LED is under fade off. */
 };
 
 PRIVATE const char* gpcLsmEvtNameTbl[LSM_EVT_MAX] = {

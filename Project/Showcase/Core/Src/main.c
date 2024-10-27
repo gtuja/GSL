@@ -100,14 +100,14 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  vidAppInitialize();
-
   HAL_TIM_Base_Start_IT(&htim21);                   /* Start TIM21. */
   HAL_TIM_Base_Start_IT(&htim22);                   /* Start TIM22. */
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);         /* Start TIM2, Channel#1. */
   __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0);  /* Set PWM duty 0 on TIM2, Channel#1. */
 
   setbuf(stdout, gNULL);
+
+  vidAppInitialize();
 
   /* USER CODE END 2 */
 
