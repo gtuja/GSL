@@ -7,7 +7,7 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "gsl_xsm.h"
+#include "gsl_psm.h"
 #include "gsl_lsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
@@ -78,8 +78,8 @@ PRIVATE const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
 };
 
 /** gpfLsmSttFtnTbl is a private constant table holding LSM state functions. */
-PRIVATE const tpfLsmSttFtn gpfLsmSttFtnTbl[LSM_STT_MAX][XSM_STT_FTN_MAX] = {
-                          /*  LSM_STT_FTN_ENTRY   LM_STT_FTN_DO     LSM_STT_FTN_EXIT  */
+PRIVATE const tpfLsmSttFtn gpfLsmSttFtnTbl[LSM_STT_MAX][PSM_STT_FTN_MAX] = {
+                          /*  PSM_STT_FTN_ENTRY   PSM_STT_FTN_DO     PSM_STT_FTN_EXIT  */
   /* LSM_STT_NA */        {   gNULL,              gNULL,            gNULL             },
   /* LSM_STT_OFF */       {   vidLsmOffEntry,     vidLsmOffDo,      vidLsmOffExit     },
   /* LSM_STT_FADE_IN */   {   vidLsmFadeInEntry,  vidLsmFadeInDo,   vidLsmFadeInExit  },
@@ -144,8 +144,8 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
           vidLsmTransit((tenuLsmType)i, enuStateNext, enuEvent);
         }
         /* Process the do state function. */
-        if (gpfLsmSttFtnTbl[(U32)(gpstrLsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO] != gNULL) {
-          gpfLsmSttFtnTbl[(U32)(gpstrLsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO]((tenuLsmType)i);
+        if (gpfLsmSttFtnTbl[(U32)(gpstrLsmCtrl[i].enuSttCur)][(U32)PSM_STT_FTN_DO] != gNULL) {
+          gpfLsmSttFtnTbl[(U32)(gpstrLsmCtrl[i].enuSttCur)][(U32)PSM_STT_FTN_DO]((tenuLsmType)i);
         }
       }
     }
@@ -163,8 +163,8 @@ PUBLIC void vidLsmSrvc(void* pvArgs) {
 PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext, tenuLsmEvent enuEvent) {
   if (enuStateNext != LSM_STT_NA) {
     /* Process the exit state function of the current state. */
-    if (gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_EXIT] != gNULL) {
-      gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_EXIT](enuType);
+    if (gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)PSM_STT_FTN_EXIT] != gNULL) {
+      gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)PSM_STT_FTN_EXIT](enuType);
     }
 
     /* Transit states. */
@@ -172,11 +172,11 @@ PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext, tenuL
     gpstrLsmCtrl[(U32)enuType].enuSttCur = enuStateNext;
 
     /* Process the entry state function of the next state. */
-    if (gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_ENTRY] != gNULL) {
-      gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)XSM_STT_FTN_ENTRY](enuType);
+    if (gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)PSM_STT_FTN_ENTRY] != gNULL) {
+      gpfLsmSttFtnTbl[(U32)gpstrLsmCtrl[(U32)enuType].enuSttCur][(U32)PSM_STT_FTN_ENTRY](enuType);
     }
 
-    vidDiagTraceXsmState(XSM_TYPE_LSM,
+    vidDiagTracePsmState(PSM_TYPE_LSM,
                          gpstrLsmCtrl[(U32)enuType].pcstrLsmCfg->pcName,
                          (U32)gpstrLsmCtrl[(U32)enuType].enuSttPrev,
                          (U32)gpstrLsmCtrl[(U32)enuType].enuSttCur,

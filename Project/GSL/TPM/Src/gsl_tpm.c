@@ -7,12 +7,12 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_xsm.h"
+#include <gsl_tpm.h>
+#include "gsl_psm.h"
 #include "gsl_bsm.h"
 #include "gsl_lsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
-#include "gsl_bpm.h"
 #include <stdio.h>
 
 /* External variables ----------------------------------------------- */
@@ -30,11 +30,11 @@
 PRIVATE void vidBpmProcIdle(void* pvArgs);
 PRIVATE void vidBpmProcDiag(void* pvArgs);
 PRIVATE void vidBpmProcDiagTrace(CH* pcTrace);
-PRIVATE void vidBpmProcDiagTraceXsmState(tstrDiagTraceXsmState* tstrDiagTraceXsmState);
+PRIVATE void vidBpmProcDiagTracePsmState(tstrDiagTracePsmState* tstrDiagTracePsmState);
 PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
 
 /* Private variables ------------------------------------------------ */
-PRIVATE const char* gpcXsmNameTbl[BSM_STT_MAX] = {
+PRIVATE const char* gpcPsmNameTbl[BSM_STT_MAX] = {
   "BSM",      /**< XSM type, BSM. */
   "LSM",      /**< XSM type, LSM. */
 };
@@ -118,8 +118,8 @@ PRIVATE void vidBpmProcDiag(void* pvArgs) {
     vidBpmProcDiagTrace((char*)pvQueDequeue(QUE_DIAG_TRACE));
   }
 
-  if (bQueIsEmpty(QUE_DIAG_TRACE_XSM_STATE) != gTRUE) {
-    vidBpmProcDiagTraceXsmState((tstrDiagTraceXsmState*)pvQueDequeue(QUE_DIAG_TRACE_XSM_STATE));
+  if (bQueIsEmpty(QUE_DIAG_TRACE_PSM_STATE) != gTRUE) {
+    vidBpmProcDiagTracePsmState((tstrDiagTracePsmState*)pvQueDequeue(QUE_DIAG_TRACE_PSM_STATE));
   }
 
   if (bQueIsEmpty(QUE_DIAG_KEEP_ALIVE) != gTRUE) {
@@ -141,29 +141,29 @@ PRIVATE void vidBpmProcDiagTrace(CH* pcTrace) {
  * @param   tstrDiagTraceXsmState The dequeued state transition information of the XSM.
  * @return  void
  */
-PRIVATE void vidBpmProcDiagTraceXsmState(tstrDiagTraceXsmState* pstrDiagTraceXsmState) {
+PRIVATE void vidBpmProcDiagTracePsmState(tstrDiagTracePsmState* pstrDiagTracePsmState) {
   CH pcTrace[QUE_DIAG_TRACE_LEN];
   
-  switch (pstrDiagTraceXsmState->enuType) {
-  case XSM_TYPE_BSM :
+  switch (pstrDiagTracePsmState->enuType) {
+  case PSM_TYPE_BSM :
     snprintf(pcTrace, QUE_DIAG_TRACE_LEN, \
             "[%s](%s)[%s]->[%s] by [%s]", \
-            gpcXsmNameTbl[(U32)pstrDiagTraceXsmState->enuType], \
-            pstrDiagTraceXsmState->pcName, \
-            gpcBsmSttNameTbl[pstrDiagTraceXsmState->u32SttPrevious], \
-            gpcBsmSttNameTbl[pstrDiagTraceXsmState->u32SttCurrent], \
-            gpcBsmEvtNameTbl[pstrDiagTraceXsmState->u32Event]
+            gpcPsmNameTbl[(U32)pstrDiagTracePsmState->enuType], \
+            pstrDiagTracePsmState->pcName, \
+            gpcBsmSttNameTbl[pstrDiagTracePsmState->u32SttPrevious], \
+            gpcBsmSttNameTbl[pstrDiagTracePsmState->u32SttCurrent], \
+            gpcBsmEvtNameTbl[pstrDiagTracePsmState->u32Event]
     );
     vidDiagTraceCallback(pcTrace);
     break;
-  case XSM_TYPE_LSM :
+  case PSM_TYPE_LSM :
     snprintf(pcTrace, QUE_DIAG_TRACE_LEN, \
             "[%s](%s)> [%s] -> [%s] by Event [%s]", \
-            gpcXsmNameTbl[(U32)pstrDiagTraceXsmState->enuType], \
-            pstrDiagTraceXsmState->pcName, \
-            gpcLsmSttNameTbl[pstrDiagTraceXsmState->u32SttPrevious], \
-            gpcLsmSttNameTbl[pstrDiagTraceXsmState->u32SttCurrent], \
-            gpcLsmEvtNameTbl[pstrDiagTraceXsmState->u32Event]
+            gpcPsmNameTbl[(U32)pstrDiagTracePsmState->enuType], \
+            pstrDiagTracePsmState->pcName, \
+            gpcLsmSttNameTbl[pstrDiagTracePsmState->u32SttPrevious], \
+            gpcLsmSttNameTbl[pstrDiagTracePsmState->u32SttCurrent], \
+            gpcLsmEvtNameTbl[pstrDiagTracePsmState->u32Event]
     );
     vidDiagTraceCallback(pcTrace);
     break;

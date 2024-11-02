@@ -7,7 +7,7 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_xsm.h"
+#include "gsl_psm.h"
 #include "gsl_bsm.h"
 #include "gsl_lsm.h"
 #include "gsl_diag.h"
@@ -88,15 +88,15 @@ PUBLIC void vidDiagTrace(CH* pcTrace) {
  * @param   CH* pcTrace  String to trace GSL
  * @return  void
  */
-PUBLIC void vidDiagTraceXsmState(tenuXsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event) {
-  tstrDiagTraceXsmState strTraceXsmState;
-  strTraceXsmState.enuType = enuType;
-  strTraceXsmState.pcName = pcName;
-  strTraceXsmState.u32SttPrevious = u32SttPrevious;
-  strTraceXsmState.u32SttCurrent = u32SttCurrent;
-  strTraceXsmState.u32Event = u32Event;
+PUBLIC void vidDiagTracePsmState(tenuPsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event) {
+  tstrDiagTracePsmState strTracePsmState;
+  strTracePsmState.enuType = enuType;
+  strTracePsmState.pcName = pcName;
+  strTracePsmState.u32SttPrevious = u32SttPrevious;
+  strTracePsmState.u32SttCurrent = u32SttCurrent;
+  strTracePsmState.u32Event = u32Event;
 
-  vidQueEnqueue(QUE_DIAG_TRACE_XSM_STATE, (void*)&strTraceXsmState);
+  vidQueEnqueue(QUE_DIAG_TRACE_PSM_STATE, (void*)&strTracePsmState);
 }
 
 /**

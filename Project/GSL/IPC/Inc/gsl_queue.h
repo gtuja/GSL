@@ -20,7 +20,7 @@
 /* Exported types -------------------------------------------------- */
 typedef enum {
   QUE_DIAG_TRACE = 0,
-  QUE_DIAG_TRACE_XSM_STATE,
+  QUE_DIAG_TRACE_PSM_STATE,
   QUE_DIAG_KEEP_ALIVE,
   QUE_MAX,
 } tenuQueType;

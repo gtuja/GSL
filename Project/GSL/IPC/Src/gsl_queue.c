@@ -32,7 +32,7 @@ PRIVATE S32   gps32QueTail[QUE_MAX] = {0};
  */
 PRIVATE char  gpcQueTraceBuf[QUE_ITM_MAX][QUE_DIAG_TRACE_LEN] = {0};
 PRIVATE tstrDiagKeepAlive gpstrQueDiagKeepAliveBuf[QUE_ITM_MAX] = {0};
-PRIVATE tstrDiagTraceXsmState gpstrQueTraceXsmStt[QUE_ITM_MAX] = {0};
+PRIVATE tstrDiagTracePsmState gpstrQueTracePsmStt[QUE_ITM_MAX] = {0};
 
 /* Public functions ------------------------------------------------ */
 /**
@@ -84,9 +84,9 @@ PUBLIC void vidQueEnqueue(tenuQueType enuType, void* pvItem) {
       bIsEnqueued = gTRUE;
     }
     break;
-  case QUE_DIAG_TRACE_XSM_STATE :
+  case QUE_DIAG_TRACE_PSM_STATE :
     if (bQueIsFull(enuType) != gTRUE) {
-      memcpy(&gpstrQueTraceXsmStt[gps32QueTail[(U32)enuType]], (tstrDiagTraceXsmState*)pvItem, sizeof(tstrDiagTraceXsmState));
+      memcpy(&gpstrQueTracePsmStt[gps32QueTail[(U32)enuType]], (tstrDiagTracePsmState*)pvItem, sizeof(tstrDiagTracePsmState));
       bIsEnqueued = gTRUE;
     }
     break;
@@ -125,9 +125,9 @@ PUBLIC void* pvQueDequeue(tenuQueType enuType) {
       bIsDequeued = gTRUE;
     }
     break;
-  case QUE_DIAG_TRACE_XSM_STATE :
+  case QUE_DIAG_TRACE_PSM_STATE :
     if (bQueIsEmpty(enuType) != gTRUE) {
-      pvReturn = (void*)(&gpstrQueTraceXsmStt[gps32QueHead[(U32)enuType]]);
+      pvReturn = (void*)(&gpstrQueTracePsmStt[gps32QueHead[(U32)enuType]]);
       bIsDequeued = gTRUE;
     }
     break;

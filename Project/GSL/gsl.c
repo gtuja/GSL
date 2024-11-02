@@ -8,9 +8,9 @@
  */
 
 /* Includes -------------------------------------------------------- */
+#include <gsl_tpm.h>
 #include "gsl_config.h"
 #include "gsl_psm.h"
-#include "gsl_bpm.h"
 #include "gsl_bsm.h"
 #include "gsl_queue.h"
 #include "gsl_diag.h"

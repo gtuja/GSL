@@ -7,7 +7,7 @@
  */
 
 /* Includes -------------------------------------------------------- */
-#include "gsl_xsm.h"
+#include "gsl_psm.h"
 #include "gsl_bsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
@@ -84,7 +84,7 @@ PRIVATE const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
  * @sa    tenuBsmStt
  * @sa    tenuXsmSttFtn
  */
-PRIVATE const tpfBsmSttFtn gpfBsmSttFtnTbl[BSM_STT_MAX][XSM_STT_FTN_MAX] = {
+PRIVATE const tpfBsmSttFtn gpfBsmSttFtnTbl[BSM_STT_MAX][PSM_STT_FTN_MAX] = {
                         /*  XSM_STT_FTN_ENTRY   XSM_STT_FTN_DO  XSM_STT_FTN_EXIT  */
   /* BSM_STT_NA */      {   gNULL,              gNULL,          gNULL             },
   /* BSM_STT_RLS */     {   vidBsmRlsEntry,     vidBsmRlsDo,    vidBsmRlsExit     },
@@ -155,8 +155,8 @@ PUBLIC void vidBsmSrvc(void* pvArgs) {
           vidBsmTransit((tenuBsmType)i, enuStateNext, enuEvent);
         }
         /* Process the do state function. */
-        if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO] != gNULL) {
-          gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)XSM_STT_FTN_DO]((tenuBsmType)i);
+        if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)PSM_STT_FTN_DO] != gNULL) {
+          gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[i].enuSttCur)][(U32)PSM_STT_FTN_DO]((tenuBsmType)i);
         }
       }
     }
@@ -185,19 +185,19 @@ PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType) {
 PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext, tenuBsmEvent enuEvent) {
   if (enuStateNext != BSM_STT_NA) {
     /* Process the exit state function of the current state. */
-    if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_EXIT] != gNULL) {
-      gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_EXIT](enuType);
+    if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)PSM_STT_FTN_EXIT] != gNULL) {
+      gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)PSM_STT_FTN_EXIT](enuType);
     }
     /* Transit states. */
     gpstrBsmCtrl[(U32)enuType].enuSttPrev = gpstrBsmCtrl[(U32)enuType].enuSttCur;
     gpstrBsmCtrl[(U32)enuType].enuSttCur = enuStateNext;
 
     /* Process the entry state function of the next state. */
-    if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY] != gNULL) {
-      gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)XSM_STT_FTN_ENTRY](enuType);
+    if (gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)PSM_STT_FTN_ENTRY] != gNULL) {
+      gpfBsmSttFtnTbl[(U32)(gpstrBsmCtrl[(U32)enuType].enuSttCur)][(U32)PSM_STT_FTN_ENTRY](enuType);
     }
 
-    vidDiagTraceXsmState(XSM_TYPE_BSM,
+    vidDiagTracePsmState(PSM_TYPE_BSM,
                          gpstrBsmCtrl[(U32)enuType].pcstrBsmCfg->pcName,
                          (U32)gpstrBsmCtrl[(U32)enuType].enuSttPrev,
                          (U32)gpstrBsmCtrl[(U32)enuType].enuSttCur,

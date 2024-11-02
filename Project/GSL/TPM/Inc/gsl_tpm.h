@@ -7,8 +7,8 @@
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef NOOS_INC_GSL_BPM_H_
-#define NOOS_INC_GSL_BPM_H_
+#ifndef NOOS_INC_GSL_TPM_H_
+#define NOOS_INC_GSL_TPM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -21,4 +21,4 @@ PUBLIC void vidBpmProc(void* pvArgs);
 
 /* Exported variables ---------------------------------------------- */
 
-#endif /* NOOS_INC_GSL_BPM_H_ */
+#endif /* NOOS_INC_GSL_TPM_H_ */

@@ -12,7 +12,7 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
-#include "gsl_xsm.h"
+#include "gsl_psm.h"
 
 /* Exported defines ------------------------------------------------ */
 #define DIAG_PRD_KA   (U32)5000
@@ -24,12 +24,12 @@ typedef struct {
 } tstrDiagKeepAlive;
 
 typedef struct {
-  tenuXsmType enuType;
+  tenuPsmType enuType;
   const CH*   pcName;
   U32         u32SttPrevious;
   U32         u32SttCurrent;
   U32         u32Event;
-} tstrDiagTraceXsmState;
+} tstrDiagTracePsmState;
 
 /* Exported functions ---------------------------------------------- */
 PUBLIC void vidDiagInit(void* pvArgs);
@@ -37,7 +37,7 @@ PUBLIC void vidDiagTusAccumulate(void* pvArgs);
 PUBLIC void vidDiagTusStart(void* pvArgs);
 PUBLIC U32  u32DiagTusElapsed(void* pvArgs);
 PUBLIC void vidDiagTrace(CH* pcTrace);
-PUBLIC void vidDiagTraceXsmState(tenuXsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event);
+PUBLIC void vidDiagTracePsmState(tenuPsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event);
 PUBLIC void vidDiagKeepAlive(U32 u32TmsCnt, U32 u32TusOrtMax);
 
 /* Exported variables ---------------------------------------------- */

@@ -12,15 +12,22 @@
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
-#include "gsl_diag.h"
 
 /* Exported defines ------------------------------------------------ */
 /* Exported types -------------------------------------------------- */
+
 typedef enum {
   PSM_TYPE_BSM = 0, /**< PSM type : BSM service. */
   PSM_TYPE_LSM,     /**< PSM type : LSM service. */
   PSM_TYPE_MAX,     /**< PSM type maximum. */
 } tenuPsmType;
+
+typedef enum {
+  PSM_STT_FTN_ENTRY = 0,  /**< XSM state function, entry. */
+  PSM_STT_FTN_DO,         /**< XSM state function, do. */
+  PSM_STT_FTN_EXIT,       /**< XSM state function, exit. */
+  PSM_STT_FTN_MAX,        /**< XSM maximum state function. */
+} tenuPsmSttFtn;
 
 typedef struct {
   const CH* pcSrvName;  /**< PSM service name.  */
