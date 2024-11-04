@@ -10,7 +10,7 @@
 #include "stm32l0xx_hal.h"
 #include "app_api.h"
 #include <stdio.h>
-#include "../../../GSL/Inc/gsl_api.h"
+#include "gsl_api.h"
 
 /* External variables --------------------------------------------------------*/
 EXTERN TIM_HandleTypeDef htim21;

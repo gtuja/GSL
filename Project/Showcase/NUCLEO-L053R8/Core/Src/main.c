@@ -27,8 +27,8 @@
 /* USER CODE BEGIN Includes */
 #include "app_api.h"
 #include <stdio.h>
-#include "../../../GSL/Inc/gsl_api.h"
-#include "../../../GSL/Inc/gsl_def.h"
+#include "gsl_api.h"
+#include "gsl_def.h"
 
 /* USER CODE END Includes */
 
