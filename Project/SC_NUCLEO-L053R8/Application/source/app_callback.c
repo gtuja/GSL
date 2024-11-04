@@ -21,7 +21,7 @@ EXTERN TIM_HandleTypeDef htim2;
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U32 gu32TraceCounter = (U32)0;
-PRIVATE tenuBsmNotify genuBsmNtfPrev[BSM_BTN_MAX] = {0};
+PRIVATE tenuBsmNotify genuBsmNtfPrev[LSM_LED_MAX][BSM_BTN_MAX] = {0};
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -55,7 +55,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
       u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_1);
       enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
       
-      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+      if (enuBsmNotify != genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType]) {
         switch (enuBsmNotify) {
           case BSM_NTF_SHORT :
             if (u32PwmDuty == (U32)0) {
@@ -74,7 +74,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
           default :
             break;
         }
-        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
+        genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType] = enuBsmNotify;
       }
     default :
       break;
