@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "eth.h"
 #include "tim.h"
 #include "usart.h"
@@ -26,6 +27,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_api.h"
+#include <stdio.h>
+#include "gsl_api.h"
+#include "gsl_def.h"
 
 /* USER CODE END Includes */
 
@@ -90,6 +95,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ETH_Init();
   MX_USART3_UART_Init();
   MX_USB_OTG_FS_PCD_Init();
@@ -99,6 +105,18 @@ int main(void)
   MX_TIM6_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
+
+  HAL_TIM_Base_Start_IT(&htim6);                    /* Start TIM6, 1ms. */
+  HAL_TIM_Base_Start_IT(&htim7);                    /* Start TIM7, 1us. */
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);         /* Start TIM3, Channel#3, LD1. */
+  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, 0);  /* Set PWM duty 0 on TIM3, Channel#3, LD1. */
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2);         /* Start TIM4, Channel#2, LD2. */
+  __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 0);  /* Set PWM duty 0 on TIM4, Channel#2, LD2. */
+  HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);        /* Start TIM12, Channel#1, LD3. */
+  __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, 0); /* Set PWM duty 0 on TIM12, Channel#1, LD3. */
+
+  setbuf(stdout, gNULL);
+  vidAppInitialize();
 
   /* USER CODE END 2 */
 

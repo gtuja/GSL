@@ -7,16 +7,18 @@
  */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f429xx.h"
+#include "stm32f4xx_hal.h"
 #include "app_api.h"
 #include <stdio.h>
 #include "gsl_api.h"
 
-#if 0
-
 /* External variables --------------------------------------------------------*/
-EXTERN TIM_HandleTypeDef htim21;
-EXTERN TIM_HandleTypeDef htim2;
+EXTERN TIM_HandleTypeDef htim3;
+EXTERN TIM_HandleTypeDef htim4;
+EXTERN TIM_HandleTypeDef htim12;
+
+EXTERN TIM_HandleTypeDef htim6;
+EXTERN TIM_HandleTypeDef htim7;
 
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
@@ -54,7 +56,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
 
   switch (enuLsmType) {
     case LSM_TYPE_L0 :
-      u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim2, TIM_CHANNEL_1);
+      u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim3, TIM_CHANNEL_3);
       enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
       
       if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
@@ -78,6 +80,62 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
         }
         genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
       }
+      break;
+
+    case LSM_TYPE_L1 :
+      u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim4, TIM_CHANNEL_2);
+      enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
+
+      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+        switch (enuBsmNotify) {
+          case BSM_NTF_SHORT :
+            if (u32PwmDuty == (U32)0) {
+              enuReturn = LSM_EVT_ON;
+            } else {
+              enuReturn = LSM_EVT_OFF;
+            }
+            break;
+          case BSM_NTF_LONG :
+            if (u32PwmDuty == (U32)0) {
+              enuReturn = LSM_EVT_FRC_ON;
+            } else {
+              enuReturn = LSM_EVT_FRC_OFF;
+            }
+            break;
+          default :
+            break;
+        }
+        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
+      }
+      break;
+
+    case LSM_TYPE_L2 :
+      u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim12, TIM_CHANNEL_1);
+      enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
+
+      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+        switch (enuBsmNotify) {
+          case BSM_NTF_SHORT :
+            if (u32PwmDuty == (U32)0) {
+              enuReturn = LSM_EVT_ON;
+            } else {
+              enuReturn = LSM_EVT_OFF;
+            }
+            break;
+          case BSM_NTF_LONG :
+            if (u32PwmDuty == (U32)0) {
+              enuReturn = LSM_EVT_FRC_ON;
+            } else {
+              enuReturn = LSM_EVT_FRC_OFF;
+            }
+            break;
+          default :
+            break;
+        }
+        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
+      }
+      break;
+
     default :
       break;
   }
@@ -88,7 +146,13 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
 PUBLIC void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
   switch (enuType) {
     case LSM_TYPE_L0 :
-      __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, u32PwmDuty);  /* Set PWM duty 0 on TIM2, Channel#1. */
+      __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, u32PwmDuty);  /* Set PWM duty L1 on TIM3, Channel#3. */
+      break;
+    case LSM_TYPE_L1 :
+      __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, u32PwmDuty);  /* Set PWM duty L2 on TIM4, Channel#2. */
+      break;
+    case LSM_TYPE_L2 :
+      __HAL_TIM_SET_COMPARE(&htim12, TIM_CHANNEL_1, u32PwmDuty);  /* Set PWM duty L3 on TIM12, Channel#1. */
       break;
     default :
       break;
@@ -97,11 +161,11 @@ PUBLIC void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
 }
 
 PUBLIC U32 u32DiagTusCntCallback(void* pvArgs) {
-  return (U32)TIM22->CNT;
+  return (U32)TIM7->CNT;
 }
 
 PUBLIC U32 u32DiagTusCntPrdCallback(void* pvArgs) {
-  return (U32)TIM22->ARR;
+  return (U32)TIM7->ARR;
 }
 
 PUBLIC void vidDiagTraceCallback(char* pcTrace) {
@@ -110,9 +174,8 @@ PUBLIC void vidDiagTraceCallback(char* pcTrace) {
 
 PUBLIC void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  if (htim == &htim21) {
+  if (htim == &htim6) {
     vidGslSrvcCallback(gNULL);
   }
 }
 
-#endif
