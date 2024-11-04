@@ -25,7 +25,7 @@ EXTERN TIM_HandleTypeDef htim7;
 /* Private function prototypes -----------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 PRIVATE U32 gu32TraceCounter = (U32)0;
-PRIVATE tenuBsmNotify genuBsmNtfPrev[BSM_BTN_MAX] = {0};
+PRIVATE tenuBsmNotify genuBsmNtfPrev[LSM_LED_MAX][BSM_BTN_MAX] = {0};
 
 /* Public functions ----------------------------------------------------------*/
 
@@ -41,7 +41,7 @@ PUBLIC tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
 
   switch (enuType) {
     case BSM_TYPE_B0 :
-      enuEvent = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) ? BSM_EVT_PSH : BSM_EVT_RLS;
+      enuEvent = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) == GPIO_PIN_RESET) ? BSM_EVT_RLS : BSM_EVT_PSH;
       break;
     default :
       break;
@@ -59,7 +59,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
       u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim3, TIM_CHANNEL_3);
       enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
       
-      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+      if (enuBsmNotify != genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType]) {
         switch (enuBsmNotify) {
           case BSM_NTF_SHORT :
             if (u32PwmDuty == (U32)0) {
@@ -78,7 +78,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
           default :
             break;
         }
-        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
+        genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType] = enuBsmNotify;
       }
       break;
 
@@ -86,7 +86,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
       u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim4, TIM_CHANNEL_2);
       enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
 
-      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+      if (enuBsmNotify != genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType]) {
         switch (enuBsmNotify) {
           case BSM_NTF_SHORT :
             if (u32PwmDuty == (U32)0) {
@@ -105,7 +105,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
           default :
             break;
         }
-        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
+        genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType] = enuBsmNotify;
       }
       break;
 
@@ -113,7 +113,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
       u32PwmDuty = (U32)__HAL_TIM_GET_COMPARE(&htim12, TIM_CHANNEL_1);
       enuBsmNotify = enuGslBsmNotifyCallback(enuBsmType);
 
-      if (enuBsmNotify != genuBsmNtfPrev[enuBsmType]) {
+      if (enuBsmNotify != genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType]) {
         switch (enuBsmNotify) {
           case BSM_NTF_SHORT :
             if (u32PwmDuty == (U32)0) {
@@ -132,7 +132,7 @@ PUBLIC tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enuBsmType, tenuLsmType e
           default :
             break;
         }
-        genuBsmNtfPrev[enuBsmType] = enuBsmNotify;
+        genuBsmNtfPrev[(U32)enuLsmType][(U32)enuBsmType] = enuBsmNotify;
       }
       break;
 
