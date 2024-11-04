@@ -11,16 +11,10 @@
 #define INCLUDE_APP_API_H_
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f429xx.h"
 #include "gsl_def.h"
 
 /* Exported defines ----------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
-typedef struct {
-  GPIO_TypeDef  *pGpiox;
-  uint16_t      u16GpioPin;
-} tstrAppBtnHandle;
-
 /* Exported functions prototypes ---------------------------------------------*/
 
 PUBLIC void vidAppMain(void);
@@ -28,7 +22,5 @@ PUBLIC void vidAppService(void);
 PUBLIC void vidAppInitialize(void);
 PUBLIC U32  u32AppTickCallback(void* pvArgs);
 PUBLIC gBOOL bAppBtnExtractEventCallback(void* pvArgs);
-
-extern tstrAppBtnHandle gpstrAppBtnHandle[];
 
 #endif /* INCLUDE_APP_API_H_ */

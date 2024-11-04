@@ -17,9 +17,9 @@
 #define FEATURE_LSM
 #define FEATURE_DIAG
 
-#define FEATURE_L053R8
+// #define FEATURE_L053R8
 // #define FEATURE_G0B1RE
-// #define FEATURE_F429ZI
+#define FEATURE_F429ZI
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/

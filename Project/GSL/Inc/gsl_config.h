@@ -102,7 +102,31 @@ EXTERN void vidDiagTraceCallback(char* pcTrace);
 #elif defined FEATURE_G0B1RE
 /* TBD */
 #elif defined FEATURE_F429ZI
-/* TBD */
+#define BSM_BTN_MAX   (U32)1  /**< The maximum of buttons managed by BSM. */
+
+#define BSM_NAME_B0   (const char*)"B1(B)" /**< B1_BLUE PC13 on F429ZI. */
+#define BSM_NAME_B1   (const char*)""
+#define BSM_NAME_B2   (const char*)""
+#define BSM_NAME_B3   (const char*)""
+#define BSM_NAME_B4   (const char*)""
+
+#define BSM_PRD_B0    (U32)1  /**< B1_BLUE PC13 on L053R8TX. */
+#define BSM_PRD_B1    (U32)0
+#define BSM_PRD_B2    (U32)0
+#define BSM_PRD_B3    (U32)0
+#define BSM_PRD_B4    (U32)0
+
+#define BSM_MCCP_B0   (U32)5    /* The match count of chattering prevention for buttons. */
+#define BSM_MCCP_B1   (U32)5    /* The match count of chattering prevention for buttons. */
+#define BSM_MCCP_B2   (U32)5    /* The match count of chattering prevention for buttons. */
+#define BSM_MCCP_B3   (U32)5    /* The match count of chattering prevention for buttons. */
+#define BSM_MCCP_B4   (U32)5    /* The match count of chattering prevention for buttons. */
+
+#define BSM_THN_B0    (U32)1000 /* The threshold between short and long press on buttons. */
+#define BSM_THN_B1    (U32)1000 /* The threshold between short and long press on buttons. */
+#define BSM_THN_B2    (U32)1000 /* The threshold between short and long press on buttons. */
+#define BSM_THN_B3    (U32)1000 /* The threshold between short and long press on buttons. */
+#define BSM_THN_B4    (U32)1000 /* The threshold between short and long press on buttons. */
 #endif
 
 typedef tenuBsmEvent (*tpfBsmEventCallback)(tenuBsmType enuType);
@@ -160,7 +184,49 @@ EXTERN tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType);
 #elif defined FEATURE_G0B1RE
 /* TBD */
 #elif defined FEATURE_F429ZI
-/* TBD */
+#define LSM_LED_MAX   (U32)3  /**< The maximum of buttons managed by BSM. */
+
+#define LSM_NAME_L0   (const char*)"LD1(G)" /**< LD1(G) PB0, TIM3_CH3 on F429ZI. */
+#define LSM_NAME_L1   (const char*)"LD2(B)" /**< LD2(B) PB7, TIM4_CH2 on F429ZI. */
+#define LSM_NAME_L2   (const char*)"LD3(R)" /**< LD3(R) PB14, TIM12_CH1 on F429ZI. */
+#define LSM_NAME_L3   (const char*)""
+#define LSM_NAME_L4   (const char*)""
+
+#define LSM_PRD_L0    (U32)1  /**< LD1(G) PB0, TIM3_CH3 on F429ZI. */
+#define LSM_PRD_L1    (U32)1  /**< LD2(B) PB7, TIM4_CH2 on F429ZI. */
+#define LSM_PRD_L2    (U32)1  /**< LD3(R) PB14, TIM12_CH1 on F429ZI. */
+#define LSM_PRD_L3    (U32)0
+#define LSM_PRD_L4    (U32)0
+
+#define LSM_BSM_TYPE_L0 BSM_TYPE_B0 /**< B(B) PC13 on F429ZI. */
+#define LSM_BSM_TYPE_L1 BSM_TYPE_B0 /**< B(B) PC13 on F429ZI. */
+#define LSM_BSM_TYPE_L2 BSM_TYPE_B0 /**< B(B) PC13 on F429ZI. */
+#define LSM_BSM_TYPE_L3 BSM_TYPE_B0 /**< Dummy */
+#define LSM_BSM_TYPE_L4 BSM_TYPE_B0 /**< Dummy */
+
+#define LSM_FI_TMO_L0 (U32)1000 /**< LD1(G) PB0, TIM3_CH3 on F429ZI. */
+#define LSM_FI_TMO_L1 (U32)500  /**< LD2(B) PB7, TIM4_CH2 on F429ZI. */
+#define LSM_FI_TMO_L2 (U32)100  /**< LD3(R) PB14, TIM12_CH1 on F429ZI. */
+#define LSM_FI_TMO_L3 (U32)0
+#define LSM_FI_TMO_L4 (U32)0
+
+#define LSM_FO_TMO_L0 (U32)2000 /**< LD1(G) PB0, TIM3_CH3 on F429ZI. */
+#define LSM_FO_TMO_L1 (U32)1000 /**< LD2(B) PB7, TIM4_CH2 on F429ZI. */
+#define LSM_FO_TMO_L2 (U32)200  /**< LD3(R) PB14, TIM12_CH1 on F429ZI. */
+#define LSM_FO_TMO_L3 (U32)0
+#define LSM_FO_TMO_L4 (U32)0
+
+#define LSM_PWM_MIN_L0   (U32)0
+#define LSM_PWM_MIN_L1   (U32)0
+#define LSM_PWM_MIN_L2   (U32)0
+#define LSM_PWM_MIN_L3   (U32)0
+#define LSM_PWM_MIN_L4   (U32)0
+
+#define LSM_PWM_MAX_L0   (U32)16799 /**< LD1(G) PB0, TIM3_CH3 on F429ZI. */
+#define LSM_PWM_MAX_L1   (U32)16799 /**< LD2(B) PB7, TIM4_CH2 on F429ZI. */
+#define LSM_PWM_MAX_L2   (U32)16799 /**< LD3(R) PB14, TIM12_CH1 on F429ZI. */
+#define LSM_PWM_MAX_L3   (U32)0
+#define LSM_PWM_MAX_L4   (U32)0
 #endif
 
 typedef tenuLsmEvent (*tpfLsmEventCallback)(tenuBsmType enuBsmType, tenuLsmType enuType);
