@@ -2,13 +2,13 @@
  * @file    gsl_lsm.h
  * @brief   This file provides LSM (LED Service Manager) interfaces.
  * @author  Gtuja
- * @date    Oct 27, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef XSM_INC_GSL_LSM_H_
-#define XSM_INC_GSL_LSM_H_
+#ifndef PSM_INC_GSL_LSM_H_
+#define PSM_INC_GSL_LSM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -29,4 +29,4 @@ typedef enum {
 PUBLIC void vidLsmInit(void* pvArgs);
 PUBLIC void vidLsmSrvc(void* pvArgs);
 
-#endif /* XSM_INC_GSL_LSM_H_ */
+#endif /* PSM_INC_GSL_LSM_H_ */

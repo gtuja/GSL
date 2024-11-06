@@ -1,8 +1,8 @@
 /**
  * @file    gsl_def.h
- * @brief   This file is used to ... 
+ * @brief   This file is comprised of defines those are used by UA and GSL.
  * @author  Gtuja
- * @date    Oct 9, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 

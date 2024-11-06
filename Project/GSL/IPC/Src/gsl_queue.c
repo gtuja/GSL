@@ -2,14 +2,13 @@
  * @file    gsl_queue.c
  * @brief   This file implements GSL queue features. 
  * @author  Gtuja
- * @date    Oct 27, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_queue.h"
 #include "gsl_diag.h"
-#include <stdio.h>
 #include <string.h>
 
 /* External variables ---------------------------------------------- */

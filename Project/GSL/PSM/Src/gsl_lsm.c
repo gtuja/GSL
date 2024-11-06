@@ -1,8 +1,8 @@
 /**
  * @file    gsl_lsm.c
- * @brief   This file is used to ... 
+ * @brief   This file is used to implement LSM manages LED states.
  * @author  Gtuja
- * @date    Oct 12, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -11,7 +11,6 @@
 #include "gsl_lsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
-#include <stdio.h>
 
 /* External variables --------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
@@ -28,24 +27,19 @@ typedef struct {
   tpfLsmOutputCallback  pfOutputCallback; /**< Callback for LED output. */
 } tstrLsmCfg;
 
-typedef void (*tpfLsmSttFtn)(tenuLsmType enuType);  /** LSM state functions */
-typedef struct {
-  tpfLsmSttFtn pfEntry;  /**< BSM state function, entry. */
-  tpfLsmSttFtn pfDo;     /**< BSM state function, do. */
-  tpfLsmSttFtn pfExit;   /**< BSM state function, exit. */
-} tstrLsmSttFtn;
-
 typedef struct {
   const tstrLsmCfg* pcstrLsmCfg;        /**< LSM configuration. */
-  U32               u32FadeInCnt;       /**< u32MatchCounter is used for chattering prevention within XLM state machine. */
-  U32               u32FadeInCntMax;    /**< u32MatchCounter is used for chattering prevention within XLM state machine. */
-  U32               u32FadeInDutyDiff;  /**< u32MatchCounter is used for chattering prevention within XLM state machine. */
-  U32               u32FadeOffCnt;      /**< u32MatchCounter is used for chattering prevention within XLM state machine. */
-  U32               u32FadeOffCntMax;   /**< u32MatchCounter is used for chattering prevention within XLM state machine. */
-  U32               u32FadeOffDutyDiff; /**< u32MatchCounter is used for chattering prevention within XLM state machine. */
+  U32               u32FadeInCnt;       /**< u32FadeInCnt is used for fade in. */
+  U32               u32FadeInCntMax;    /**< u32FadeInCntMax is used for fade in. */
+  U32               u32FadeInDutyDiff;  /**< u32FadeInDutyDiff is used for fade in. */
+  U32               u32FadeOffCnt;      /**< u32FadeOffCnt is used for fade off. */
+  U32               u32FadeOffCntMax;   /**< u32FadeOffCntMax is used for fade off. */
+  U32               u32FadeOffDutyDiff; /**< u32FadeOffDutyDiff is used  for fade off. */
   tenuLsmState      enuSttCur;          /**< The current LSM state. */
   tenuLsmState      enuSttPrev;         /**< The previous LSM state. */
 } tstrLsmControl;
+
+typedef void (*tpfLsmSttFtn)(tenuLsmType enuType);  /** LSM state functions */
 
 /* Private function prototypes -----------------------------------------------*/
 PRIVATE void vidLsmTransit(tenuLsmType enuType, tenuLsmState enuStateNext, tenuLsmEvent enuEvent);

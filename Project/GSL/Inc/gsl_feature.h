@@ -2,7 +2,7 @@
  * @file    gsl_feature.h
  * @brief   This file is comprised of defines, i.e., macros, those specify GSL features.
  * @author  Gtuja
- * @date    Oct 27, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 

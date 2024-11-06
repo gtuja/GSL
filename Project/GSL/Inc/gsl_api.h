@@ -1,20 +1,20 @@
 /**
  * @file    gsl_api.h
- * @brief   This file is used to ... 
+ * @brief   This file is comprised of interfaces between UA and GSL.
  * @author  Gtuja
  * @date    Oct 9, 2024
  * @note    Copyleft, All rights reversed.
  */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+/* Define to prevent recursive inclusion --------------------------- */
 #ifndef GSL_API_H_
 #define GSL_API_H_
 
-/* Includes ------------------------------------------------------------------*/
+/* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
 
-/* Exported defines ----------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
+/* Exported defines ------------------------------------------------ */
+/* Exported types -------------------------------------------------- */
 /* Exported functions ---------------------------------------------- */
 EXTERN void vidGslInitCallback(void* pvArgs);
 EXTERN void vidGslSrvcCallback(void* pvArgs);

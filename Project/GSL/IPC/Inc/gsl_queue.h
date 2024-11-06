@@ -2,13 +2,13 @@
  * @file    gsl_queue.h
  * @brief   This file provides GSL queue interfaces. 
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef NOOS_INC_GSL_QUEUE_H_
-#define NOOS_INC_GSL_QUEUE_H_
+#ifndef IPC_INC_GSL_QUEUE_H_
+#define IPC_INC_GSL_QUEUE_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -34,4 +34,4 @@ PUBLIC void* pvQueDequeue(tenuQueType enuType);
 
 /* Exported variables ---------------------------------------------- */
 
-#endif /* NOOS_INC_GSL_QUEUE_H_ */
+#endif /* IPC_INC_GSL_QUEUE_H_ */

@@ -3,6 +3,10 @@
     "gsl_queue.h": "c",
     "gsl_def.h": "c",
     "gsl_feature.h": "c",
-    "gsl_config.h": "c"
+    "gsl_config.h": "c",
+    "gsl_diag.h": "c",
+    "gsl_lsm.h": "c",
+    "gsl_tpm.h": "c",
+    "gsl_psm.h": "c"
   }
 }

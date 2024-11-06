@@ -1,8 +1,8 @@
 /**
- * @file    gsl_bpm.c
- * @brief   This file is used to implement BPM manages background processes.
+ * @file    gsl_tpm.c
+ * @brief   This file is used to implement TPM manages background processes.
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -17,21 +17,21 @@
 
 /* External variables ----------------------------------------------- */
 /* Private define --------------------------------------------------- */
-#define BPM_XSM_NAME(index)      gpcXsmNameTbl[index]
-#define BPM_BSM_STT_NAME(index)  gpcBsmSttNameTbl[index]
-#define BPM_BSM_EVT_NAME(index)  gpcBsmEvtNameTbl[index]
-#define BPM_BSM_NTF_NAME(index)  gpcBsmNtfNameTbl[index]
+#define TPM_XSM_NAME(index)      gpcXsmNameTbl[index]
+#define TPM_BSM_STT_NAME(index)  gpcBsmSttNameTbl[index]
+#define TPM_BSM_EVT_NAME(index)  gpcBsmEvtNameTbl[index]
+#define TPM_BSM_NTF_NAME(index)  gpcBsmNtfNameTbl[index]
 
-#define BPM_LSM_STT_NAME(index)  gpcLsmSttNameTbl[index]
-#define BPM_LSM_EVT_NAME(index)  gpcLsmEvtNameTbl[index]
+#define TPM_LSM_STT_NAME(index)  gpcLsmSttNameTbl[index]
+#define TPM_LSM_EVT_NAME(index)  gpcLsmEvtNameTbl[index]
 
 /* Private typedef -------------------------------------------------- */
 /* Private function prototypes -------------------------------------- */
-PRIVATE void vidBpmProcIdle(void* pvArgs);
-PRIVATE void vidBpmProcDiag(void* pvArgs);
-PRIVATE void vidBpmProcDiagTrace(CH* pcTrace);
-PRIVATE void vidBpmProcDiagTracePsmState(tstrDiagTracePsmState* tstrDiagTracePsmState);
-PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
+PRIVATE void vidTpmProcIdle(void* pvArgs);
+PRIVATE void vidTpmProcDiag(void* pvArgs);
+PRIVATE void vidTpmProcDiagTrace(CH* pcTrace);
+PRIVATE void vidTpmProcDiagTracePsmState(tstrDiagTracePsmState* tstrDiagTracePsmState);
+PRIVATE void vidTpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
 
 /* Private variables ------------------------------------------------ */
 PRIVATE const char* gpcPsmNameTbl[BSM_STT_MAX] = {
@@ -79,51 +79,51 @@ PRIVATE const char* gpcLsmEvtNameTbl[LSM_EVT_MAX] = {
 
 /* Public functions ------------------------------------------------- */
 /**
- * @brief   A public function that initialize BPM.
+ * @brief   A public function that initialize TPM.
  * @param   pvArgs  arguments reserved.
  * @sa      vidGslInitCallback
  * @return  void
  */
-PUBLIC void vidBpmInit(void* pvArgs) {
+PUBLIC void vidTpmInit(void* pvArgs) {
 }
 
 /**
- * @brief   A public function that do BPM processes.
+ * @brief   A public function that do TPM processes.
  * @param   pvArgs  arguments reserved.
  * @sa      vidGslProcCallback
  * @return  void
  */
-PUBLIC void vidBpmProc(void* pvArgs) {
-  vidBpmProcIdle(gNULL);
-  vidBpmProcDiag(gNULL);
+PUBLIC void vidTpmProc(void* pvArgs) {
+  vidTpmProcIdle(gNULL);
+  vidTpmProcDiag(gNULL);
 }
 
 /**
  * @brief   A public function that do idle processes.
  * @param   pvArgs  arguments reserved.
- * @sa      vidBpmProc
+ * @sa      vidTpmProc
  * @return  void
  */
-PRIVATE void vidBpmProcIdle(void* pvArgs) {
+PRIVATE void vidTpmProcIdle(void* pvArgs) {
 }
 
 /**
  * @brief   A public function that do diagnostic processes.
  * @param   pvArgs  arguments reserved.
- * @sa      vidBpmProc
+ * @sa      vidTpmProc
  * @return  void
  */
-PRIVATE void vidBpmProcDiag(void* pvArgs) {
+PRIVATE void vidTpmProcDiag(void* pvArgs) {
   if (bQueIsEmpty(QUE_DIAG_TRACE) != gTRUE) {
-    vidBpmProcDiagTrace((char*)pvQueDequeue(QUE_DIAG_TRACE));
+    vidTpmProcDiagTrace((char*)pvQueDequeue(QUE_DIAG_TRACE));
   }
 
   if (bQueIsEmpty(QUE_DIAG_TRACE_PSM_STATE) != gTRUE) {
-    vidBpmProcDiagTracePsmState((tstrDiagTracePsmState*)pvQueDequeue(QUE_DIAG_TRACE_PSM_STATE));
+    vidTpmProcDiagTracePsmState((tstrDiagTracePsmState*)pvQueDequeue(QUE_DIAG_TRACE_PSM_STATE));
   }
 
   if (bQueIsEmpty(QUE_DIAG_KEEP_ALIVE) != gTRUE) {
-    vidBpmProcDiagKeepAlive((tstrDiagKeepAlive*)pvQueDequeue(QUE_DIAG_KEEP_ALIVE));
+    vidTpmProcDiagKeepAlive((tstrDiagKeepAlive*)pvQueDequeue(QUE_DIAG_KEEP_ALIVE));
   }
 }
 
@@ -132,7 +132,7 @@ PRIVATE void vidBpmProcDiag(void* pvArgs) {
  * @param   pcTrace The string for trace GSL
  * @return  void
  */
-PRIVATE void vidBpmProcDiagTrace(CH* pcTrace) {
+PRIVATE void vidTpmProcDiagTrace(CH* pcTrace) {
   vidDiagTraceCallback(pcTrace);
 }
 
@@ -141,7 +141,7 @@ PRIVATE void vidBpmProcDiagTrace(CH* pcTrace) {
  * @param   tstrDiagTraceXsmState The dequeued state transition information of the XSM.
  * @return  void
  */
-PRIVATE void vidBpmProcDiagTracePsmState(tstrDiagTracePsmState* pstrDiagTracePsmState) {
+PRIVATE void vidTpmProcDiagTracePsmState(tstrDiagTracePsmState* pstrDiagTracePsmState) {
   CH pcTrace[QUE_DIAG_TRACE_LEN];
   
   switch (pstrDiagTracePsmState->enuType) {
@@ -177,7 +177,7 @@ PRIVATE void vidBpmProcDiagTracePsmState(tstrDiagTracePsmState* pstrDiagTracePsm
  * @param   pstrKeepAlive The dequeued keep alive information of the PSM.
  * @return  void
  */
-PRIVATE void vidBpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive) {
+PRIVATE void vidTpmProcDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive) {
   CH pcTrace[QUE_DIAG_TRACE_LEN];
   
   U32 u32hourTotal;
