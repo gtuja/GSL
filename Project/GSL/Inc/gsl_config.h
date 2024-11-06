@@ -3,7 +3,7 @@
  * @brief   gsl_config.h contains contains defines for each modules
  *          in the GSL to satisfy UA requirements.  
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 

@@ -3,7 +3,7 @@
  * @brief   This file is used to implement GSL that
  *          plays a counter role between GSL and UA.
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -29,7 +29,7 @@
  */
 PUBLIC void vidGslInitCallback(void* pvArgs) {
   vidPsmInit(gNULL);
-  vidBpmInit(gNULL);
+  vidTpmInit(gNULL);
   vidQueInit(gNULL);
   vidDiagInit(gNULL);
 }
@@ -46,13 +46,13 @@ PUBLIC void vidGslSrvcCallback(void* pvArgs) {
 }
 
 /**
- * @brief   A public function shall do GSL background processes (BPM).
+ * @brief   A public function shall do GSL background processes (TPM).
  * @param   pvArgs  arguments reserved.
  * @note    UA shall call this callback in the thread loop, main().
  * @return  void
  */
 PUBLIC void vidGslProcCallback(void* pvArgs) {
-  vidBpmProc(gNULL);
+  vidTpmProc(gNULL);
 }
 
 /**

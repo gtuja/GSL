@@ -2,7 +2,7 @@
  * @file    gsl_bsm.c
  * @brief   This file is used to implement BSM manages button states.
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -11,7 +11,6 @@
 #include "gsl_bsm.h"
 #include "gsl_diag.h"
 #include "gsl_queue.h"
-#include <stdio.h>
 
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
@@ -24,13 +23,6 @@ typedef struct {
   tpfBsmEventCallback pfBsmEventCallback;   /**< Callback for retrieving tenuBsmEvent. */
 } tstrBsmCfg;
 
-typedef void (*tpfBsmSttFtn)(tenuBsmType enuType);  /** BSM state functions */
-typedef struct {
-  tpfBsmSttFtn pfEntry;  /**< BSM state function, entry. */
-  tpfBsmSttFtn pfDo;     /**< BSM state function, do. */
-  tpfBsmSttFtn pfExit;   /**< BSM state function, exit. */
-} tstrBsmSttFtn;
-
 typedef struct {
   const tstrBsmCfg* pcstrBsmCfg;  /**< BSM configuration. */
   U32               u32MCCPCnt;   /**< u32MCCPCnt is used for chattering prevention within BSM state machine. */
@@ -39,6 +31,8 @@ typedef struct {
   tenuBsmStt        enuSttPrev;   /**< The previous BSM state. */
   tenuBsmNotify     enuNotify;    /**< Event notified by BSM. */
 } tstrBsmCtrl;
+
+typedef void (*tpfBsmSttFtn)(tenuBsmType enuType);  /** BSM state functions */
 
 /* Private function prototypes ------------------------------------- */
 PRIVATE void vidBsmTransit(tenuBsmType enuType, tenuBsmStt enuStateNext, tenuBsmEvent enuEvent);
@@ -115,7 +109,7 @@ PRIVATE U32 gu32BsmCnt = (S32)0;
 
 /* Public functions ------------------------------------------------ */
 /**
- * @brief   A public function that initialize BSM called by ISB.
+ * @brief   A public function that initialize BSM called by vidPsmInit.
  * @param   pvArgs  arguments reserved. 
  * @sa      vidPsmInit
  * @return  void
@@ -131,7 +125,7 @@ PUBLIC void vidBsmInit(void* pvArgs) {
 }
 
 /**
- * @brief   A public function that process BSM called by PSM.
+ * @brief   A public function that service BSM called by vidPsmSrvc.
  * @param   pvArgs  arguments reserved. 
  * @sa      vidGslPsmService
  * @return  void

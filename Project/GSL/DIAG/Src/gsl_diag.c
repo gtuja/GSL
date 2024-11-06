@@ -2,7 +2,7 @@
  * @file    gsl_diag.c
  * @brief   This file implements DIAG interfaces and UA callbacks as week functions.
  * @author  Gtuja
- * @date    Oct 27, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 

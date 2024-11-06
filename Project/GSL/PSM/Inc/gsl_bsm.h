@@ -2,13 +2,13 @@
  * @file    gsl_bsm.h
  * @brief   This file provides BSM interfaces. 
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion --------------------------- */
-#ifndef XSM_INC_GSL_BSM_H_
-#define XSM_INC_GSL_BSM_H_
+#ifndef PSM_INC_GSL_BSM_H_
+#define PSM_INC_GSL_BSM_H_
 
 /* Includes -------------------------------------------------------- */
 #include "gsl_config.h"
@@ -30,4 +30,4 @@ PUBLIC void vidBsmInit(void* pvArgs);
 PUBLIC void vidBsmSrvc(void* pvArgs);
 PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType);
 
-#endif /* XSM_INC_GSL_BSM_H_ */
+#endif /* PSM_INC_GSL_BSM_H_ */

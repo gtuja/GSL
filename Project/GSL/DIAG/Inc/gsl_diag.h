@@ -1,8 +1,8 @@
 /**
  * @file    gsl_diag.h
- * @brief   This file is used to ... 
+ * @brief   This file is comprised of interfaces, i.e., types, function prototypes for DIAG.
  * @author  Gtuja
- * @date    Oct 19, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -33,7 +33,6 @@ typedef struct {
 
 /* Exported functions ---------------------------------------------- */
 PUBLIC void vidDiagInit(void* pvArgs);
-PUBLIC void vidDiagTusAccumulate(void* pvArgs);
 PUBLIC void vidDiagTusStart(void* pvArgs);
 PUBLIC U32  u32DiagTusElapsed(void* pvArgs);
 PUBLIC void vidDiagTrace(CH* pcTrace);

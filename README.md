@@ -23,7 +23,8 @@
 - [TOC](#toc)
 - v0.1 2024/10/11 Seho.Seo Brand new repository..
 - v0.2 2024/10/24 Seho.Seo Update overall.
-  
+- v0.3 2024/11/07 Seho.Seo Update overall.
+
 </details>
 
 <div id="Abbreviation"></div>
@@ -36,17 +37,11 @@
 |:--|:--|
 |GSL|G? Static Library|
 |UA|User Application|
+|PSM|Periodic Service Manager|
+|TPM|Task Process Manager|
 |DIAG|Diagnostics|
 |IPC|Inter Process Communication|
-|NOOS|NO Operating System|
-|BPM|Background Process Manager|
-|PSM|Periodic Service Manager|
-|XPM|eXtended Process Manager|
-|DPM|Diagnostic Process Manager|
-|IPM|Idle Process Manage
-|XSM|eXtended Service Manager|
 |BSM|Button Service Manager|
-|DSM|Diagnostic Service Manager|
 |LSM|LED Service Manager|
 
 <br>
@@ -58,7 +53,7 @@
 
 - [TOC](#toc)
 - GSL is a collection of C libraries for embedded devices.
-- GSL is comprised of NOOS and modules that implement general purpose features.
+- GSL is comprised of modules those implement general purpose features.
 - GSL shall be deployed as a platform independent static library. 
 - Keep in mind [Golden ratio](https://en.m.wikipedia.org/wiki/Golden_ratio) and [Affordance](https://en.m.wikipedia.org/wiki/Affordance), divide and conquer with [Occam's razor](https://en.m.wikipedia.org/wiki/Occam%27s_razor). 
 
@@ -71,7 +66,8 @@
 - [TOC](#toc)
 - Nucleo Evaluation Board<br>
   - [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-l053r8.html)
-  - [NUCLEO-L053R8](https://www.st.com/en/evaluation-tools/nucleo-f429zi.html)
+  - [NUCLEO-F429ZI](https://www.st.com/en/evaluation-tools/nucleo-f429zi.html)
+  - [NUCLEO-G0B1RE](https://www.st.com/en/evaluation-tools/nucleo-g0b1re.html)
 - PC
 - Wifi
 - [Github account](https://github.com)
@@ -96,9 +92,8 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 - [GSL](#GSL)
 - [DIAG](#DIAG)
 - [IPC](#IPC)
-- [NOOS](#NOOS)
-- [XPM](#XPM)
-- [XSM](#XSM)
+- [PSM](#PSM)
+- [TPM](#TPM)
 
 </details>
 
@@ -122,17 +117,15 @@ The latest version is always a good choice, but let's use CubeIDE with ***1.16.0
 |||
 
 - ***Inc***<br>
-Each of files in this folder provides interfaces between GSL and UA (User Application).<br>
-
+Each of files in this folder provides interfaces between GSL and UA (User Application).
 - ***gsl_api.h***<br>
 gsl_api.h provides GSL callback APIs below shall be called by UA.<br>
 
 ```C
-PUBLIC void vidGslInitCallback(void* pvArgs);
-PUBLIC void vidGslSrvcCallback(void* pvArgs);
-PUBLIC void vidGslProcCallback(void* pvArgs);
+EXTERN void vidGslInitCallback(void* pvArgs);
+EXTERN void vidGslSrvcCallback(void* pvArgs);
+EXTERN void vidGslProcCallback(void* pvArgs);
 EXTERN tenuBsmNotify enuGslBsmNotifyCallback(tenuBsmType enuType);
-EXTERN void vidGslDiagElapsedCallback(void* pvArgs);
 ...
 ```
 
@@ -170,6 +163,7 @@ gsl_feature.h is comprised of defines, i.e., macros, those specify GSL features.
 #define FEATURE_BSM
 #define FEATURE_LSM
 #define FEATURE_DIAG
+#define FEATURE_L053R8
 ...
 ```
 
@@ -188,8 +182,8 @@ gsl.c implements GSL APIs provided through gsl_api.h to UA.<br>
 
 | Path | File Name |
 |:--|:--|
-|Libs/DIAG/Inc|gsl_diag.h|
-|Libs/DIAG/Src|gsl_diag.c|
+|DIAG/Inc|gsl_diag.h|
+|DIAG/Src|gsl_diag.c|
 |||
 
 - ***gsl_diag.h***<br>
@@ -197,12 +191,11 @@ gsl_diag.h provides diagnostic method, e.g., vidDiagTusStart, vidDiagTrace, etc,
 
 ```C
 PUBLIC void vidDiagInit(void* pvArgs);
-PUBLIC void vidDiagTusAccumulate(void* pvArgs);
 PUBLIC void vidDiagTusStart(void* pvArgs);
 PUBLIC U32  u32DiagTusElapsed(void* pvArgs);
-PUBLIC U64  u64DiagGetTusTotal(void *pvArgs);
 PUBLIC void vidDiagTrace(CH* pcTrace);
-PUBLIC void vidDiagKeepAlive(tstrDiagKeepAlive* pstrKeepAlive);
+PUBLIC void vidDiagTracePsmState(tenuPsmType enuType, const CH* pcName, U32 u32SttPrevious, U32 u32SttCurrent, U32 u32Event);
+PUBLIC void vidDiagKeepAlive(U32 u32TmsCnt, U32 u32TusOrtMax);
 ...
 ```
 
@@ -223,14 +216,14 @@ PUBLIC __attribute__((weak)) void vidDiagTraceCallback(char* pcTrace) {}
 <summary><font size="5"><b>IPC</b></font></summary>
 
 - [Features](#Features)
-- IPC (Inter Process Communication) provides communication between ISR (Interrupt Service Routine) and Thread, i.e., background process
-- Time consuming requests, e.g., serial communication, E2P manipulation, from ISR shall be done in thread with IPC interfaces.
+- IPC (Inter Process Communication) provides communication among GSL modules.
+- Time consuming requests, e.g., serial communication, shall be done in task with IPC interfaces.
 - Folder structure
 
 | Path | File Name |
 |:--|:--|
-|Libs/IPC/Inc|gsl_queue.h|
-|Libs/IPC/Src|gsl_queue.c|
+|IPC/Inc|gsl_queue.h|
+|IPC/Src|gsl_queue.c|
 |||
 
 - ***gsl_queue.h***<br>
@@ -250,33 +243,26 @@ gsl_queue.c implements simple queue features and interfaces.<br>
 
 </details>
 
-<div id="NOOS"></div>
+<div id="PSM"></div>
 <details open>
-<summary><font size="5"><b>NOOS</b></font></summary>
+<summary><font size="5"><b>PSM</b></font></summary>
 
 - [Features](#Features)
-- NOOS (NO Operating System) provides OS-like features, e.g., periodic service, background process.
+- PSM (Periodic Service Manager) provides periodic services, i.e., BSM (Button Service Manager), LSM(LED Service Manager).
 - Folder structure
 
 | Path | File Name |
 |:--|:--|
-|Libs/NOOS/Inc|gsl_bpm.h|
-||gsl_psm.h|
-|Libs/NOOS/Src|gsl_bpm.c|
-||gsl_psm.c|
+|PSM/Inc|gsl_psm.h|
+||gsl_bsm.h|
+||gsl_lsm.h|
+|PSM/Src|gsl_psm.c|
+||gsl_bsm.c|
+||gsl_lsm.c|
 |||
 
-- ***gsl_bpm.h***<br>
-gsl_bpm.h provides BPM (Background Process Manager) interfaces, e.g., vidBpmInit, vidBpmProc, etc.<br>
-
-```C
-PUBLIC void vidBpmInit(void* pvArgs);
-PUBLIC void vidBpmProc(void* pvArgs);
-...
-```
-
 - ***gsl_psm.h***<br>
-gsl_psm.h provides PSM (Periodic Service Manager) interfaces, e.g., vidPsmInit, vidPsmSrvc, etc..<br>
+gsl_psm.h provides PSM (Periodic Service Manager) interfaces, e.g., vidPsmInit, vidPsmSrvc, etc.<br>
 
 ```C
 PUBLIC void vidPsmInit(void* pvArgs);
@@ -284,84 +270,8 @@ PUBLIC void vidPsmSrvc(void* pvArgs);
 ...
 ```
 
-- ***gsl_bpm.c***<br>
-gsl_bpm.c implements BPM features and interfaces, e.g., vidBpmInit, vidBpmProc, etc.<br>
-
-- ***gsl_psm.c***<br>
-gsl_psm.c implements PSM features and interfaces, e.g., vidPsmInit, vidPsmSrvc, etc.<br>
-
-</details>
-
-<div id="XPM"></div>
-<details open>
-<summary><font size="5"><b>XPM</b></font></summary>
-
-- [Features](#Features)
-- XPM (eXtended Process Manager) provide polling processes as part of BPM.
-- Folder structure
-
-| Path | File Name |
-|:--|:--|
-|Libs/XPM/Inc|gsl_dpm.h|
-||gsl_ipm.h|
-||gsl_xpm.h|
-|Libs/XPM/Src|gsl_dpm.c|
-||gsl_ipm.c|
-||gsl_xsm.c|
-|||
-
-- ***gsl_dpm.h***<br>
-gsl_dpm.h provides DPM (Diagnostic Process Manager) interfaces, e.g., vidDpmInit, vidDpmProc, etc.<br>
-
-```C
-PUBLIC void vidDpmInit(void* pvArgs);
-PUBLIC void vidDpmProc(void* pvArgs);
-...
-```
-
-- ***gsl_ipm.h***<br>
-gsl_ipm.h provides IPM (Idle Process Manager) interfaces, e.g., vidIpmInit, vidIpmProc <br>
-
-```C
-PUBLIC void vidIpmInit(void* pvArgs);
-PUBLIC void vidIpmProc(void* pvArgs);
-...
-```
-
-- ***gsl_xpm.h***<br>
-gsl_xpm.h provides XPM shared data types among XPM modules.<br>
-
-
-- ***gsl_dpm.c***<br>
-gsl_dpm.c implements DPM features and interfaces.<br>
-
-- ***gsl_ipm.c***<br>
-gsl_ipm.c implements IPM features and interfaces.<br>
-
-</details>
-
-<div id="XSM"></div>
-<details open>
-<summary><font size="5"><b>XSM</b></font></summary>
-
-- [Features](#Features)
-- XSM (exTended Service Manager) provides button, LED, Diag services as part of PSM.<br>
-- Folder structure
-
-| Path | File Name |
-|:--|:--|
-|XSM/Inc|gsl_bsm.h|
-||gsl_dsm.h|
-||gsl_lsm.h|
-||gsl_xsm.h|
-|XSM/Src|gsl_bsm.c|
-||gsl_dsm.c|
-||gsl_lsm.c|
-
 - ***gsl_bsm.h***<br>
-gsl_bsm.h provides BSM (Button Service Manager) interfaces.<br>
-gsl_bsm.h also provide callback function for button notification, i.e., short-press, long-press.<br>
-UA shall use that when extracting LED events.<br>
+gsl_bsm.h provides BSM interfaces.<br>
 
 ```C
 PUBLIC void vidBsmInit(void* pvArgs);
@@ -370,17 +280,8 @@ PUBLIC tenuBsmNotify enuBsmNotifyCallback(tenuBsmType enuType);
 ...
 ```
 
-- ***gsl_dsm.h***<br>
-gsl_dsm.h provides DSM (Diagnostic Service Manager) features and interfaces. <br>
-
-```C
-PUBLIC void vidDsmInit(void* pvArgs);
-PUBLIC void vidDsmSrvc(void* pvArgs);
-...
-```
-
 - ***gsl_lsm.h***<br>
-gsl_lsm.h provides LSM (LED Service Manager) interfaces.<br>
+gsl_lsm.h provides LSM interfaces.<br>
 
 ```C
 PUBLIC void vidLsmInit(void* pvArgs);
@@ -388,17 +289,40 @@ PUBLIC void vidLsmSrvc(void* pvArgs);
 ...
 ```
 
-- ***gsl_xsm.h***<br>
-gsl_xsm.h provides XSM shared data types among XSM modules.<br>
-
+- ***gsl_psm.c***<br>
+gsl_psm.c implements PSM features and interfaces, e.g., vidPsmInit, vidPsmSrvc, etc.
 - ***gsl_bsm.c***<br>
-gsl_bsm.c implements BSM features and interfaces with its internal state machine to control button states.<br>
-
-- ***gsl_dsm.c***<br>
-gsl_dsm.c implements DSM features and interfaces.<br>
-
+gsl_bsm.c implements BSM features and interfaces with its internal state machine to control button states.
 - ***gsl_lsm.c***<br>
-gsl_lsm.c implements LSM features and interfaces with its internal state machine to control LED states.<br>
+gsl_lsm.c implements LSM features and interfaces with its internal state machine to control LED states.
+
+</details>
+
+<div id="TPM"></div>
+<details open>
+<summary><font size="5"><b>TPM</b></font></summary>
+
+- [Features](#Features)
+- XPM (eXtended Process Manager) provide polling processes as part of BPM.
+- Folder structure
+
+| Path | File Name |
+|:--|:--|
+|TPM/Inc|gsl_tpm.h|
+|TPM/Src|gsl_tpm.c|
+|||
+
+- ***gsl_tpm.h***<br>
+gsl_tpm.h provides TPM interfaces.<br>
+
+```C
+PUBLIC void vidTpmInit(void* pvArgs);
+PUBLIC void vidTpmProc(void* pvArgs);
+...
+```
+
+- ***gsl_tpm.c***<br>
+gsl_tpm.c implements TPM features and interfaces.<br>
 
 </details>
 

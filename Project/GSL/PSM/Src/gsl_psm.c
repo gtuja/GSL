@@ -2,7 +2,7 @@
  * @file    gsl_psm.c
  * @brief   This file is used to implement PSM manages periodic services.
  * @author  Gtuja
- * @date    Oct 18, 2024
+ * @date    Nov 7, 2024
  * @note    Copyleft, All rights reversed.
  */
 
@@ -15,6 +15,14 @@
 /* External variables ---------------------------------------------- */
 /* Private define -------------------------------------------------- */
 /* Private typedef ------------------------------------------------- */
+typedef void (*tpfPsmInit)(void* pvArgs);
+typedef void (*tpfPsmSrvc)(void* pvArgs);
+typedef struct {
+  U32         u32Period;  /**< PSM period. */
+  tpfPsmInit  pfPsmInit;  /**< PSM Initialize. */
+  tpfPsmSrvc  pfPsmSrvc;  /**< PSM service. */
+} tstrPsmCfg;
+
 /* Private function prototypes ------------------------------------- */
 /* Private variables ----------------------------------------------- */
 PRIVATE U32 gu32PsmCnt;   /** @brief A private variable holding PSM count. */
