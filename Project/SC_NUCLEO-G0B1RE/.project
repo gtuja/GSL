@@ -3,6 +3,7 @@
 	<name>SC_NUCLEO-G0B1RE</name>
 	<comment></comment>
 	<projects>
+		<project>GSL</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
