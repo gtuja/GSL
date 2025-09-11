@@ -1,23 +1,21 @@
 /**
- * @file    gsl_feature.h
- * @brief   This file is comprised of defines, i.e., macros, those specify GSL features.
+ * @file    app_feature.h
+ * @brief   This file is used to ... 
  * @author  Gtuja
- * @date    Nov 7, 2024
+ * @date    Oct 12, 2024
  * @note    Copyleft, All rights reversed.
  */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef GSL_FEATURE_H_
-#define GSL_FEATURE_H_
+#ifndef INCLUDE_APP_FEATURE_H_
+#define INCLUDE_APP_FEATURE_H_
 
 /* Includes ------------------------------------------------------------------*/
-
 /* Exported defines ----------------------------------------------------------*/
-#define FEATURE_BSM
-#define FEATURE_LSM
-#define FEATURE_DIAG
+#define APP_BTN_MATCH_MAX   (U32)5
+#define APP_BTN_PRESS_TH    (U32)1000
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported functions prototypes ---------------------------------------------*/
 
-#endif /* GSL_FEATURE_H_ */
+#endif /* INCLUDE_APP_FEATURE_H_ */

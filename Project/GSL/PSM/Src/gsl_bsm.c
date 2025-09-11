@@ -16,14 +16,6 @@
 /* Private define -------------------------------------------------- */
 /* Private typedef ------------------------------------------------- */
 typedef struct {
-  const CH*           pcName;               /**< The name of BSM service. */
-  U32                 u32Period;            /**< The cycle of execution. */
-  U32                 u32MCCP;              /**< The match count of same button state for chattering prevention. */
-  U32                 u32PressedThreshHold; /**< The threshold for fetching tenuBsmEventNotify, short or long press. */
-  tpfBsmEventCallback pfBsmEventCallback;   /**< Callback for retrieving tenuBsmEvent. */
-} tstrBsmCfg;
-
-typedef struct {
   const tstrBsmCfg* pcstrBsmCfg;  /**< BSM configuration. */
   U32               u32MCCPCnt;   /**< u32MCCPCnt is used for chattering prevention within BSM state machine. */
   U32               u32PressCnt;  /**< u32PressCnt is used for fetching ISB event(tenuIsbEvent) within BSM state machine. */
@@ -64,7 +56,8 @@ PRIVATE tstrBsmCtrl gpstrBsmCtrl[BSM_BTN_MAX] = {0};
  * @brief gcpstrBsmCfgTbl is a private constant table holding BSM features.
  * @sa    tenuBsmType
  */
-PRIVATE const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
+PRIVATE tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {0};
+#if 0
   /* pcName       u32Period    u32MCCP      u32PressedThreshHold  pfBsmEventCallback  */
   {  BSM_NAME_B0, BSM_PRD_B0,  BSM_MCCP_B0, BSM_THN_B0,           enuGslBsmEventCallback },  /* BSM_TYPE_B0 */
   {  BSM_NAME_B1, BSM_PRD_B1,  BSM_MCCP_B1, BSM_THN_B1,           enuGslBsmEventCallback },  /* BSM_TYPE_B1 */
@@ -72,6 +65,7 @@ PRIVATE const tstrBsmCfg gcpstrBsmCfgTbl[BSM_TYPE_MAX] = {
   {  BSM_NAME_B3, BSM_PRD_B3,  BSM_MCCP_B3, BSM_THN_B3,           enuGslBsmEventCallback },  /* BSM_TYPE_B3 */
   {  BSM_NAME_B4, BSM_PRD_B4,  BSM_MCCP_B4, BSM_THN_B4,           enuGslBsmEventCallback },  /* BSM_TYPE_B4 */
 };
+#endif
 
 /** 
  * @brief gpfBsmSttFtnTbl is a private constant table holding BSM state functions.
@@ -117,6 +111,7 @@ PRIVATE U32 gu32BsmCnt = (S32)0;
 PUBLIC void vidBsmInit(void* pvArgs) {
   U32 i;
 
+  vidGslBsmConfigCallback(gcpstrBsmCfgTbl);
   for (i=0; i<(U32)BSM_BTN_MAX; i++) {
     gpstrBsmCtrl[i].pcstrBsmCfg = &(gcpstrBsmCfgTbl[i]);
     gpstrBsmCtrl[i].enuSttCur = BSM_STT_RLS;
@@ -333,4 +328,15 @@ PRIVATE void vidBsmRlsCfmExit(tenuBsmType enuType) {
  */
 PUBLIC __attribute__((weak)) tenuBsmEvent enuGslBsmEventCallback(tenuBsmType enuType) {
   return BSM_EVT_NA;
+}
+
+/**
+ * @brief   A public weak function for initializing BSM configuration.
+ * @param   tstrBsmCfg* The pointer of BSM configuration table.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  void
+ */
+PUBLIC __attribute__((weak)) void vidGslBsmConfigCallback(tstrBsmCfg* pstBsmCfg) {
+  return;
 }

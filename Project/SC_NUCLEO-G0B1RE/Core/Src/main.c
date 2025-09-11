@@ -21,6 +21,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app_api.h"
+#include <stdio.h>
+#include "gsl_api.h"
+#include "gsl_def.h"
 
 /* USER CODE END Includes */
 
@@ -91,12 +95,16 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  setbuf(stdout, gNULL);
+
+  vidAppInitialize();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    vidAppMain();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

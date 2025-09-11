@@ -16,18 +16,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private typedef -----------------------------------------------------------*/
 typedef struct {
-  const CH*             pcName;           /**< The name of LSM service. */
-  U32                   u32Period;        /**< The periodic cycle for LSM. */
-  tenuBsmType           enuBsmType;       /**< BSM linked with LSM */
-  U32                   u32FadeInTmo;     /**< The fade in timeout. */
-  U32                   u32FadeOffTmo;    /**< The fade off timeout. */
-  U32                   u32PwmMin;        /**< The minimum PWM duty. */
-  U32                   u32PwmMax;        /**< The maximum PWM duty. */
-  tpfLsmEventCallback   pfEventCallback;  /**< Callback for retrieving tenuLlmState. */
-  tpfLsmOutputCallback  pfOutputCallback; /**< Callback for LED output. */
-} tstrLsmCfg;
-
-typedef struct {
   const tstrLsmCfg* pcstrLsmCfg;        /**< LSM configuration. */
   U32               u32FadeInCnt;       /**< u32FadeInCnt is used for fade in. */
   U32               u32FadeInCntMax;    /**< u32FadeInCntMax is used for fade in. */
@@ -62,7 +50,8 @@ PRIVATE void vidLsmFadeOffExit(tenuLsmType enuType);
 
 /* Private variables ---------------------------------------------------------*/
 PRIVATE tstrLsmControl gpstrLsmCtrl[LSM_LED_MAX] = {0};  /** gpstrLsmCtrl is a private variable holding information for BSM. */
-PRIVATE const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
+PRIVATE tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {0};
+#if 0
   /* pcName       u32Period    tenuBsmType       u32FadeInTimeOut  u32FadeOffTimeOut  u32PwmMin        u32PwmMin       pfLsmEventCallback      pfLsmOutputCallback    */
   {  LSM_NAME_L0, LSM_PRD_L0,  LSM_BSM_TYPE_L0,  LSM_FI_TMO_L0,    LSM_FO_TMO_L0,     LSM_PWM_MIN_L0,  LSM_PWM_MAX_L0, enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* LSM_TYPE_LD2_GREEN */
   {  LSM_NAME_L1, LSM_PRD_L1,  LSM_BSM_TYPE_L1,  LSM_FI_TMO_L1,    LSM_FO_TMO_L1,     LSM_PWM_MIN_L1,  LSM_PWM_MAX_L1, enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* Dummy */
@@ -70,6 +59,7 @@ PRIVATE const tstrLsmCfg gcpstrLsmCfgTbl[LSM_TYPE_MAX] = {
   {  LSM_NAME_L3, LSM_PRD_L3,  LSM_BSM_TYPE_L3,  LSM_FI_TMO_L3,    LSM_FO_TMO_L3,     LSM_PWM_MIN_L3,  LSM_PWM_MAX_L3, enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* Dummy */
   {  LSM_NAME_L4, LSM_PRD_L4,  LSM_BSM_TYPE_L4,  LSM_FI_TMO_L4,    LSM_FO_TMO_L4,     LSM_PWM_MIN_L4,  LSM_PWM_MAX_L4, enuGslLsmEventCallback, vidGslLsmOutputCallback },  /* Dummy */
 };
+#endif
 
 /** gpfLsmSttFtnTbl is a private constant table holding LSM state functions. */
 PRIVATE const tpfLsmSttFtn gpfLsmSttFtnTbl[LSM_STT_MAX][PSM_STT_FTN_MAX] = {
@@ -109,6 +99,8 @@ PUBLIC void vidLsmInit(void* pvArgs) {
   U32 i;
 
   gu32LsmCnt = (U32)0;
+  
+  vidGslLsmConfigCallback(gcpstrLsmCfgTbl);
   for (i=0; i<(U32)LSM_LED_MAX; i++) {
     gpstrLsmCtrl[i].pcstrLsmCfg = &(gcpstrLsmCfgTbl[i]);
     gpstrLsmCtrl[i].enuSttCur = LSM_STT_OFF;
@@ -335,4 +327,15 @@ PUBLIC __attribute__((weak)) tenuLsmEvent enuGslLsmEventCallback(tenuBsmType enu
  * @return  void.
  */
 PUBLIC __attribute__((weak)) void vidGslLsmOutputCallback(tenuLsmType enuType, U32 u32PwmDuty) {
+}
+
+/**
+ * @brief   A public weak function for initializing LSM configuration.
+ * @param   tstrBsmCfg* The pointer of LSM configuration table.
+ * @note    This is an weak function!
+ *          UA shall override this and implement device specific features.
+ * @return  void
+ */
+PUBLIC __attribute__((weak)) void vidGslLsmConfigCallback(tstrLsmCfg* pstLsmCfg) {
+  return;
 }
